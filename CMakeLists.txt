@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(stremio VERSION "5.0.18")
+project(stremio VERSION "5.0.19")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")

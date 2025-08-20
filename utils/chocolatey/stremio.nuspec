@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>stremio-desktop-v5</id>
-    <version>5.0.18</version>
+    <version>5.0.19</version>
     <title>Stremio Desktop v5</title>
     <authors>Zarg</authors>
     <owners>Zarg</owners>

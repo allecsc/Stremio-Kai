@@ -37,7 +37,7 @@ const DEFAULT_SETTINGS_FOLDER = path.join(SOURCE_DIR, 'utils', 'stremio');
 const DEFAULT_NSIS = 'C:\\Program Files (x86)\\NSIS\\makensis.exe';
 //VCPKG
 const VCPKG_TRIPLET = ARCH === 'x86' ? 'x86-windows-static' : 'x64-windows-static';
-const VCPKG_CMAKE = 'C:/bin/vcpkg/scripts/buildsystems/vcpkg.cmake';
+const VCPKG_CMAKE = 'G:\\Documents\\Github\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake';
 
 // ---------------------------------------------------------------------
 // Main
