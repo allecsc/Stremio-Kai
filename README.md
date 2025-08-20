@@ -115,8 +115,9 @@
        # Uninstall
        scoop uninstall stremio-desktop-v5
        ```
-    4. 🍫 **Chocolatey**
+    4. ~~🍫 **Chocolatey**~~
         ```shell
+        ⚠️ Note: Chocolatey is not updated use scoop or a other installation method!
         # Install
         choco install stremio-desktop-v5 -y
         # Update

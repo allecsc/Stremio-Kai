@@ -513,7 +513,7 @@ static void SetupWebMessageHandler()
                             HandleEvent("mpv-command", subaddArgs);
                             json j;
                             j["type"] = "SubtitleDropped";
-                            j["path"] = decodedFilePathUtf8;
+                            j["path"] = utf8FilePath;
                             SendToJS("SubtitleDropped", j);
                             return S_OK;
                         }
