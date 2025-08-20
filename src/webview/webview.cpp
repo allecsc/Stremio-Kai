@@ -511,6 +511,10 @@ static void SetupWebMessageHandler()
                         if (isSubtitle(filePath)) {
                             std::vector<std::string> subaddArgs = {"sub-add",decodedFilePathUtf8, "select", baseName + " External", "Other Tracks"};
                             HandleEvent("mpv-command", subaddArgs);
+                            json j;
+                            j["type"] = "SubtitleDropped";
+                            j["path"] = decodedFilePathUtf8;
+                            SendToJS("SubtitleDropped", j);
                             return S_OK;
                         }
                         json j;
