@@ -101,8 +101,8 @@ Bring your favorite anime into the 4K era with the powerful [Anime4K](https://gi
 </br>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/3fe98a39-a125-4556-991d-88bdca8d6f69" alt="Original Frame" width="450"/>
-  <img src="https://github.com/user-attachments/assets/9bb0875d-6352-4f4b-aee2-8d0e7e0e84da" alt="Eye Candy HQ + Denoise" width="450"/>
+  <img src="https://github.com/user-attachments/assets/3fe98a39-a125-4556-991d-88bdca8d6f69" alt="Original Frame" width="400"/>
+  <img src="https://github.com/user-attachments/assets/9bb0875d-6352-4f4b-aee2-8d0e7e0e84da" alt="Eye Candy HQ + Denoise" width="400"/>
 </p>
 <p align="center">
   <small><i>No Filters vs Anime4K Eye Candy (HQ) + Denoise</i></small>
