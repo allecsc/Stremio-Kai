@@ -73,9 +73,9 @@ This is the heart of the project's visual philosophy. It's a curated collection 
 
 | Profile Name | Content Type | Core Function |
 | :---- | :---- | :---- |
-| **[anime-sdr]** | Standard Definition (SD) &</br>High Definition (HD) Anime | Enables the  full suite of enhancements: SVP</br>motion smoothing, Anime4K upscaling,</br>and the custom anime audio mix. |
-| **[anime-hdr]** | High Dynamic Range (HDR)</br>Anime | Builds on the anime profile but adds true</br>HDR passthrough for vibrant colors and</br>brightness on compatible displays. |
-| **[anime-old]** | Legacy & Interlaced</br>Anime (480i, 576i) | A special profile for older shows. It enables</br>a high-quality deinterlacer (bwdif)</br>to fix visual combing artifacts before</br>sending it to the SVP engine. |
+| **[anime-sdr]** | Standard Definition (SD) &</br>High Definition (HD)</br>Anime | Enables the  full suite of enhancements: SVP motion</br>smoothing, Anime4K upscaling, and the</br>custom anime audio mix. |
+| **[anime-hdr]** | High Dynamic Range (HDR)</br>Anime | Builds on the anime profile but adds true HDR</br>passthrough for vibrant colors and</br>brightness on compatible displays. |
+| **[anime-old]** | Legacy & Interlaced</br>Anime (480i, 576i) | A special profile for older shows. It enables a high-quality</br>deinterlacer (bwdif) to fix visual combing artifacts</br>before sending it to the SVP engine. |
 | **[hdr]** | HDR Movies & TV Shows | A minimalist profile designed for cinematic HDR content.</br>It disables anime-specific shaders and enables pure HDR</br>passthrough for a true-to-source experience. |
 | **[sdr]** | SDR Movies & TV Shows | The default for all non-anime, non-HDR content.</br>Uses high-quality scaling algorithms and a cinematic audio mix. |
 
