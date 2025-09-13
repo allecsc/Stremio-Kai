@@ -77,7 +77,7 @@ This is the heart of the project's visual philosophy. It's a curated collection 
 | **[anime-hdr]** | High Dynamic Range (HDR)</br>Anime | Builds on the anime profile but adds true HDR</br>passthrough for vibrant colors an brightness on</br>compatible displays. |
 | **[anime-old]** | Legacy & Interlaced</br>Anime (480i, 576i) | A special profile for older shows. It enables a high-quality</br>deinterlacer (bwdif) to fix visual combing artifacts</br>before sending it to the SVP engine. |
 | **[hdr]** | HDR Movies & TV Shows | A minimalist profile designed for cinematic HDR content.</br>It disables anime-specific shaders and enables pure HDR</br>passthrough for a true-to-source experience. |
-| **[sdr]** | SDR Movies & TV Shows | The default for all non-anime, non-HDR content.</br>Uses high-quality scaling algorithms and a cinematic audio mix. |
+| **[sdr]** | SDR Movies & TV Shows | The default for all non-anime, non-HDR content. Uses</br>high-quality scaling algorithms and a cinematic audio mix. |
 
 > *You never need to touch these, but it helps to know how Stremio Kai selects and defines its view. Advanced users can fine-tune the specific settings for each of these profiles directly in the mpv.conf file.*
 
