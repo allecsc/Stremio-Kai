@@ -725,7 +725,7 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
 * Unzip the entire contents of the 7z archive to a location of your choice on your computer (e.g., C:\\Program Files\\Stremio Kai or D:\\PortableApps\\Stremio Kai).  
 ### 3. Run  
 * Double-click stremio.exe. That's it. Log in to your Stremio account and enjoy.
-### 4. (Optional) Use the provided [AIOstreams Template](https://github.com/allecsc/Stremio-Kai/blob/main/aiostreams-config-TEMPLATE.json)
+### 4. (Optional) Use the provided [AIOstreams Template](https://github.com/allecsc/Stremio-Kai/releases/download/stremio-kai-v2.0/aiostreams-config-TEMPLATE.json)
 * To help you identify the right video source, this package includes a pre-configured template for the **AIOstreams** addon. This template formats the search results to clearly display critical information like resolution, HDR format (HDR10+, DV), audio type (Atmos), and file size, so you can pick the best source for your display with confidence. It would look like this:
 
 <p align="center">
@@ -767,6 +767,27 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
 </details>  
 </br>
 
+### **⌨️ Power-User Control: The Cheatsheet**
+
+> Stremio Kai is designed to work perfectly out of the box, but power users have full control. Use these hotkeys to adjust the visuals on the fly.
+
+| Key | Action | Description |
+| :---: | :---: | :---: |
+| Tab | **Smart Skip** | Skips the current intro/outro when prompted. |
+| F12 | Toggle **SVP Motion Smoothing** | Manually enables or disables frame interpolation. |
+| Ctrl+F1 | **Anime4K: Optimized** | A balanced preset for great quality and performance. |
+| Ctrl+F2 | **Anime4K: Eye Candy (Fast)** | A higher-quality preset with a minor performance cost. |
+| Ctrl+F3 | **Anime4K: Eye Candy (HQ)** | The highest-quality preset for powerful machines. |
+| Ctrl+F4 | **Clear All Shaders** | Instantly removes all active GLSL shaders. |
+| Ctrl+F10 | Toggle **High Denoise** | Toggles the default subjective denoise filter. |
+| F9 | Cycle **Denoise Filters** | Cycles through other, weaker denoise filters. |
+| F8 | Toggle **ICC Profile** | Toggles automatic ICC color profile correction. |
+
+> *For a full list of all custom shortcuts, please consult the `input.conf` file. For even more, check the [mpv manual](https://mpv.io/manual/master/).*
+
+</br>
+
+
 ## 🛠️ Project Status
 
 ### ⚙️ **Current State**
@@ -803,26 +824,6 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
     - **Dubbed Anime:** If you primarily watch anime with English (or other non-Japanese) dubs, the anime-specific profiles will not activate by default. You will need to make a small adjustment to the configuration to include your preferred language.
     - **Live-Action Content:** If you watch other Asian-language content (like K-dramas with Korean audio), the system will incorrectly identify it as anime and apply the wrong visual profile.
   - For users who watch dubbed anime or other Asian content, please **[open a discussion](https://github.com/allecsc/Stremio-Kai/discussions)** for assistance in adjusting the detection settings for a better experience.
-
-</br>
-
-## **⌨️ Power-User Control: The Cheatsheet**
-
-Stremio Kai is designed to work perfectly out of the box, but power users have full control. Use these hotkeys to adjust the visuals on the fly.
-
-| Key | Action | Description |
-| :---: | :---: | :---: |
-| Tab | **Smart Skip** | Skips the current intro/outro when prompted. |
-| F12 | Toggle **SVP Motion Smoothing** | Manually enables or disables frame interpolation. |
-| Ctrl+F1 | **Anime4K: Optimized** | A balanced preset for great quality and performance. |
-| Ctrl+F2 | **Anime4K: Eye Candy (Fast)** | A higher-quality preset with a minor performance cost. |
-| Ctrl+F3 | **Anime4K: Eye Candy (HQ)** | The highest-quality preset for powerful machines. |
-| Ctrl+F4 | **Clear All Shaders** | Instantly removes all active GLSL shaders. |
-| Ctrl+F10 | Toggle **High Denoise** | Toggles the default subjective denoise filter. |
-| F9 | Cycle **Denoise Filters** | Cycles through other, weaker denoise filters. |
-| F8 | Toggle **ICC Profile** | Toggles automatic ICC color profile correction. |
-
-> *For a full list of all custom shortcuts, please consult the `input.conf` file. For even more, check the [mpv manual](https://mpv.io/manual/master/).*
 
 </br>
 
