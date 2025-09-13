@@ -15,6 +15,8 @@ local opts = {
     notification_duration = 15,
     skip_window = 3,
     max_skip_duration = 200,
+    -- MODIFIED: Added a new, lenient time limit specifically for the first chapter.
+    max_intro_chapter_duration = 300,
     opening_patterns = "^OP$|^OP[0-9]+$|^Opening|Opening$|^Intro|Intro$|^Introduction$|^Theme Song$|^Main Theme$|^Title Sequence$|^Cold Open$|^Teaser$|^Prologue$",
     ending_patterns = "^ED$|^ED[0-9]+$|^Ending|Ending$|^Outro|Outro$|^End Credits$|^Credits$|^Closing|Closing$|^Epilogue$|^End Theme$|^Closing Theme$",
     preview_patterns = "Preview|Next Episode|^Next Time|^Coming Up|^Next Week|^Trailer$"
@@ -104,10 +106,18 @@ function find_skip_chapters()
     -- Position-based candidates
     local candidates = {}
     
+    -- MODIFIED: The logic for the first 2 chapters now handles Chapter 1 with a special time limit.
     -- First 2 chapters as potential openings
     for i = 1, math.min(2, #chapters) do
         local duration = calculate_chapter_duration(chapters, i)
-        if duration > 0 and duration <= opts.max_skip_duration then
+        local limit = opts.max_skip_duration
+
+        -- If this is the first chapter, use the more lenient time limit.
+        if i == 1 then
+            limit = opts.max_intro_chapter_duration
+        end
+
+        if duration > 0 and duration <= limit then
             table.insert(candidates, {
                 index = i,
                 time = chapters[i].time,
@@ -241,7 +251,7 @@ function skip_to_chapter_end(chapter_index)
         -- Last chapter, skip to end
         local duration = mp.get_property_native("duration")
         if duration then
-            set_time(duration - 1) -- 5 seconds before end
+            set_time(duration - 1) -- 1 second before end
         end
         mp.osd_message("Skipped to end", 2)
     end
