@@ -725,7 +725,7 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
 * Unzip the entire contents of the 7z archive to a location of your choice on your computer (e.g., C:\\Program Files\\Stremio Kai or D:\\PortableApps\\Stremio Kai).  
 ### 3. Run  
 * Double-click stremio.exe. That's it. Log in to your Stremio account and enjoy.
-### 4. (Optional) Use the provided [AIOstreams Template](https://github.com/allecsc/Stremio-Kai/releases/download/stremio-kai-v2.0/aiostreams-config-TEMPLATE.json)
+### 4. (Optional) Use the provided [AIOstreams Template](https://github.com/allecsc/Stremio-Kai/blob/main/aiostreams-config-TEMPLATE.json)
 * To help you identify the right video source, this package includes a pre-configured template for the **AIOstreams** addon. This template formats the search results to clearly display critical information like resolution, HDR format (HDR10+, DV), audio type (Atmos), and file size, so you can pick the best source for your display with confidence. It would look like this:
 
 <p align="center">
