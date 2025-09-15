@@ -165,21 +165,7 @@
         "useMultipleInstances": false,
         "showTorrentLinks": false
       }
-    },
-    {
-      "type": "stremthruStore",
-      "instanceId": "58e",
-      "enabled": true,
-      "options": {
-        "name": "StremThru Store",
-        "timeout": 10000,
-        "resources": [
-          "stream",
-          "catalog",
-          "meta"
-        ]
-      }
-    },
+    },    
     {
       "type": "jackettio",
       "instanceId": "7a4",
