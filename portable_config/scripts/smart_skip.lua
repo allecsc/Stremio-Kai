@@ -1,5 +1,6 @@
 -- smart-skip.lua
 -- Unified intro/outro skipping with chapter priority and silence detection fallback
+-- Enhanced with custom OSD overlay for skip notifications
 
 local mp = require 'mp'
 local options = require 'mp.options'
@@ -24,16 +25,20 @@ local opts = {
 
 -- State variables
 local skip_mode = "none" -- "chapter" or "silence" or "none"
-local current_notification = nil
 local silence_active = false
 local skip_start_time = 0
+
+-- State variables for the custom OSD overlay
+local skip_overlay = nil
+local skip_overlay_timer = nil
+
 
 -- Speed constants
 local MAX_SPEED = 100
 local NORMAL_SPEED = 1
 
 function read_options()
-    options.read_options(opts, "smart-skip")
+    options.read_options(opts, "smart_skip")
 end
 
 -- Utility functions
@@ -90,7 +95,10 @@ function is_untitled_chapter(title)
     return false
 end
 
--- Position-first approach: check position, then use titles for confidence
+--------------------------------------------------------------------------------
+-- REPLACED FUNCTION
+-- This is the new, improved logic for finding skippable chapters.
+--------------------------------------------------------------------------------
 function find_skip_chapters()
     local chapters = mp.get_property_native("chapter-list")
     if not chapters or #chapters == 0 then return {} end
@@ -98,90 +106,70 @@ function find_skip_chapters()
     local skip_chapters = {}
     local categories = {}
     
-    -- Parse enabled categories
+    -- Parse enabled categories from the config
     for category in string.gmatch(opts.skip_categories, "([^;]+)") do
         categories[category:lower():gsub("%s+", "")] = true
     end
     
-    -- Position-based candidates
-    local candidates = {}
-    
-    -- MODIFIED: The logic for the first 2 chapters now handles Chapter 1 with a special time limit.
-    -- First 2 chapters as potential openings
-    for i = 1, math.min(2, #chapters) do
+    -- Single loop through ALL chapters
+    for i = 1, #chapters do
+        local chapter = chapters[i]
         local duration = calculate_chapter_duration(chapters, i)
-        local limit = opts.max_skip_duration
+        local is_skippable = false
+        local matched_category = ""
 
-        -- If this is the first chapter, use the more lenient time limit.
-        if i == 1 then
-            limit = opts.max_intro_chapter_duration
-        end
+        -- Check if the chapter's duration is within the allowed limits
+        local duration_limit = (i == 1) and opts.max_intro_chapter_duration or opts.max_skip_duration
+        if duration > 0 and duration <= duration_limit then
 
-        if duration > 0 and duration <= limit then
-            table.insert(candidates, {
-                index = i,
-                time = chapters[i].time,
-                title = chapters[i].title,
-                duration = duration,
-                potential_category = "opening"
-            })
+            -- Hybrid Logic: First check if the chapter is titled
+            if not is_untitled_chapter(chapter.title) then
+                -- HIGH CONFIDENCE: Titled chapter. Match against all patterns, regardless of position.
+                for category_name, _ in pairs(categories) do
+                    if matches_chapter_pattern(chapter.title, category_name) then
+                        is_skippable = true
+                        matched_category = category_name
+                        break -- Match found, no need to check other categories
         end
     end
-    
-    -- Last 2 chapters as potential endings (avoid overlap with first 2)
-    local start_idx = math.max(#chapters - 1, 3)
-    for i = start_idx, #chapters do
-        local duration = calculate_chapter_duration(chapters, i)
-        if duration > 0 and duration <= opts.max_skip_duration then
-            table.insert(candidates, {
-                index = i,
-                time = chapters[i].time,
-                title = chapters[i].title,
-                duration = duration,
-                potential_category = "ending"
-            })
+            else
+                -- MEDIUM CONFIDENCE: Untitled chapter. Check position.
+                if i <= 2 or i >= #chapters - 1 then
+                    -- Heuristic: If it's in the first half, guess "opening". If second half, guess "ending".
+                    if i <= math.ceil(#chapters / 2) then
+                        if categories["opening"] then
+                            is_skippable = true
+                            matched_category = "opening"
+                        end
+                    else
+                        if categories["ending"] then
+                            is_skippable = true
+                            matched_category = "ending"
         end
     end
-    
-    -- Evaluate candidates based on title confidence
-    for _, candidate in ipairs(candidates) do
-        local should_skip = false
-        local final_category = candidate.potential_category
-        local is_titled = false
-        
-        -- High confidence: titled chapters matching our patterns
-        if candidate.title and candidate.title ~= "" then
-            for category, _ in pairs(categories) do
-                if matches_chapter_pattern(candidate.title, category) then
-                    should_skip = true
-                    final_category = category
-                    is_titled = true
-                    break
                 end
             end
         end
         
-        -- Medium confidence: untitled chapters in correct positions
-        if not should_skip and is_untitled_chapter(candidate.title) then
-            should_skip = true
-            is_titled = false
-        end
-        
-        -- Add to skip list if qualified
-        if should_skip then
+        -- If the chapter was flagged as skippable, add it to the final list
+        if is_skippable then
             table.insert(skip_chapters, {
-                index = candidate.index,
-                time = candidate.time,
-                title = candidate.title or ("Chapter " .. candidate.index),
-                category = final_category,
-                duration = candidate.duration,
-                is_titled = is_titled
+                index = i,
+                time = chapter.time,
+                title = chapter.title or ("Chapter " .. i),
+                category = matched_category,
+                duration = duration,
+                is_titled = not is_untitled_chapter(chapter.title)
             })
         end
     end
     
     return skip_chapters
 end
+--------------------------------------------------------------------------------
+-- END OF REPLACED FUNCTION
+--------------------------------------------------------------------------------
+
 
 -- Silence detection functions
 function init_audio_filter()
@@ -259,27 +247,50 @@ function skip_to_chapter_end(chapter_index)
     return true
 end
 
--- Notification functions
-function show_skip_notification(message)
-    if not opts.show_notification then return end
-    
-    if current_notification then
-        mp.cancel_timer(current_notification)
+-- FINAL: Notification functions using vector drawing for the box.
+function hide_skip_overlay()
+    if skip_overlay_timer then
+        skip_overlay_timer:kill()
+        skip_overlay_timer = nil
     end
-    
-    mp.osd_message(message .. " (Press Tab to skip)", opts.notification_duration)
-    
-    current_notification = mp.add_timeout(opts.notification_duration, function()
-        current_notification = nil
-    end)
+    if skip_overlay then
+        skip_overlay.data = ""
+        skip_overlay:update()
+    end
 end
 
-function hide_notification()
-    if current_notification then
-        mp.cancel_timer(current_notification)
-        current_notification = nil
-        mp.osd_message("", 0)
+function show_skip_overlay(message)
+    if not opts.show_notification then return end
+
+    hide_skip_overlay()
+
+    if not skip_overlay then
+        skip_overlay = mp.create_osd_overlay("ass-events")
     end
+
+    -- This string combines vector drawing for the box and standard text rendering.
+    -- It is split into two parts for clarity.
+    
+    -- Part 1: The Box.
+    -- Uses your proven vector drawing method. Anchored bottom-right.
+    -- The drawing commands (m, l) are relative to the anchor point.
+    -- A 380x63 box is drawn from the anchor point leftwards and upwards.
+    local box_drawing = "{\\an3\\1c&FFFFFF&\\alpha&H60&\\4c&H000000&\\shad1\\be6\\bord0\\}{\\p1}m 180 23 l 380 23 l 380 63 l 180 63{\\p0}"
+
+    -- Part 2: The Text.
+    -- Also anchored bottom-right. A margin is created by adding a newline `\\N`
+    -- and spaces to physically push the text away from the corner.
+    local text_drawing = string.format("{\\fnNata Sans\\a6\\alpha&H00&\\c&H111111&\\4c&H000000&\\shad1\\be1\\bord0\\fs22\\b900}%s{\\b0\\fs16}\\N(Press Tab)\\h\\h\\h\\h\\h\\h\\N\\N\\N\\N\\N\\N", message)
+
+    -- The two strings are concatenated. The text will appear over the box.
+    local ass_string = box_drawing .. text_drawing
+    
+    skip_overlay.data = ass_string
+    skip_overlay:update()
+
+    skip_overlay_timer = mp.add_timeout(opts.notification_duration, function()
+        hide_skip_overlay()
+    end)
 end
 
 -- Main skip function
@@ -288,6 +299,7 @@ function perform_skip()
     local current_time = get_time()
     
     if skip_mode == "chapter" then
+        hide_skip_overlay() -- Hide notification on explicit skip
         local skip_chapters = find_skip_chapters()
         local current_chapter = mp.get_property_native("chapter")
         
@@ -340,19 +352,19 @@ function check_notification()
         if (current_chapter ~= nil and chapter.index == current_chapter + 1) or
            (chapter.time > current_time and chapter.time <= current_time + opts.skip_window) then
             local category_name = chapter.category:gsub("^%l", string.upper)
-            show_skip_notification("Skip " .. category_name)
+            show_skip_overlay("Skip " .. category_name)
             return
         end
     end
     
-    hide_notification()
+    hide_skip_overlay()
 end
 
 -- Event handlers
 function on_file_loaded()
     read_options()
     skip_mode = "none"
-    hide_notification()
+    hide_skip_overlay()
     
     if silence_active then
         stop_silence_skip()
@@ -391,11 +403,17 @@ function on_seek()
     check_notification()
 end
 
+-- Cleanup function
+function on_shutdown()
+    hide_skip_overlay()
+end
+
 -- Initialize
 read_options()
 
 -- Register events
 mp.register_event("file-loaded", on_file_loaded)
+mp.register_event("shutdown", on_shutdown)
 mp.observe_property("chapter", "number", on_chapter_change)
 mp.register_event("seek", on_seek)
 mp.add_key_binding('Tab', 'smart-skip', perform_skip)
