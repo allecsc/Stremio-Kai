@@ -95,10 +95,6 @@ function is_untitled_chapter(title)
     return false
 end
 
---------------------------------------------------------------------------------
--- REPLACED FUNCTION
--- This is the new, improved logic for finding skippable chapters.
---------------------------------------------------------------------------------
 function find_skip_chapters()
     local chapters = mp.get_property_native("chapter-list")
     if not chapters or #chapters == 0 then return {} end
@@ -166,10 +162,6 @@ function find_skip_chapters()
     
     return skip_chapters
 end
---------------------------------------------------------------------------------
--- END OF REPLACED FUNCTION
---------------------------------------------------------------------------------
-
 
 -- Silence detection functions
 function init_audio_filter()
@@ -275,12 +267,12 @@ function show_skip_overlay(message)
     -- Uses your proven vector drawing method. Anchored bottom-right.
     -- The drawing commands (m, l) are relative to the anchor point.
     -- A 380x63 box is drawn from the anchor point leftwards and upwards.
-    local box_drawing = "{\\an3\\1c&FFFFFF&\\alpha&H60&\\4c&H000000&\\shad1\\be6\\bord0\\}{\\p1}m 180 23 l 380 23 l 380 63 l 180 63{\\p0}"
+    local box_drawing = "{\\an3\\1c&FFFFFF&\\alpha&H60&\\4c&H000000&\\shad1\\be6\\bord0\\}{\\p1}m 180 15 l 380 15 l 380 55 l 180 55{\\p0}"
 
     -- Part 2: The Text.
     -- Also anchored bottom-right. A margin is created by adding a newline `\\N`
     -- and spaces to physically push the text away from the corner.
-    local text_drawing = string.format("{\\fnNata Sans\\a6\\alpha&H00&\\c&H111111&\\4c&H000000&\\shad1\\be1\\bord0\\fs22\\b900}%s{\\b0\\fs16}\\N(Press Tab)\\h\\h\\h\\h\\h\\h\\N\\N\\N\\N\\N\\N", message)
+    local text_drawing = string.format("{\\fnNata Sans\\alpha&H00&\\c&H111111&\\4c&H000000&\\shad1\\be1\\bord0\\fs24\\b900}%s{\\alpha&H80&\\b0\\fs16} (Press Tab)\\N\\N\\N\\N\\N\\N", message)
 
     -- The two strings are concatenated. The text will appear over the box.
     local ass_string = box_drawing .. text_drawing
