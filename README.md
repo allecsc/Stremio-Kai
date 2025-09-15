@@ -819,11 +819,12 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
   - If you are a purist who prefers the original, unaltered look of an anime, you can easily achieve that. The settings are controlled in the mpv.conf file. If you're not comfortable editing it yourself, please **[open a discussion](https://github.com/allecsc/Stremio-Kai/discussions)**. I will personally guide you on how to tailor the experience to your exact preferences.
 
 **3. How does the "anime detection" work? Will this affect other content?**
-  - The system detects anime by checking the audio tracks of the video file. If it finds a Japanese (or other asian languages) audio track, it applies the appropriate anime profile.
-  - This has two important consequences:
-    - **Dubbed Anime:** If you primarily watch anime with English (or other non-Japanese) dubs, the anime-specific profiles will not activate by default. You will need to make a small adjustment to the configuration to include your preferred language.
-    - **Live-Action Content:** If you watch other Asian-language content (like K-dramas with Korean audio), the system will incorrectly identify it as anime and apply the wrong visual profile.
-  - For users who watch dubbed anime or other Asian content, please **[open a discussion](https://github.com/allecsc/Stremio-Kai/discussions)** for assistance in adjusting the detection settings for a better experience.
+- The system uses an advanced, multi-step process to accurately identify anime and separate it from live-action content.
+    1.  First, it looks for common "fingerprints" in the file's metadata, such as styled subtitles, "Signs & Songs" tracks, or anime-specific chapters. This allows it to detect many anime files, including movies and dubbed versions, regardless of audio language.
+    2.  If those aren't found, it falls back to checking for a combination of an Asian language audio track and a short, episode-like duration.
+- This new system has two important consequences:
+    - **Live-Action Content:** This logic is specifically designed to *fix* the misidentification of other Asian content. Live-action dramas and movies (like K-dramas or J-dramas) will now be correctly identified and receive the standard visual profiles.
+    - **Dubbed Anime:** Because the system can detect anime using more than just the audio language, many dubbed anime files will now be correctly identified automatically.
 
 </br>
 
