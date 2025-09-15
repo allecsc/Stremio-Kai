@@ -111,6 +111,23 @@
       }
     },
     {
+      "type": "nuvio-streams",
+      "instanceId": "021",
+      "enabled": true,
+      "options": {
+        "name": "Nuvio Streams",
+        "timeout": 10000,
+        "resources": [
+          "stream"
+        ],
+        "url": "",
+        "scraperApiKey": "",
+        "showBoxCookie": "",
+        "showBoxRegion": "USA7",
+        "providers": []
+      }
+    },
+    {
       "type": "torrents-db",
       "instanceId": "851",
       "enabled": true,
@@ -164,18 +181,6 @@
         ],
         "useMultipleInstances": false,
         "showTorrentLinks": false
-      }
-    },    
-    {
-      "type": "jackettio",
-      "instanceId": "7a4",
-      "enabled": true,
-      "options": {
-        "name": "Jackettio",
-        "timeout": 10000,
-        "resources": [
-          "stream"
-        ]
       }
     }
   ],
@@ -246,12 +251,11 @@
     "enabled": true,
     "multiGroupBehaviour": "aggressive",
     "keys": [
-      "filename",
       "infoHash"
     ],
-    "cached": "per_service",
-    "uncached": "per_service",
-    "p2p": "per_service"
+    "cached": "single_result",
+    "uncached": "single_result",
+    "p2p": "single_result"
   },
   "proxy": {
     "id": "mediaflow",
@@ -328,8 +332,8 @@
     },
     {
       "addons": [
-        "851",
-        "181"
+        "181",
+        "021"
       ],
       "condition": "count(totalStreams) <= 5"
     },
@@ -339,7 +343,8 @@
         "e84",
         "c57",
         "58e",
-        "7a4"
+        "7a4",
+        "851"
       ],
       "condition": "count(totalStreams) <= 5"
     }
@@ -379,5 +384,8 @@
   },
   "precacheNextEpisode": true,
   "alwaysPrecache": true,
-  "catalogModifications": []
+  "catalogModifications": [],
+  "resultLimits": {
+    "global": 6
+  }
 }
