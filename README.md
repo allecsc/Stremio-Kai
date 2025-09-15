@@ -690,7 +690,7 @@ This script merges and modernizes concepts from two foundational scripts. Full c
   * [rui-ddc/skip-intro](https://github.com/rui-ddc/skip-intro)
 
 ### **🎉 The Bottom Line**
-Go right to your favorite part! This script replaces imprecise, repetitive skipping with a clean, single-press command. It gives you the power to navigate content exactly as you want, making the experience seamless without taking control away from you.
+Go right to your favorite part! This script provides a polished, pop-up notification that gives you precise, one-press control to skip content exactly when you want. It’s a quality-of-life upgrade that makes your player feel less like a tool and more like a premium service.
 </details>
 </br>
 
