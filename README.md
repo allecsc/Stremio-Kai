@@ -384,23 +384,29 @@ But every time you open a file, you have to manually switch between them. Or wor
 
 #### ✨ The Smart Solution
 
-This script is the central brain your mpv config has been missing. It completely takes over the job of profile selection, analyzing every file on load, thinking like a human, and applying the **one, correct profile** for what you're watching. No conditions, no fighting, no mistakes.
+This script is the central brain your mpv config has been missing. It completely takes over the job of profile selection, analyzing every file on load using an advanced, multi-step process that thinks like a human. It applies the **one, correct profile** for what you're watching. No conditions, no fighting, no mistakes.
 
-It's the set-it-and-forget-it system that finally makes your carefully tuned profiles work automatically.
+It's the set-it-and-forget-it system that finally makes your carefully tuned profiles work automatically, correctly distinguishing between anime, movies, and live-action dramas.
 
 #### 🤔 How It Thinks (The Decision Tree)
 
-This script's sole purpose is to analyze the video file and apply the appropriate profile from the [**Visually Stunning Predefined Profiles**](#-visually-stunning-predefined-profiles) table. It runs a lightning-fast check on every file, asking a series of questions to determine its exact nature and apply the perfect profile:
+This script's sole purpose is to analyze the video file and apply the appropriate profile from the [**Visually Stunning Predefined Profiles**](#-visually-stunning-predefined-profiles) table. It uses a powerful, two-tiered system to identify content with high accuracy and runs a lightning-fast check on every file, asking a series of questions to determine its exact nature and apply the perfect profile:
 
-1.  **Is it Anime?** (Checks for Japanese, Chinese, or Korean audio tracks).
-2.  **If YES, is it HDR?** (Checks for HDR10, HLG, or Dolby Vision metadata).
-    * If also HDR, it's `anime-hdr`.
-    * **If not HDR, is it Old?** (Checks for low resolution or interlaced video).
-        * If old, it's `anime-old`.
-        * Otherwise, it's modern `anime`.
-3.  **If NO, is it HDR?**
-    * If it's non-anime HDR, it's `hdr`.
-    * Otherwise, it's `general`.
+1. **Tier 1: High-Confidence "Fingerprint" Check**
+  * First, it scans for metadata "fingerprints" that are strong indicators of anime. This includes things like:
+      * Styled subtitle formats (`.ass`)
+      * "Signs & Songs" subtitle tracks
+      * Anime-specific chapter names ("Part A", "Part B")
+      * Embedded font files
+  * If it finds any of these, it confidently applies an anime profile. This method is smart enough to correctly identify anime **movies, specials, and even dubbed anime** that would fool simpler checks.
+
+2. **Tier 2: General Episodic Check (Fallback)**
+  * If the "fingerprints" aren't found, the script falls back to a safer, more general check. It asks two questions:
+      1.  Does it have an Asian language audio track (Japanese, Chinese, etc.)?
+      2.  Is its duration under 40 minutes (like a typical TV episode)?
+  * If the answer to both is yes, it applies an anime profile. This reliably catches standard anime episodes while correctly **excluding live-action Asian dramas**, which are longer.
+
+If a file matches neither tier, it receives the standard `sdr` or `hdr` profile.
 
 ### 🚀 Quick Setup
 
@@ -417,11 +423,11 @@ This script's sole purpose is to analyze the video file and apply the appropriat
 
 This script is smart, but it's not a mind reader. It needs profiles to apply. Make sure your `mpv.conf` contains the profiles it will look for:
 
-* `[anime]`
+* `[anime-sdr]`
 * `[anime-hdr]`
 * `[anime-old]`
 * `[hdr]`
-* `[general]`
+* `[sdr]`
 
 #### **3. Clean Your `mpv.conf`**
 
@@ -429,11 +435,16 @@ This is critical. The script is now in charge. **Delete every `profile-cond=...`
 
 #### ⚙️ Configuration Magic
 
-This script has no `.conf` file. **You configure it by editing your profiles in `mpv.conf`**.
+This script has no `.conf` file, but it's still easy to configure. A **configuration table** has been placed at the very top of the `profile-manager.lua` file.
+
+You can easily tweak the script's core logic without digging through the code:
+* Add a new language for detection.
+* Change the 40-minute duration threshold.
+* Add new keywords to look for in chapter or subtitle titles.
+
+Of course, the main way to configure is still by editing your profiles in `mpv.conf`. The script simply acts as the intelligent switch for the settings you've already defined.
 
 Want your `[anime]` profile to be brighter? Edit `[anime]` in `mpv.conf`. Want your `[hdr]` profile to use different tone-mapping? Edit `[hdr]`. The script simply acts as the intelligent switch for the settings you've already defined.
-
-Power users can also edit the logic directly in the `.lua` file (e.g., add new languages, change the resolution cutoff).
 
 #### 🤔 How It Actually Works
 
@@ -445,14 +456,13 @@ When a video starts loading, the script patiently waits in the background.
 
 #### 😯 Real Examples
 
-| If the file is...                               | The script will apply... |
-| ----------------------------------------------- | ------------------------ |
-| 1080p, Japanese audio, SDR                      | `[anime]`                |
-| 2160p, English audio, Dolby Vision              | `[hdr]`                  |
-| 480i, Japanese audio, SDR                       | `[anime-old]`            |
-| 1080p, Korean audio, HDR10                      | `[anime-hdr]`            |
-| 720p, English audio, SDR                        | `[general]`              |
-
+| If the file is...                                       | The script will apply... | Why?                                                     |
+| ------------------------------------------------------- | ------------------------ | -------------------------------------------------------- |
+| 1080p Anime, Japanese audio, 24 min                     | `[anime-sdr]`            | Tier 2: Asian audio + short duration.                    |
+| 2160p K-Drama, Korean audio, 60 min, HDR                | `[hdr]`                  | Tier 2: Fails duration check. Correctly not anime.       |
+| 1080p Anime Movie, Japanese audio, 120 min, ASS subs    | `[anime-sdr]`            | Tier 1: Detects `.ass` subtitles, ignores long duration. |
+| 720p Dubbed Anime, English audio, 24 min, "Signs" track | `[anime-sdr]`            | Tier 1: Detects "Signs" track, ignores English audio.    |
+| 2160p Hollywood Movie, English audio, HDR               | `[hdr]`                  | Fails both tiers. Correctly not anime.                   |
 
 ### 🔧 Troubleshooting
 
@@ -464,10 +474,12 @@ When a video starts loading, the script patiently waits in the background.
 
 #### 😡 **"It picked the wrong profile!"**
 
-* Look at the log! The script logs every piece of data it uses to make its decision.
-    * `HDR Detected: false` means your file lacks the right metadata.
-    * `No Asian language audio track found` means the audio track isn't tagged correctly.
-* The log tells you *why* it made its choice, allowing you to see if the file's metadata is the problem.
+* Look at the log! The script now logs the **exact reason** for its choice.
+* Open the mpv console (`~` key) and look for the `[profile-manager]` logs. You will see a line like:
+    * `Reason: Tier 1 (ASS Subtitle Format)`
+    * `Reason: Tier 2 (Asian Audio + Short Duration)`
+    * `Reason: Default (No Anime Detected)`
+* This tells you *why* it made its choice, allowing you to see if the file's metadata is the problem or if a tweak to the script's configuration table is needed.
 
 ### 🎉 The Bottom Line
 Install it, clean your `mpv.conf`, and enjoy a player that is finally smart enough to use your profiles correctly. This is the robust, centralized logic that ends the profile wars for good.
@@ -583,23 +595,25 @@ During a binge-watching session, the flow between episodes is constantly interru
 
 #### ✨ The Solution
 
-This script provides a seamless, Netflix-style viewing experience by intelligently detecting and skipping unwanted sections of a video file. It uses a multi-layered detection system that prioritizes a chapter's position and uses its title to determine confidence, ensuring high accuracy and safety. This allows you to move from one episode to the next without interruption.
+This script elevates your viewing experience by intelligently identifying skippable content and presenting a clean, non-intrusive toast notification, just like on major streaming services. It uses a sophisticated, multi-layered detection system to handle files with or without chapters, ensuring you can seamlessly move between episodes with a single keypress.
 
-#### 🤔 How It Works: The Position-First Logic
+#### 🤔 How It Works: A Multi-Layered Approach
 
-The script analyzes each file using a precise, multi-step process to identify skippable content.
+The script analyzes each file using a hierarchy of detection methods to ensure the highest possible accuracy.
 
-1.  **Step 1: Identify Positional Candidates**
-    The script first examines the chapter list, identifying the first two and last two chapters as potential candidates for being an intro or outro. It assumes content at the absolute beginning or end of a file is likely skippable.
+1.  **Chapter-Based Detection (Primary Method)**
+    This is the most accurate mode, used on files with embedded chapters. The script analyzes the chapter list to find skippable segments.
+      * **High Confidence:** If a chapter has a descriptive title matching known patterns (e.g., "Intro," "Ending," "Outro"), it's considered a high-confidence match.
+      * **Medium Confidence:** If a chapter is untitled (e.g., "Chapter 1") but is in a common position for an intro, it's considered a medium-confidence match.
 
-2.  **Step 2: Assign Confidence Using Titles**
-    Next, it inspects the titles of these positional candidates to determine a confidence level:
+2.  **Intelligent Fallback (For Chapter-less Files)**
+    If a video file has no chapters, the script switches to its intelligent fallback mode.
+      * **Time-Gated Scanning:** To avoid interrupting actual content, this mode only scans for breaks during the **first and last few minutes** of the file, where intros and outros are expected.
+      * **Silence Detection:** Within these time windows, the script actively listens for periods of silence that typically precede or follow a skippable segment.
+      * **Contextual Prompts:** Based on *when* the silence is detected, it will generate a contextual notification (e.g., "Skip Intro" or "Skip Outro").
 
-      * **High Confidence:** If a candidate has a descriptive title matching known patterns (e.g., "Opening," "ED," "Preview"), it is marked as a high-confidence skip.
-      * **Medium Confidence:** If a candidate has a generic or no title (e.g., "Chapter 1"), it is marked as a medium-confidence skip. It will still be prompted, but never skipped automatically.
-
-3.  **Step 3: Fallback to Silence Detection**
-    If the video file contains no chapters at all, the script switches to its fallback mode. It will listen for periods of silence and fast-forward through them upon command.
+3.  **Proactive Notifications**
+    In all cases, the script's default behavior is to proactively display a skip notification, giving you the choice to act. For those who prefer a fully automated experience, an `auto_skip` option can be enabled for high-confidence (titled) chapters.
 
 #### **😯 Real Example (Anime with Chapters):**
 
@@ -627,23 +641,36 @@ Chapters found:
 The script's behavior is controlled via `smart_skip.conf`. These settings are read directly from the script's code:
 
 ```ini
-# Automatically skip high-confidence chapters without a prompt.
-# For safety, this only applies to chapters identified by title.
-auto_skip=false
+opening_patterns=OP|Opening|Intro
+ending_patterns=ED|Ending|Outro
+preview_patterns=Preview|Coming Up
 
-# Categories to be considered skippable, separated by semicolons.
-# To prevent skipping previews, for example, remove "preview" from the list.
-skip_categories=opening;ending;preview
+# Auto-skip detected intro/outro chapters
+auto_skip=no
 
-# Display the "Skip Intro" style notification.
-show_notification=true
-
-# The duration the notification remains on screen, in seconds.
-notification_duration=15
-
-# Maximum duration in seconds a chapter can be to be considered skippable.
-# This is a safety feature to prevent skipping the whole file.
+# Maximum duration for skippable chapters (seconds)
+# Chapters longer than this will never be marked as skippable
 max_skip_duration=200
+
+# Set the time limit for untitled Chapter 1 to 4 minutes (240 seconds)
+max_intro_chapter_duration=240
+
+# Time window for manual skip (seconds)
+# Allow skip when skippable chapter starts within this time
+skip_window=3
+
+# Silence detection settings (for files without chapters)
+# Maximum noise level in dB to consider as silence
+quietness=-30
+
+# Minimum silence duration in seconds to trigger skip
+silence_duration=0.5
+
+# Show OSD notification when skippable content is detected
+show_notification=yes
+
+# Duration to show notification in seconds
+notification_duration=30
 ```
 
 ### 🔧 Troubleshooting
