@@ -213,7 +213,7 @@ Drop these files in MPV, watch anime, enjoy buttery smooth animation that'll mak
 </details></br>
 
 
-### 🧹 The Janitor
+### 🧹 The Broom
 
 The perfect companion for binge-watching. This tiny, zero-configuration script prevents hangs and crashes between episodes by ensuring SVP is completely shut down and cleaned up before the next file loads.
 
@@ -486,7 +486,7 @@ Install it, clean your `mpv.conf`, and enjoy a player that is finally smart enou
 </details>
 </br>
 
-### 🍷 The Sommelier
+### 🍷 The Selection
 
 Ends the nightmare of manually cycling through subtitle tracks. This script intelligently scans and selects the best subtitle track based on your preferences, automatically rejecting "Forced" or "Commentary" tracks.  
 
@@ -580,9 +580,13 @@ Install once, configure to your taste, then never think about subtitles again. T
 </details>
 </br>
 
-### 🔎 The Detective
+### 🔔 The Note
 
 Binge-watch like a pro. This script provides a configurable, Netflix-style system for skipping intros, outros, and previews, with a multi-layered detection system that uses chapter titles, positions, and even silence to know when to offer a skip.  
+
+<div align="center">
+<img width="730" alt="Screenshot 2025-09-15 143608" src="https://github.com/user-attachments/assets/77f60d4a-2eed-4353-a28a-71b7ba31a6b9" />
+</div>
 
 <details>
 <summary><strong>Smart Skip</strong></summary>
