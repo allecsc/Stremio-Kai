@@ -852,7 +852,7 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
   - Currently, Stremio Kai is **Windows-only**. The project is built upon the **[Stremio Community v5](https://github.com/Zaarrg/stremio-community-v5)**, and I am dependent on its developer for cross-platform support. While a **Linux/macOS** version **has been announced, there is no ETA**. Once that foundation is available, I can begin the work of porting Stremio Kai.
 
 **2. What if I don't like the upscaling or motion smoothing?**
-  - This project is designed to be a highly opinionated "_it just works_" setup, but it is not a locked box. **Every visual and performance enhancement**—from Anime4K upscaling to SVP motion smoothing—is fully configurable and **[can be disabled](https://github.com/allecsc/Stremio-Kai/edit/main/README.md#-how-to-disable-features)**.
+  - This project is designed to be a highly opinionated "_it just works_" setup, but it is not a locked box. **Every visual and performance enhancement**—from Anime4K upscaling to SVP motion smoothing—is fully configurable and **[can be disabled](https://github.com/allecsc/Stremio-Kai/blob/main/README.md#%EF%B8%8F-how-to-disable-features)**.
   - If you are a purist who prefers the original, unaltered look of an anime, you can easily achieve that. The settings are controlled in the mpv.conf file. If you're not comfortable editing it yourself, please **[open a discussion](https://github.com/allecsc/Stremio-Kai/discussions)**. I will personally guide you on how to tailor the experience to your exact preferences.
 
 **3. How does the "anime detection" work? Will this affect other content?**
