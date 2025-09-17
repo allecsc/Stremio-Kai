@@ -585,7 +585,7 @@ Install once, configure to your taste, then never think about subtitles again. T
 Binge-watch like a pro. This script provides a configurable, Netflix-style system for skipping intros, outros, and previews, with a multi-layered detection system that uses chapter titles, positions, and even silence to know when to offer a skip.  
 
 <details>
-<summary><strong>Smart Skip</strong></summary>
+<summary><strong>Notify Skip</strong></summary>
 
   > *An automated system for skipping intros, outros, and previews.*
 
@@ -746,6 +746,11 @@ This project is engineered to deliver the best visual quality possible on modest
   * **🔬 For Advanced Users:**
     While most default settings are optimal, power users can adjust `.conf` files for each script. Only modify these settings if you understand what they do. This is a personalized setup, and while it's designed to be universal, unique hardware or software combinations may lead to unpredictable issues.
 
+### ⁉️ How to disable features:
+  * Before making any permanent changes, you can first identify which feature hinders your experience. While watching anime content, you can quickly **disable** the **SVP** frame rate **by pressing F12**. That's the most heavy thing. Check and see if it works fine without it, shaders aren't supposed to be that heavy. If it's still bad, **press F4 to disable the Anime4K shaders**.
+
+  * **To permanently disable the features**, you need to go into `/Stemio Kai/portable_config/` and open `mpv.conf` in Notepad (just drag and drop into an open Notepad). Then, look for the lines starting with `vf=` and `glsl-shaders=` and either delete them, or put a **#** before them. **Save and restart Stremio Kai** and they will be permanently deleted. 
+
 </br>
 
 ## **🚀 Installation**
@@ -847,7 +852,7 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
   - Currently, Stremio Kai is **Windows-only**. The project is built upon the **[Stremio Community v5](https://github.com/Zaarrg/stremio-community-v5)**, and I am dependent on its developer for cross-platform support. While a **Linux/macOS** version **has been announced, there is no ETA**. Once that foundation is available, I can begin the work of porting Stremio Kai.
 
 **2. What if I don't like the upscaling or motion smoothing?**
-  - This project is designed to be a highly opinionated "_it just works_" setup, but it is not a locked box. **Every visual and performance enhancement**—from Anime4K upscaling to SVP motion smoothing—is fully configurable and **can be disabled**.
+  - This project is designed to be a highly opinionated "_it just works_" setup, but it is not a locked box. **Every visual and performance enhancement**—from Anime4K upscaling to SVP motion smoothing—is fully configurable and **[can be disabled](https://github.com/allecsc/Stremio-Kai/edit/main/README.md#-how-to-disable-features)**.
   - If you are a purist who prefers the original, unaltered look of an anime, you can easily achieve that. The settings are controlled in the mpv.conf file. If you're not comfortable editing it yourself, please **[open a discussion](https://github.com/allecsc/Stremio-Kai/discussions)**. I will personally guide you on how to tailor the experience to your exact preferences.
 
 **3. How does the "anime detection" work? Will this affect other content?**
@@ -857,7 +862,9 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
 - This new system has two important consequences:
     - **Live-Action Content:** This logic is specifically designed to *fix* the misidentification of other Asian content. Live-action dramas and movies (like K-dramas or J-dramas) will now be correctly identified and receive the standard visual profiles.
     - **Dubbed Anime:** Because the system can detect anime using more than just the audio language, many dubbed anime files will now be correctly identified automatically.
-
+ 
+**4. I have a decent PC, why does it run like crap?**
+-  This app was designed to run 1080p anime content, not native 4K, on low and mid range computer specs. Anime4K is supposed to bring you the quality of 4K content, or even better, for 1080p sources. Although, if you have a high end PC, it should run great even with 4K content, **it is** still **recommended to use 1080p content**.
 </br>
 
 ---
