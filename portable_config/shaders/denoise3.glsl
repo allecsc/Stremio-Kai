@@ -156,7 +156,7 @@ vec4 hook()
 //!HEIGHT I.h
 //!SAVE A
 
-#define E 0.0013
+#define E 0.002
 
 vec4 hook()
 {

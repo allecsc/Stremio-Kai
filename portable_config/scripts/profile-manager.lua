@@ -1,5 +1,5 @@
 -- profile-manager.lua
--- Version: 3.0 (Tiered Heuristic Logic)
+-- Version: 3.1 (Fixed HDR Detection)
 -- This script automatically applies mpv profiles based on a multi-tiered analysis
 -- of the media's metadata.
 
@@ -30,6 +30,49 @@ end
 local profile_applied_for_this_file = false
 local detection_reason = "None"
 
+-- Enhanced HDR detection function
+local function detect_hdr(video_params)
+    if not video_params then return false end
+    
+    local primaries = video_params.primaries
+    local gamma = video_params.gamma
+    local colormatrix = video_params.colormatrix
+    
+    -- Log the detected values for debugging
+    log("Video params - Primaries: " .. tostring(primaries) .. ", Gamma: " .. tostring(gamma) .. ", Colormatrix: " .. tostring(colormatrix))
+    
+    -- Check for Dolby Vision profile
+    if colormatrix == "dolbyvision" then
+        log("Dolby Vision detected (profile: " .. tostring(dv_profile) .. ")")
+        return true
+    end
+    
+    -- Check for HDR10/HDR10+ via primaries
+    if primaries == "bt.2020" or primaries == "rec2020" then
+        log("HDR detected via primaries: " .. tostring(primaries))
+        return true
+    end
+    
+    -- Check for HDR via gamma/transfer characteristics
+    if gamma == "smpte2084" or gamma == "pq" or gamma == "st2084" then
+        log("HDR10 detected via gamma: " .. tostring(gamma))
+        return true
+    end
+    
+    if gamma == "arib-std-b67" or gamma == "hlg" then
+        log("HLG detected via gamma: " .. tostring(gamma))
+        return true
+    end
+    
+    -- Additional checks for HDR indicators
+    if colormatrix == "bt.2020-ncl" or colormatrix == "bt.2020-cl" or colormatrix == "rec2020" then
+        log("HDR detected via colormatrix: " .. tostring(colormatrix))
+        return true
+    end
+    
+    return false
+end
+
 function select_and_apply_profile()
     if profile_applied_for_this_file then return end
 
@@ -42,6 +85,16 @@ function select_and_apply_profile()
 
     -- 2. Data Validation: Abort if critical data is not yet available.
     if not track_list or #track_list == 0 or not video_params or not video_params.h or not duration then
+        return
+    end
+    
+    -- NEW: Wait for video params to be fully loaded
+    local primaries = video_params.primaries
+    local gamma = video_params.gamma  
+    local colormatrix = video_params.colormatrix
+    
+    if not primaries or not gamma or not colormatrix then
+        log("Video params not fully loaded yet - Primaries: " .. tostring(primaries) .. ", Gamma: " .. tostring(gamma) .. ", Colormatrix: " .. tostring(colormatrix))
         return
     end
 
@@ -133,17 +186,35 @@ function select_and_apply_profile()
     -- 4. Profile Selection
     local final_profile = nil
     local height = video_params.h
-    local primaries = video_params.primaries or "unknown"
-    local gamma = video_params.gamma or "unknown"
-    local dv_profile = video_params['dv-profile']
+    local width = video_params.w  
     local is_interlaced = video_params.interlaced or false
-    local is_hdr = (primaries == "bt.2020" or gamma == "smpte2084" or gamma == "arib-std-b67" or dv_profile ~= nil)
+    local is_hdr = detect_hdr(video_params)
+
+    -- Enhanced legacy anime detection
+    local is_legacy_anime = false
+    local legacy_reasons = {}
+    
+    if height <= 576 then
+        local aspect_ratio = width / height
+        local is_4_3_aspect = (aspect_ratio >= 1.30 and aspect_ratio <= 1.40)  -- 4:3 with tolerance
+        
+        if is_4_3_aspect then
+            is_legacy_anime = true
+            table.insert(legacy_reasons, "4:3 Aspect (" .. string.format("%.2f", aspect_ratio) .. ":1)")
+        end
+        
+        if is_interlaced then
+            is_legacy_anime = true
+            table.insert(legacy_reasons, "Interlaced")
+        end
+    end
 
     if is_anime then
         if is_hdr then
             final_profile = "anime-hdr"
-        elseif height <= 576 or is_interlaced then
+        elseif is_legacy_anime then
             final_profile = "anime-old"
+            detection_reason = detection_reason .. " + Legacy (" .. table.concat(legacy_reasons, ", ") .. ")"          
         else -- Standard SDR
             final_profile = "anime-sdr"
         end
@@ -160,6 +231,8 @@ function select_and_apply_profile()
     if final_profile then
         log("--- FINAL DECISION ---")
         log("Reason: " .. detection_reason)
+        log("HDR Status: " .. tostring(is_hdr))
+        log("Resolution: " .. tostring(height) .. "p")
         log("Applying profile '" .. final_profile .. "'")
         mp.commandv("apply-profile", final_profile)
     else
