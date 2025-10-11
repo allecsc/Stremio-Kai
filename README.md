@@ -816,9 +816,9 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
 | Ctrl+F2 | **Anime4K: Eye Candy (Fast)** | A higher-quality preset with a minor performance cost. |
 | Ctrl+F3 | **Anime4K: Eye Candy (HQ)** | The highest-quality preset for powerful machines. |
 | Ctrl+F4 | **Clear All Shaders** | Instantly removes all active GLSL shaders. |
-| Ctrl+F10 | Toggle **High Denoise** | Toggles the default subjective denoise filter. |
-| F9 | Cycle **Denoise Filters** | Cycles through other, weaker denoise filters. |
 | F8 | Toggle **ICC Profile** | Toggles automatic ICC color profile correction. |
+| F9 | Toggle **Denoise Filter** | Toggles Temporal + Spatial Denoising Filter. |
+| Ctrl+F10 | Toggle **High Denoise Shader** | Toggles the default subjective denoise filter. |
 
 > *For a full list of all custom shortcuts, please consult the `input.conf` file. For even more, check the [mpv manual](https://mpv.io/manual/master/).*
 
