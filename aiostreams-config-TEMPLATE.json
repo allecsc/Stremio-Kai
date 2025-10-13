@@ -63,6 +63,21 @@
   ],
   "presets": [
     {
+      "type": "nuvio-streams",
+      "instanceId": "e94",
+      "enabled": true,
+      "options": {
+        "name": "Nuvio Streams",
+        "timeout": 15000,
+        "resources": [
+          "stream"
+        ],
+        "url": "",
+        "showBoxRegion": "DE2",
+        "providers": []
+      }
+    },
+    {
       "type": "comet",
       "instanceId": "5c6",
       "enabled": true,
@@ -108,23 +123,6 @@
         "contributorStreams": false,
         "certificationLevelsFilter": [],
         "nudityFilter": []
-      }
-    },
-    {
-      "type": "nuvio-streams",
-      "instanceId": "021",
-      "enabled": true,
-      "options": {
-        "name": "Nuvio Streams",
-        "timeout": 10000,
-        "resources": [
-          "stream"
-        ],
-        "url": "",
-        "scraperApiKey": "",
-        "showBoxCookie": "",
-        "showBoxRegion": "USA7",
-        "providers": []
       }
     },
     {
@@ -187,8 +185,8 @@
   "formatter": {
     "id": "custom",
     "definition": {
-      "name": "{service.cached::istrue[\"⚡\"||\"🐢\"]}{stream.resolution::exists[\"{stream.resolution}\"||\"\"]}",
-      "description": "{stream.filename::exists[\"🎬 {stream.filename}\"||\"{stream.title::title}\"]}\n{stream.folderName::exists[\"📁 {stream.folderName}\"||\"\"]}\n{stream.visualTags::exists[\"📺 {stream.visualTags::join(' • ')}\"||\"\"]}{stream.quality::exists[\" • {stream.quality}\"||\"\"]}\n{stream.audioTags::exists[\"🎧 {stream.audioTags::join(' • ')}\"||\"\"]}{stream.languages::exists[\"📣 {stream.languageEmojis::join(' · ')}\"||\"\"]}\n{stream.size::>0[\"📦 {stream.size::bytes}\"||\"\"]} {stream.seeders::>=0[\"🌱 {stream.seeders}\"||\"\"]}\n{addon.name::exists[\"📡 {addon.name}\"||\"\"]}"
+      "name": "{stream.seeders::exists::and::stream.seeders::>=10::or::service.cached::istrue[\"⚡\"||\"🐢 \"]}{stream.resolution::exists[\"{stream.resolution::replace('2160p','4K UHD')::replace('1080p','Full HD')::replace('720p','HD')}\"||\"Unknown\"]}\n",
+      "description": "{stream.filename::exists[\"🎬 {stream.filename}\"||\"{stream.title::title}\"]}\n{stream.folderName::exists[\"📁 {stream.folderName}\"||\"\"]}\n{stream.visualTags::exists[\"📺 {stream.visualTags::join(' • ')}\"||\"\"]}{stream.quality::exists[\" • {stream.quality}\"||\"\"]}\n{stream.audioTags::exists[\"🎧 {stream.audioTags::join(' • ')}\"||\"\"]}{stream.languages::exists[\"📣 {stream.languageEmojis::join(' · ')}\"||\"\"]}\n{stream.size::>0[\"📦 {stream.size::bytes}\"||\"\"]}\n{stream.seeders::>=0[\"🌱 {stream.seeders} Seeders\"||\"\"]} {addon.name::exists[\"📡 {addon.name}\"||\"\"]}"
     }
   },
   "preferredQualities": [
@@ -234,6 +232,10 @@
         "direction": "desc"
       },
       {
+        "key": "seeders",
+        "direction": "desc"
+      },
+      {
         "key": "size",
         "direction": "desc"
       },
@@ -262,8 +264,6 @@
     "proxiedAddons": [],
     "proxiedServices": []
   },
-  "rpdbApiKey": "t0-free-rpdb",
-  "uuid": "",
   "trusted": false,
   "excludedResolutions": [],
   "includedResolutions": [],
@@ -271,20 +271,18 @@
   "includedQualities": [],
   "requiredQualities": [],
   "excludedLanguages": [],
-  "includedLanguages": [
-    "Japanese",
-    "English"
-  ],
+  "includedLanguages": [],
   "requiredLanguages": [],
   "preferredLanguages": [
-    "Japanese",
     "English"
   ],
   "includedVisualTags": [],
   "requiredVisualTags": [],
   "preferredVisualTags": [
+    "HDR+DV",
     "HDR10+",
     "HDR10",
+    "DV",
     "HDR",
     "10bit"
   ],
@@ -310,7 +308,7 @@
   "requiredEncodes": [],
   "preferredEncodes": [],
   "requiredSeederRange": [
-    1,
+    4,
     1000
   ],
   "seederRangeTypes": [],
@@ -321,44 +319,62 @@
   "excludeUncachedFromServices": [],
   "excludeUncachedFromStreamTypes": [],
   "disableGroups": false,
-  "groups": [
-    {
-      "addons": [
-        "5c6",
-        "5d2",
-        "c50"
-      ],
-      "condition": "true"
-    },
-    {
-      "addons": [
-        "181",
-        "021"
-      ],
-      "condition": "count(totalStreams) <= 5"
-    },
-    {
-      "addons": [
-        "407",
-        "e84",
-        "c57",
-        "58e",
-        "7a4",
-        "851"
-      ],
-      "condition": "count(totalStreams) <= 5"
-    }
-  ],
+  "groups": {
+    "enabled": true,
+    "groupings": [
+      {
+        "addons": [
+          "622",
+          "5d2"
+        ],
+        "condition": "true"
+      },
+      {
+        "addons": [
+          "181",
+          "5c6"
+        ],
+        "condition": "count(totalStreams) <= 5"
+      },
+      {
+        "addons": [
+          "407",
+          "851",
+          "e94"
+        ],
+        "condition": "count(totalStreams) <= 5"
+      }
+    ],
+    "behaviour": "sequential"
+  },
+  "resultLimits": {
+    "resolution": 5
+  },
   "size": {
     "global": {
+      "movies": [
+        0,
+        100000000000
+      ],
       "series": [
         0,
-        15000000000
+        16600000000
       ]
+    },
+    "resolution": {
+      "2160p": {
+        "movies": [
+          0,
+          100000000000
+        ],
+        "series": [
+          0,
+          100000000000
+        ]
+      }
     }
   },
   "hideErrorsForResources": [],
-  "tmdbAccessToken": "",
   "yearMatching": {
     "enabled": false,
     "tolerance": 1,
@@ -385,7 +401,15 @@
   "precacheNextEpisode": true,
   "alwaysPrecache": true,
   "catalogModifications": [],
-  "resultLimits": {
-    "global": 6
+  "statistics": {
+    "statsToShow": [
+      "addon",
+      "filter"
+    ]
+  },
+  "cacheAndPlay": {
+    "streamTypes": [
+      "usenet"
+    ]
   }
 }
