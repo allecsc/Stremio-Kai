@@ -789,7 +789,7 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
 
 <h4>Name Template</h4>
 <pre>
-{service.cached::istrue["⚡"||"🐢"]}{stream.resolution::exists["{stream.resolution}"||""]}
+{stream.seeders::exists::and::stream.seeders::>=10::or::service.cached::istrue["⚡"||"🐢 "]}{stream.resolution::exists["{stream.resolution::replace('2160p','4K UHD')::replace('1080p','Full HD')::replace('720p','HD')}"||"Unknown"]}
 </pre>
 
 <h4>Description Template</h4>
@@ -798,8 +798,8 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
 {stream.folderName::exists["📁 {stream.folderName}"||""]}
 {stream.visualTags::exists["📺 {stream.visualTags::join(' • ')}"||""]}{stream.quality::exists[" • {stream.quality}"||""]}
 {stream.audioTags::exists["🎧 {stream.audioTags::join(' • ')}"||""]}{stream.languages::exists["📣 {stream.languageEmojis::join(' · ')}"||""]}
-{stream.size::>0["📦 {stream.size::bytes}"||""]} {stream.seeders::>=0["🌱 {stream.seeders}"||""]}
-{addon.name::exists["📡 {addon.name}"||""]}
+{stream.size::>0["📦 {stream.size::bytes}"||""]}
+{stream.seeders::>=0["🌱 {stream.seeders} Seeders"||""]} {addon.name::exists["📡 {addon.name}"||""]}
 </pre>
 
 </details>  
