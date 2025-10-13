@@ -778,8 +778,8 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
 #### Setup Instructions:
 
 1. Navigate to one of the AIOstreams configuration pages:  
-   * https://aiostreams.elfhosted.com/stremio/configure  
-   * https://aiostreamsfortheweak.nhyira.dev/stremio/configure  
+   * https://aiostreams.elfhosted.com/stremio/configure ⇨ _This one is the most updated but doesn't allow Torrentio._
+   * https://aiostreamsfortheweak.nhyira.dev/stremio/configure ⇨ _This one allows Torrentio. You need to manually turn it on the Addons page_
 2. Click the **Import** button and select the template file provided with Stremio Kai.  
 3. Click **Install to Stremio** if you don't have it installed, or **Save** to apply the template, if you're already using the addon.
 </details>
