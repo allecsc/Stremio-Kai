@@ -63,6 +63,22 @@
   ],
   "presets": [
     {
+      "type": "torrentio",
+      "instanceId": "622",
+      "enabled": false,
+      "options": {
+        "name": "Torrentio",
+        "timeout": 10000,
+        "resources": [
+          "stream",
+          "catalog",
+          "meta"
+        ],
+        "providers": [],
+        "useMultipleInstances": false
+      }
+    },
+    {
       "type": "nuvio-streams",
       "instanceId": "e94",
       "enabled": true,
@@ -318,7 +334,6 @@
   "excludeUncachedFromAddons": [],
   "excludeUncachedFromServices": [],
   "excludeUncachedFromStreamTypes": [],
-  "disableGroups": false,
   "groups": {
     "enabled": true,
     "groupings": [
@@ -375,6 +390,12 @@
     }
   },
   "hideErrorsForResources": [],
+  "statistics": {
+    "statsToShow": [
+      "addon",
+      "filter"
+    ]
+  },
   "yearMatching": {
     "enabled": false,
     "tolerance": 1,
@@ -401,12 +422,6 @@
   "precacheNextEpisode": true,
   "alwaysPrecache": true,
   "catalogModifications": [],
-  "statistics": {
-    "statsToShow": [
-      "addon",
-      "filter"
-    ]
-  },
   "cacheAndPlay": {
     "streamTypes": [
       "usenet"
