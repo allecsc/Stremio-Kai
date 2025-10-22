@@ -835,7 +835,7 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
     - Future updates will focus on bug fixes or meaningful feature requests that align with the project’s vision.
 
 ### 🐞 **Known Issues**
-- 🖼️ ThumbFast Timeline Misalignment: Thumbnail previews may not align properly; no current fix available
+- ~~🖼️ ThumbFast Timeline Misalignment: Thumbnail previews may not align properly; no current fix available~~
 - ~~⚠️ 10-Bit Video Incompatibility: Processing 10-bit video files can cause visual artifacts (e.g., black dots) or interpolation failures.~~
     - ~~❌ This is a core limitation of the underlying 8-bit SVP engine; no script-level fix is available.~~
     - ~~ℹ️ This is a harmless visual-only issue and poses no risk to computer hardware.~~
