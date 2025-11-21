@@ -1,11 +1,8 @@
-  <img width="0" alt="logo-small" src="https://github.com/user-attachments/assets/f1fdf623-ac3d-4f8a-a580-0b31ced14cd3" />
 
-  <img width="0" height="0" alt="01" src="https://github.com/user-attachments/assets/4f5c12ba-10e7-4053-a20d-6c91cf47f7a1" />
-<img width="0" height="0" alt="02" src="https://github.com/user-attachments/assets/6f22a51f-4c56-48bf-a212-9fae2825e843" />
-<img width="0" height="0" alt="11" src="https://github.com/user-attachments/assets/8a5ae484-1858-4422-a528-0f602c75022d" />
-<img width="0" height="0" alt="13" src="https://github.com/user-attachments/assets/8c1c3236-120a-415a-827a-114fd5346877" />
+<img width="0" alt="Stremio-Kai-v3-small" src="https://github.com/user-attachments/assets/5a43dbc5-8c78-49f9-bced-a428eed1b6f8" />
 
 <div align="center">
+<img width="0" alt="Stremio-Kai-v3.0" src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" />
   <img src="https://github.com/user-attachments/assets/f8b5ad4d-bac0-4110-b9ac-7961de312c22" alt="Stremio Kai Logo" width="200"/>
   <h1>Stremio Kai</h1>
   <p><h3>Built for Anime, Engineered for Performance</h3></p>
