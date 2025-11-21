@@ -1,4 +1,6 @@
-  <img width="0" alt="logo-small" src="https://github.com/user-attachments/assets/59e86704-0a9e-4187-a811-3d244054b609" />
+  <img width="0" alt="logo-small" src="https://github.com/user-attachments/assets/f1fdf623-ac3d-4f8a-a580-0b31ced14cd3" />
+
+  
 <div align="center">
   <img src="https://github.com/user-attachments/assets/f8b5ad4d-bac0-4110-b9ac-7961de312c22" alt="Stremio Kai Logo" width="200"/>
   <h1>Stremio Kai</h1>
