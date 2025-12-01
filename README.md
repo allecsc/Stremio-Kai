@@ -16,15 +16,13 @@ https://github.com/user-attachments/assets/65835f67-fe45-45d2-84c3-d43e2ab304e2
   <img src="https://img.shields.io/badge/🪟%20Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
   <img src="https://img.shields.io/badge/%20Stremio-8B57D3?style=for-the-badge&logo=stremio&logoColor=white" alt="Stremio" />
   <img src="https://img.shields.io/badge/🌐%20WebView2-0078D6?style=for-the-badge&logo=microsoftedge&logoColor=white" alt="WebView2" />
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
+<img src="https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS" />
+<br>
   <img src="https://img.shields.io/badge/%20MPV-663399?style=for-the-badge&logo=mpv&logoColor=white" alt="MPV" />
   <img src="https://img.shields.io/badge/🎨%20Anime4K-2D72D8?style=for-the-badge&logo=&logoColor=white" alt="Anime4K" />
   <img src="https://img.shields.io/badge/⏩%20SVP-4A4A4A?style=for-the-badge&logo=&logoColor=white" alt="SVP" />
   <img src="https://img.shields.io/badge/%20Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white" alt="Lua" />
-  <!-- JavaScript badge -->
-<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
-
-<!-- CSS badge -->
-<img src="https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS" />
 </div>
 
 ---
@@ -33,6 +31,7 @@ https://github.com/user-attachments/assets/65835f67-fe45-45d2-84c3-d43e2ab304e2
 - 🧱 **[Stremio Community v5](https://github.com/Zaarrg/stremio-community-v5) Base**: Fast, open-source, and actively maintained
 - 🖥️ **Windows Desktop App**: Portable, self-contained, and install-free
 - 🌐 **WebView2 Engine**: Always up-to-date with the latest Stremio Web UI
+- 🔔 **Update Notification**: Get notified every time a new version is released
 
 ### 🎬 MPV Playback Engine
 - 🧠 **Full MPV Integration**: Native playback with full config access
