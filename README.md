@@ -6,6 +6,10 @@
     <img src="https://github.com/user-attachments/assets/d905b28a-1995-4e0d-bff5-2b43fe69b7f0" alt="Stremio Kai Logo" width="200"/>
 
   <h1>Stremio Kai <br><br> 🚨 v3.0 COMING SOON! STAY TUNED! 🚨</h1>
+    <p><h2>EARLY PREVIEW</h2></p>
+    
+https://github.com/user-attachments/assets/65835f67-fe45-45d2-84c3-d43e2ab304e2    
+
   <p><h3>Built for Anime, Engineered for Performance</h3></p>
   <p><i>A custom Stremio + MPV build that makes anime look and feel amazing—even on modest hardware.</i></p>
   </br>
@@ -16,6 +20,11 @@
   <img src="https://img.shields.io/badge/🎨%20Anime4K-2D72D8?style=for-the-badge&logo=&logoColor=white" alt="Anime4K" />
   <img src="https://img.shields.io/badge/⏩%20SVP-4A4A4A?style=for-the-badge&logo=&logoColor=white" alt="SVP" />
   <img src="https://img.shields.io/badge/%20Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white" alt="Lua" />
+  <!-- JavaScript badge -->
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
+
+<!-- CSS badge -->
+<img src="https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS" />
 </div>
 
 ---
@@ -24,7 +33,6 @@
 - 🧱 **[Stremio Community v5](https://github.com/Zaarrg/stremio-community-v5) Base**: Fast, open-source, and actively maintained
 - 🖥️ **Windows Desktop App**: Portable, self-contained, and install-free
 - 🌐 **WebView2 Engine**: Always up-to-date with the latest Stremio Web UI
-- 🔄 **Built-in Autoupdate**: No manual updates—just launch and go
 
 ### 🎬 MPV Playback Engine
 - 🧠 **Full MPV Integration**: Native playback with full config access
@@ -53,7 +61,7 @@
 
 ### 🖥️ Desktop Experience
 - 📺 **Picture-in-Picture Mode**: Multitask while watching
-- 🖼️ **Thumbnail Preview**: Thumbfast support (partially functional)
+- 🖼️ **Thumbnail Preview**: Thumbfast support
 - ⚙️ **App Settings**: Customize behavior like PauseOnMinimize, CloseOnExit, etc.
 
 ---
