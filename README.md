@@ -3,8 +3,9 @@
 
 <div align="center">
 <img width="0" alt="Stremio-Kai-v3.0" src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" />
-  <img src="https://github.com/user-attachments/assets/f8b5ad4d-bac0-4110-b9ac-7961de312c22" alt="Stremio Kai Logo" width="200"/>
-  <h1>Stremio Kai</h1>
+    <img src="https://github.com/user-attachments/assets/d905b28a-1995-4e0d-bff5-2b43fe69b7f0" alt="Stremio Kai Logo" width="200"/>
+
+  <h1>Stremio Kai <br><br> 🚨 v3.0 COMING SOON! STAY TUNED! 🚨</h1>
   <p><h3>Built for Anime, Engineered for Performance</h3></p>
   <p><i>A custom Stremio + MPV build that makes anime look and feel amazing—even on modest hardware.</i></p>
   </br>
