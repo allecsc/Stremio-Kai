@@ -2,16 +2,14 @@
 <img width="0" alt="Stremio-Kai-v3-small" src="https://github.com/user-attachments/assets/5a43dbc5-8c78-49f9-bced-a428eed1b6f8" />
 
 <div align="center">
-<img width="0" alt="Stremio-Kai-v3.0" src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" />
-    <img src="https://github.com/user-attachments/assets/d905b28a-1995-4e0d-bff5-2b43fe69b7f0" alt="Stremio Kai Logo" width="200"/>
+<img width="200" alt="Stremio-Kai-v3.0" src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" />
 
-  <h1>Stremio Kai <br><br> 🚨 v3.0 COMING SOON! STAY TUNED! 🚨</h1>
-    <p><h2>EARLY PREVIEW</h2></p>
+  <h1>Stremio Kai <br><br> 🚨 v3.0 IS HERE! 🚨 <br> v3.1 COMING SOON! STAY TUNED! </h1>
+    <p><h2>Showcase</h2></p>
     
 https://github.com/user-attachments/assets/65835f67-fe45-45d2-84c3-d43e2ab304e2    
 
-  <p><h3>Built for Anime, Engineered for Performance</h3></p>
-  <p><i>A custom Stremio + MPV build that makes anime look and feel amazing—even on modest hardware.</i></p>
+  <p><i>A custom Stremio + MPV build that offers premium features and feel amazing—even on modest hardware.</i></p>
   </br>
   <img src="https://img.shields.io/badge/🪟%20Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
   <img src="https://img.shields.io/badge/%20Stremio-8B57D3?style=for-the-badge&logo=stremio&logoColor=white" alt="Stremio" />
@@ -65,14 +63,51 @@ https://github.com/user-attachments/assets/65835f67-fe45-45d2-84c3-d43e2ab304e2
 
 ---
 
+## **🚀 Installation**
+
+Stremio Kai is a completely self-contained, portable system. All dependencies—SVP, VapourSynth, MPV, shaders, and scripts—are included and pre-configured. No separate installation is required.  
+### 1. Download  
+Grab the latest Stremio-Kai_vX.X.7z **OR** Stremio-Kai_vX.X-Zero from [releases](https://github.com/allecsc/Stremio-Kai/releases).
+> _**Stremio Kai Zero** has all the features, except anime specific ones: SVP and Anime4K._
+### 2. Extract  
+* Unzip the entire contents of the 7z archive to a location of your choice on your computer (e.g., C:\\Program Files\\Stremio Kai or D:\\PortableApps\\Stremio Kai).  
+### 3. Run  
+* Double-click stremio.exe. That's it. Log in to your Stremio account and enjoy.
+  
+### 📣 **Support & Contributions**
+- 🐛 Bug Reports & Feature Requests: Please open an issue on GitHub
+- 💬 Feedback Welcome: Suggestions that improve usability or performance are appreciated
+
+</br>
+
+<div align="center"><h2>💖 Support the Project</h2></p></div>
+<p align="center">If Stremio Kai made your setup smoother and you’d like to support my work, you can <a href="https://ko-fi.com/allecsc">buy me a coffee</a>.</br><strong>Thanks for the kind gesture!</strong></p>
+
+<p align="center">
+  <a href="https://ko-fi.com/allecsc">
+    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi">
+  </a>
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a0f2ef09-2932-4f74-89aa-58d949f65e5f" alt="Crypto Address" width="200"/>
+</p>
+<p align="center">
+  <small><i>Crypto (USDT TRC-20):</br> TE4LPfv6tgYbucSxrUsagSN9DiPimBVrwX</i></small>
+</p>
+
+
+
 # **⭐ Features**
 
 Why fuss with manual tweaks? Stremio Kai's scripts think for you, detecting content type and applying perfect settings automatically. It knows if you're binging anime or a movie, picks the right subtitles, and skips intros like Netflix—freeing you to relax.
 
 This is what elevates the project from a simple configuration to a complete, intelligent system. Each component was custom-built or meticulously tuned to solve real-world frustrations and deliver the ultimate anime viewing experience.
 
-The core of Stremio Kai is a visual pipeline engineered for anime, delivering breathtaking clarity and fluid motion without requiring a high-end PC.
+The core of Stremio Kai is ~a visual pipeline engineered for anime,~ delivering breathtaking clarity and fluid motion without requiring a high-end PC.
 
+<details>
+<summary><strong>Find out more</strong></summary>
+    
 </br>
 
 ## 🎨 I: The Visual Enhancement Suite
@@ -761,20 +796,14 @@ This project is engineered to deliver the best visual quality possible on modest
 ### ⁉️ How to disable features:
   * Before making any permanent changes, you can first identify which feature hinders your experience. While watching anime content, you can quickly **disable** the **SVP** frame rate **by pressing F12**. That's the most heavy thing. Check and see if it works fine without it, shaders aren't supposed to be that heavy. If it's still bad, **press F4 to disable the Anime4K shaders**.
 
-  * **To permanently disable the features**, you need to go into `/Stemio Kai/portable_config/` and open `mpv.conf` in Notepad (just drag and drop into an open Notepad). Then, look for the lines starting with `vf=` and `glsl-shaders=` and either delete them, or put a **#** before them. **Save and restart Stremio Kai** and they will be permanently deleted. 
+  * **To permanently disable the features**, you need to go into `/Stemio Kai/portable_config/` and open `mpv.conf` in Notepad (just drag and drop into an open Notepad). Then, look for the lines starting with `vf=` and `glsl-shaders=` and either delete them, or put a **#** before them. **Save and restart Stremio Kai** and they will be permanently deleted.
+  
+  * Best option is to get **Stremio Kai Zero** which has all the features, except anime specific ones: SVP and Anime4K.
 
 </br>
 
-## **🚀 Installation**
 
-Stremio Kai is a completely self-contained, portable system. All dependencies—SVP, VapourSynth, MPV, shaders, and scripts—are included and pre-configured. No separate installation is required.  
-### 1. Download  
-Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/allecsc/Stremio-Kai/releases).  
-### 2. Extract  
-* Unzip the entire contents of the 7z archive to a location of your choice on your computer (e.g., C:\\Program Files\\Stremio Kai or D:\\PortableApps\\Stremio Kai).  
-### 3. Run  
-* Double-click stremio.exe. That's it. Log in to your Stremio account and enjoy.
-### 4. (Optional) Use the provided [AIOstreams Template](https://github.com/allecsc/Stremio-Kai/blob/main/aiostreams-config-TEMPLATE.json)
+### (Optional) Use the provided [AIOstreams Template](https://github.com/allecsc/Stremio-Kai/blob/main/aiostreams-config-TEMPLATE.json)
 * To help you identify the right video source, this package includes a pre-configured template for the **AIOstreams** addon. This template formats the search results to clearly display critical information like resolution, HDR format (HDR10+, DV), audio type (Atmos), and file size, so you can pick the best source for your display with confidence. It would look like this:
 
 <p align="center">
@@ -836,28 +865,6 @@ Grab the latest Stremio.Kai.vX.X.7z file from [releases](https://github.com/alle
 
 </br>
 
-
-## 🛠️ Project Status
-
-### ⚙️ **Current State**
-- 🧪 Actively Tested: Stability and performance validated across long viewing sessions
-- 🧼 uBlock Extension Removed: Prevented infinite loading loop during app startup
-- 🔧 Project is feature-complete and stable—no major development planned.
-    - Future updates will focus on bug fixes or meaningful feature requests that align with the project’s vision.
-
-### 🐞 **Known Issues**
-- ~~🖼️ ThumbFast Timeline Misalignment: Thumbnail previews may not align properly; no current fix available~~
-- ~~⚠️ 10-Bit Video Incompatibility: Processing 10-bit video files can cause visual artifacts (e.g., black dots) or interpolation failures.~~
-    - ~~❌ This is a core limitation of the underlying 8-bit SVP engine; no script-level fix is available.~~
-    - ~~ℹ️ This is a harmless visual-only issue and poses no risk to computer hardware.~~
-- ~~🧠 SVP Memory Leaks: Previously caused stutters after extended playback~~
-    - ~~✅ Mitigations and fallback logic have been implemented~~
-    - ~~🔍 Issue appears resolved in latest tests, but will be monitored and documented if it resurfaces~~
-
-### 📣 **Support & Contributions**
-- 🐛 Bug Reports & Feature Requests: Please open an issue on GitHub
-- 💬 Feedback Welcome: Suggestions that improve usability or performance are appreciated
-
 ### ❓ Frequently Asked Questions
 
 **1. Is there a version for Linux or macOS?**
@@ -897,28 +904,7 @@ This project stands on the shoulders of giants and wouldn't be possible without 
 * A massive thank you to **Zaarrg** for creating the original [**stremio-community-v5**](https://github.com/Zaarrg/stremio-community-v5), which provides the essential MPV integration that this entire project is built upon.  
 * Credit and thanks to the brilliant team behind [**bloc97/Anime4K**](https://github.com/bloc97/Anime4K) for their amazing upscaling shaders.
 
-</br>
-
-## 🧑‍💻 About This Project
-Stremio Kai is a personal project developed over the years, born from a simple frustration: nothing out there offered the anime viewing experience I wanted. So I built it myself.
-This latest version—with full Stremio integration and upgraded plugins—is the most extensive work I’ve done on it. While I don’t consider myself a developer, I’ve learned to shape existing tools into something I genuinely love using.
-
-</br>
-
-<div align="center"><h2>💖 Support the Project</h2></p></div>
-<p align="center">If Stremio Kai made your setup smoother and you’d like to support my work, you can <a href="https://ko-fi.com/allecsc">buy me a coffee</a>.</br><strong>Thanks for the kind gesture!</strong></p>
-
-<p align="center">
-  <a href="https://ko-fi.com/allecsc">
-    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi">
-  </a>
-</p>
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/a0f2ef09-2932-4f74-89aa-58d949f65e5f" alt="Crypto Address" width="200"/>
-</p>
-<p align="center">
-  <small><i>Crypto (USDT TRC-20):</br> TE4LPfv6tgYbucSxrUsagSN9DiPimBVrwX</i></small>
-</p>
+</details>
 <p align="center">
     <strong>✨ Built with love for the series that keep us up all night. Enjoy the view. ✨</br>- Alt </strong>
 </p>
