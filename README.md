@@ -5,11 +5,8 @@
 <img width="200" alt="Stremio-Kai-v3.0" src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" />
 
   <h1>Stremio Kai <br><br> 🚨 v3.0 IS HERE! 🚨 <br> v3.1 COMING SOON! STAY TUNED! </h1>
-    <p><h2>Showcase</h2></p>
-    
-https://github.com/user-attachments/assets/65835f67-fe45-45d2-84c3-d43e2ab304e2    
 
-  <p><i>A custom Stremio + MPV build that offers premium features and feel amazing—even on modest hardware.</i></p>
+  <p><i>A custom Stremio + MPV build that offers premium features and feels amazing—even on modest hardware.</i></p>
   </br>
   <img src="https://img.shields.io/badge/🪟%20Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
   <img src="https://img.shields.io/badge/%20Stremio-8B57D3?style=for-the-badge&logo=stremio&logoColor=white" alt="Stremio" />
@@ -24,6 +21,10 @@ https://github.com/user-attachments/assets/65835f67-fe45-45d2-84c3-d43e2ab304e2
 </div>
 
 ---
+    
+https://github.com/user-attachments/assets/65835f67-fe45-45d2-84c3-d43e2ab304e2    
+
+---
 
 ### 🚀 Core Architecture
 - 🧱 **[Stremio Community v5](https://github.com/Zaarrg/stremio-community-v5) Base**: Fast, open-source, and actively maintained
@@ -31,12 +32,22 @@ https://github.com/user-attachments/assets/65835f67-fe45-45d2-84c3-d43e2ab304e2
 - 🌐 **WebView2 Engine**: Always up-to-date with the latest Stremio Web UI
 - 🔔 **Update Notification**: Get notified every time a new version is released
 
+### 🖥️ Desktop Experience
+- 📝 **Enhanced Metadata**: See more details about shows like more ratings and cast with photos
+- 🎡 **Hero Banner**: Discover newly released movies and series
+- 📺 **Picture-in-Picture Mode**: Multitask while watching
+- 🖼️ **Thumbnail Preview**: Thumbfast support
+- ⚙️ **App Settings**: Customize behavior like PauseOnMinimize, CloseOnExit, etc.
+
 ### 🎬 MPV Playback Engine
 - 🧠 **Full MPV Integration**: Native playback with full config access
 - 🖥️ **Hardware Decoding**: Supports Vulkan, OpenGL, D3D, and HDR
 - 🔊 **Bit-Perfect Audio**: Dolby Atmos, DTS-HD, and lossless passthrough
+
+### 👀 Anime Enhancements
 - 🎨 **Anime4K Shader Presets**: Custom chains for upscaling, line thinning, and denoise
 - ⏩ **SVP Motion Interpolation**: Smooth playback with fallback logic and cleanup
+- 🎡 **Anime Catalog**: See today's episode releases through the hero banner
 
 ### 🧠 Smart Automation
 - 🔄 **Auto Profile Switching**: Detects resolution, language, and HDR
@@ -55,11 +66,6 @@ https://github.com/user-attachments/assets/65835f67-fe45-45d2-84c3-d43e2ab304e2
 - ➕ **One-Click Addon Install**: No copy-pasting URLs
 - 📦 **AIOstreams Template**: Helps pick the best source for your setup
 - 💬 **Discord Rich Presence**: Show what you're watching in real-time
-
-### 🖥️ Desktop Experience
-- 📺 **Picture-in-Picture Mode**: Multitask while watching
-- 🖼️ **Thumbnail Preview**: Thumbfast support
-- ⚙️ **App Settings**: Customize behavior like PauseOnMinimize, CloseOnExit, etc.
 
 ---
 
