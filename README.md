@@ -41,7 +41,7 @@ This combination of smart automation and careful tuning elevates the project fro
 - **Complete UI overhaul** — Modernized interface with refined layouts, an improved hero banner, and a richer metadata panel for quick content insights.
 - **Hidden Navigation** — Sidebar and search bar automatically hide and reappear on hover, creating a clean, distraction-free, couch-friendly viewing experience.
 - **OLED (Pure Black) toggle** — Instantly switch to a high-contrast theme ideal for dark setups.
-- **Hover-preview thumbnails** — Thumbnail preview on the seek bar via the ThumbFast/hover time preview script.
+- **[Hover-preview thumbnails](https://github.com/allecsc/Stremio-Kai/tree/main#%EF%B8%8F-timestamp--thumbnails-preview)** — Thumbnail preview on the seek bar via the ThumbFast/hover time preview script.
 - **Performance & stability improvements** — Faster navigation, reduced UI overhead, and general internal refinements. 
 - **Updated core base** — Now built on [Stremio Community Edition v5.0.21](https://github.com/Zaarrg/stremio-community-v5/releases/tag/5.0.0-beta.21).
 - **Multiple builds** —  
@@ -112,12 +112,14 @@ This combination of smart automation and careful tuning elevates the project fro
 - **Full MPV Integration**: Native playback with full config access
 - **Hardware Decoding**: Supports Vulkan, OpenGL, D3D, and HDR
 - **Bit-Perfect Audio**: Dolby Atmos, DTS-HD, and lossless passthrough
-- **Thumbnail Preview**: Thumbfast support
+- **[Thumbnail Preview](https://github.com/allecsc/Stremio-Kai/tree/main#%EF%B8%8F-timestamp--thumbnails-preview)**: Thumbfast support
 
 ### 🧠 Smart Automation
-- **Auto Profile Switching**: Detects resolution, language, and HDR
-- **Smart Subtitle Selector**: Filters out karaoke, signs, and junk tracks
-- **Smart Skip**: Detects and skips intros, outros, and previews
+- **[Auto Profile Switching](https://github.com/allecsc/Stremio-Kai/tree/main#-profile-manager)**: Detects resolution, language, and HDR
+- **[Smart Subtitle Selector](https://github.com/allecsc/Stremio-Kai/tree/main#%EF%B8%8F-smart-subtitle-selector
+)**: Filters out karaoke, signs, and junk tracks
+- **[Smart Skip](https://github.com/allecsc/Stremio-Kai/tree/main#-skip-intro-w-notification
+)**: Detects and skips intros, outros, and previews
 - **Reactive VF Bypass**: Prevents lag during seeks by temporarily disabling filters
 - **SVP Cleanup**: Clears filters between episodes to prevent crashes
 
@@ -133,8 +135,9 @@ This combination of smart automation and careful tuning elevates the project fro
 - **Discord Rich Presence**: Show what you're watching in real-time
 
 ### 👀 Anime Enhancements _(Optional – only applied when anime is detected)_
-- **Anime4K Shader Presets**: Custom chains for upscaling, line thinning, and denoise
-- **SVP Motion Interpolation**: Smooth playback with fallback logic and cleanup
+- **[Anime4K Shader Presets](https://github.com/allecsc/Stremio-Kai/tree/main#-real-time-upscaling-with-anime4k-optional
+)**: Custom chains for upscaling, line thinning, and denoise
+- **[SVP Motion Interpolation](https://github.com/allecsc/Stremio-Kai/tree/main#iii-the-smooth-motion-suite-optional)**: Smooth playback with fallback logic and cleanup
 - **Anime Catalog**: See today's episode releases through the hero banner
 
 
@@ -179,8 +182,6 @@ The section below breaks down the internal systems, automation scripts, and play
 
 <details>
 <summary><strong>How Stremio Kai Works (Technical Deep Dive)</strong></summary>
-
-<br>
 
 ## I: Intelligent Automation Suite
 
@@ -303,8 +304,6 @@ Go right to your favorite part! This script provides a polished, pop-up notifica
   <img width="3840" height="2160" alt="Skip-Intro" src="https://github.com/user-attachments/assets/c3b65119-dc74-475f-8659-2201a843bff4" />
 </div>
 
-</br>
-
 ### 🖼️ Timestamp & Thumbnails Preview
 
 Instant visual and time-accurate previews while scrubbing through video. Stremio Kai adds hover-based seek bar previews with clear thumbnails ([ThumbFast](https://github.com/po5/thumbfast)) and precise timestamp feedback, making it easy to jump to the exact moment you want without blind seeking.
@@ -318,8 +317,6 @@ Instant visual and time-accurate previews while scrubbing through video. Stremio
 ![Image](https://github.com/user-attachments/assets/e56347a2-bd48-4a55-924a-2b252fc23607)
 
 </div>
-
-</br>
 
 ### ✔️ Smart Subtitle Selector
 
@@ -413,7 +410,6 @@ reject_keywords = signs,songs,commentary
 ### 🎉 The Bottom Line
 Install once, configure to your taste, then never think about subtitles again. The script just quietly does the right thing while you focus on actually watching your content.
 </details>
-</br>
 
 ### 🧠 Profile Manager
 
@@ -532,15 +528,13 @@ When a video starts loading, the script patiently waits in the background.
 ### 🎉 The Bottom Line
 Install it, clean your `mpv.conf`, and enjoy a player that is finally smart enough to use your profiles correctly. This is the robust, centralized logic that ends the profile wars for good.
 </details>
-</br>
-
----
+<br>
 
 ## II: The Visual Enhancement Suite
 
 This is the heart of the project's visual philosophy. It's a curated collection of advanced shaders and carefully tuned profiles that work together to upscale, sharpen, and denoise content in real-time. Forget blurry, low-resolution anime; this suite ensures every frame is clean, sharp, and perfectly optimized for your display, from vintage 480p classics to modern 1080p releases.
 
-</br>
+<br>
 
 ### 🤩 Visually Stunning Predefined Profiles
 
@@ -554,10 +548,10 @@ This is the heart of the project's visual philosophy. It's a curated collection 
 
 > *You never need to touch these, but it helps to know how Stremio Kai selects and defines its view. Advanced users can fine-tune the specific settings for each of these profiles directly in the mpv.conf file.*
 
-</br>
+<br>
 
-### 🪄 Real-time Upscaling with Anime4K _(Optional – only applied when anime is detected)_
-> _A collection of advanced, real-time shaders designed to upscale, clean, and refine anime for high-resolution displays._
+### 🪄 Real-time Upscaling with Anime4K _(Optional)_
+> _A collection of advanced, real-time shaders designed to upscale, clean, and refine anime for high-resolution displays. **Only applied when anime is detected.**_
 
 Bring your favorite anime into the 4K era with the powerful [Anime4K](https://github.com/bloc97/Anime4K) shader suite pre-installed and expertly configured. 
 
@@ -571,7 +565,7 @@ Bring your favorite anime into the 4K era with the powerful [Anime4K](https://gi
 ### 🎭 Comparison
 > _A quick look at how Anime4K transforms the source frame using one of Stremio Kai’s custom presets._
 
-</br>
+<br>
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/3fe98a39-a125-4556-991d-88bdca8d6f69" alt="Original Frame" width="400"/>
@@ -583,15 +577,14 @@ Bring your favorite anime into the 4K era with the powerful [Anime4K](https://gi
 <p align="center">
   <strong>🔍 Want to see all presets side-by-side? Check out the <a href="https://imgsli.com/NDE0Mjgx/1/4">interactive comparison slider</a>.</strong>
 </p>
-</br>
+<br>
 
----
-
-## III: The Smooth Motion Suite _(Optional – only applied when anime is detected)_
+## III: The Smooth Motion Suite _(Optional)_
+>  _**Only applied when anime is detected.**_
 
 This system delivers a stable and natural viewing experience through a custom-engineered VapourSynth pipeline. Instead of crudely forcing all content to 60fps, it employs smart frame doubling to enhance motion authentically, transforming 24fps anime into a silky-smooth 48fps and boosting 30fps sources to 60fps. This advanced performance is built on a foundation of rock-solid stability. This custom pipeline has been painstakingly debugged to eliminate memory leaks and crashes, ensuring you can binge-watch an entire series without a single hiccup because high-quality visuals mean nothing if the player is unstable or unresponsive. These utilities ensure the experience is always smooth, stable, and under your control.
 
-</br>
+<br>
 
 ### ⏩ SVP Motion Interpolation Frame Rate Converter
 
@@ -683,8 +676,7 @@ This configuration was successfully tested on a modest laptop (i5-9300H CPU, GTX
 
 ### 🎉 The Bottom Line
 Drop these files in MPV, watch anime, enjoy buttery smooth animation that'll make you question why you ever watched anime any other way.
-</details></br>
-
+</details>
 
 ### 🧹 SVP Cleanup Utility
 
@@ -733,8 +725,6 @@ This ensures that every new video starts with a perfectly clean slate, eliminati
 ### 🎉 The Bottom Line
 If you ever watch multiple videos in a row with SVP enabled, drop this script into your folder. It's a tiny insurance policy against hangs and crashes.
 </details>
-
-</br>
 
 ### ⚡ Instant Seeker - Reactive Filter Bypass
 
@@ -823,7 +813,7 @@ This is a fire-and-forget script that fixes one of the most significant performa
 > _A short clip that showcases SVP’s frame interpolation in a fast-paced anime fight. See how motion transforms from choppy to fluid—especially during camera pans and impact frames._
 > **Click the thumbnail below to watch the full demo.**
 
-</br>
+<br>
 
 <p align="center">
 <a href="https://streamable.com/ck3853">
@@ -938,7 +928,7 @@ This project is engineered to deliver the best visual quality possible on modest
 
 > *For a full list of all custom shortcuts, please consult the `input.conf` file. For even more, check the [mpv manual](https://mpv.io/manual/master/).*
 
-</br>
+<br>
 
 ### ❓ Frequently Asked Questions
 
@@ -961,7 +951,6 @@ This project is engineered to deliver the best visual quality possible on modest
 -  This app was designed to run 1080p anime content, not native 4K, on low and mid range computer specs. Anime4K is supposed to bring you the quality of 4K content, or even better, for 1080p sources. Although, if you have a high end PC, it should run great even with 4K content, **it is** still **recommended to use 1080p content**.
 
 </details>
-</br>
 
 ---
 
@@ -972,8 +961,6 @@ Use responsibly and at your own discretion.
 
 ---
 
-</br>
-
 ## **🙏 Acknowledgements**
 
 This project stands on the shoulders of giants and wouldn't be possible without their incredible work.
@@ -981,7 +968,7 @@ This project stands on the shoulders of giants and wouldn't be possible without 
 * A massive thank you to **Zaarrg** for creating the original [**stremio-community-v5**](https://github.com/Zaarrg/stremio-community-v5), which provides the essential MPV integration that this entire project is built upon.  
 * Credit and thanks to the brilliant team behind [**bloc97/Anime4K**](https://github.com/bloc97/Anime4K) for their amazing upscaling shaders.
 
-</br>
+<br><br>
 
 <p align="center">
     <strong>✨ Built with love for the series that keep us up all night. Enjoy the view. ✨</br>- Alt </strong>
