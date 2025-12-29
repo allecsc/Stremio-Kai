@@ -144,7 +144,6 @@ This blend of automation and precision tuning transforms the project from a conf
 - **[SVP Motion Interpolation](https://github.com/allecsc/Stremio-Kai/tree/main#iii-the-smooth-motion-suite-optional)**: Smooth playback with fallback logic and cleanup
 - **Anime Catalog**: See today's episode releases through the hero banner
 
-
 ## **🚀 Installation**
 
 Stremio Kai is a completely self-contained, portable system. All dependencies—SVP, VapourSynth, MPV, shaders, and scripts—are included and pre-configured. No separate installation is required.  
@@ -156,30 +155,130 @@ Grab the latest Stremio-Kai_vX.X.7z **OR** Stremio-Kai_vX.X-Zero from [releases]
 ### 3. Run  
 * Double-click stremio.exe. That's it. Log in to your Stremio account and enjoy.
   
-### 📣 **Support & Contributions**
+#### 📣 **Support & Contributions**
 - 🐛 Bug Reports & Feature Requests: Please open an issue on GitHub
 - 💬 Feedback Welcome: Suggestions that improve usability or performance are appreciated
 
-<br>
+## 💻 Is Your PC Ready?
+> **⚠️ System Requirements & User Advisory**
 
-<div align="center"><h2>💖 Support the Project</h2></p></div>
-<p align="center">If Stremio Kai made your setup smoother and you’d like to support my work, you can <a href="https://ko-fi.com/allecsc">buy me a coffee</a>.</br><strong>Thanks for the kind gesture!</strong></p>
+This project is engineered to deliver the best visual quality possible on modest hardware, but "optimized" does not mean "zero-impact." High-quality, real-time video processing is demanding. Please read the following before you begin.
+
+### **⚙️ Performance & Hardware**
+  * **✅ Minimum Specs:** i5/Ryzen 5 (4+ cores), 8GB RAM, and a dedicated GPU (GTX 1050 / RX 560 or better) are recommended for a smooth 1080p experience.
+  * **🌡️ Expect Heavy CPU Usage:** The motion smoothing (SVP) feature is extremely CPU-intensive. It is normal for your CPU temperatures to rise and for your cooling fans to spin up significantly (💨). **This is the sound of the system working as intended.** Ensure your PC or laptop has adequate cooling.
+  * **🎯 Benchmark:** This build was developed and tested on a laptop with an i5-9300H CPU, GTX 1650 GPU, and 16GB of RAM outputting to a 4K display. This proves the system can run well even on modest hardware, but your mileage may vary.
 
 <p align="center">
-  <a href="https://ko-fi.com/allecsc">
-    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi">
-  </a>
+  <img src="https://github.com/user-attachments/assets/5c9e252f-43dd-4f19-8906-91be6516cf8d" alt="Resources Usage"/>
 </p>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/a0f2ef09-2932-4f74-89aa-58d949f65e5f" alt="Crypto Address" width="200"/>
+<small><i>Typical resource consumption during 4K playback with all features active.</i></small>
 </p>
+
+### **🖥️ Display & Visuals**
+  * **🛑 CRITICAL: HDR Content is for HDR Displays Only.**
+    The HDR profiles are configured for true HDR passthrough. If you play an HDR video on a standard (SDR) monitor, the colors will look grey, washed-out, and incorrect. This is by design. **You must choose video sources that match your display's capabilities.** The AIOstreams add-on can help you filter content correctly.
+  * **🎨 A Note on Color Calibration:**
+    All visual profiles were tuned on a calibrated display. If your monitor is not calibrated, the final image may look different from the intended result. Visuals are subjective and will vary based on your screen.
+
+### **🛡️ Antivirus & False Positives**
+  * **You may receive a warning from Windows Defender**, flagging the application with a generic name like `Wacatac`.
+  * **This is a FALSE POSITIVE.** The detection is triggered simply because the app's original icon was modified, a change that heuristic-based security software can view as suspicious. The application is completely safe to use.
+  * **A submission has been made to Microsoft to have the application whitelisted.** In the meantime, you can safely resolve this by adding an exclusion for the Stremio Kai folder in your antivirus settings.
+
 <p align="center">
-  <small><i>Crypto (USDT TRC-20):</br> TE4LPfv6tgYbucSxrUsagSN9DiPimBVrwX</i></small>
+  <img src="https://github.com/user-attachments/assets/f855d5b7-a3e3-42a5-bb8a-634e5f1c4a1e" alt="VirusTotal Results"/>
 </p>
 
----
+### **🔧 Configuration & Usage**
+  * **🔌 This is a "Plug-and-Play" Build:**
+    The scripts and configurations have been custom-built to work together out of the box. The goal is to provide a seamless experience with minimal user tinkering.
+  * **🔬 For Advanced Users:**
+    While most default settings are optimal, power users can adjust `.conf` files for each script. Only modify these settings if you understand what they do. This is a personalized setup, and while it's designed to be universal, unique hardware or software combinations may lead to unpredictable issues.
 
-# 🔬 Under the Hood
+### (Optional) Use the provided [AIOstreams Template](https://github.com/allecsc/Stremio-Kai/blob/main/aiostreams-config-TEMPLATE.json)
+* To help you identify the right video source, this package includes a pre-configured template for the **AIOstreams** addon. This template formats the search results to clearly display critical information like resolution, HDR format (HDR10+, DV), audio type (Atmos), and file size, so you can pick the best source for your display with confidence. It would look like this:
+
+<details>
+<summary><strong>How to set up AIOstreams and use the template</strong></summary></br>
+  
+> *The template file is included in the Stremio Kai package. To use it, you'll need to configure one of the AIOstreams addons. Below are two of the most popular ones.*
+
+#### Setup Instructions:
+
+1. Navigate to one of the AIOstreams configuration pages:  
+   * https://aiostreams.elfhosted.com/stremio/configure ⇨ _This one is the most updated but doesn't allow Torrentio._
+   * https://aiostreamsfortheweak.nhyira.dev/stremio/configure ⇨ _This one allows Torrentio. You need to manually turn it on the Addons page_
+2. Click the **Import** button and select the template file provided with Stremio Kai.  
+3. Click **Install to Stremio** if you don't have it installed, or **Save** to apply the template, if you're already using the addon.
+</details>
+
+<details> 
+<summary><strong>AIOstreams Custom Formatter Settings</strong></summary>
+
+<h4>Name Template</h4>
+<pre>
+{stream.type::replace('debrid','  ')::replace('p2p','⁽ᵖ²ᵖ⁾')::replace('live','⁽ˡᶦᵛᵉ⁾')::replace('http','⁽ʷᵉᵇ⁾')::replace('usenet','⁽ⁿᶻᵇ⁾')::replace('statistic','⁽ˢᵗᵃᵗˢ⁾')::replace('external','⁽ᵉˣᵗ⁾')::replace('error','⁽ᵉʳʳᵒʳ⁾')::replace('youtube','⁽ʸᵗ⁾')} {stream.quality::exists["{stream.quality::replace('REMUX',' ')::replace('BluRay','ᵇ ˡ ᵘ ʳ ᵃ ʸ')::replace('WEB-DL','ʷ ᵉ ᵇ ⁻ ᵈ ˡ')::replace('WEBRip','ʷ ᵉ ᵇ  ʳ ⁱ ᵖ')::replace('HDRip','ʰ ᵈ  ʳ ⁱ ᵖ')::replace('HC HD-Rip','ʰ ᶜ  ʰ ᵈ')::replace('DVDRip','ᵈ ᵛ ᵈ ʳ ⁱ ᵖ')::replace('HDTV','ʰ ᵈ ᵗ ᵛ')}"||" "]}{stream.quality::~REMUX::isfalse[" "||""]}\n
+{service.cached::istrue["▶  "||""]}{service.cached::isfalse["▷  "||""]}{stream.resolution::exists["{stream.resolution::replace('2160p','𝟰𝗞')::replace('1440p','𝗤𝗛𝗗')::replace('1080p','𝗙𝗛𝗗')::replace('720p','𝗛𝗗')::replace('576p','𝗦𝗗')::replace('540p','540P')::replace('480p','480P')::replace('360p','360P')::replace('240p','240P')::replace('144p','144P')}"||"ⁿ/ₐ "]}{stream.visualTags::exists["  ♛"||""]}   \n{stream.regexMatched::~T1::istrue::and::stream.quality::~REMUX::isfalse["ᴛ ɪ               "||""]}{stream.regexMatched::~T1::isfalse::and::stream.regexMatched::~T2::isfalse::and::stream.regexMatched::~T3::isfalse::and::stream.regexMatched::~bad::isfalse::stream.quality::~REMUX::istrue["ʀᴇᴍᴜx"||""]}{stream.regexMatched::~T1::and::stream.quality::~REMUX["ᴛ ɪ  ʀᴇᴍᴜx"||""]}{stream.regexMatched::~T2::istrue::and::stream.quality::~REMUX::isfalse["ᴛ ɪɪ            "||""]}{stream.regexMatched::~T2::and::stream.quality::~REMUX["ᴛ ɪɪ  ʀᴇᴍᴜx"||""]}{stream.regexMatched::~T3::istrue::and::stream.quality::~REMUX::isfalse["ᴛ ɪɪɪ           "||""]}{stream.regexMatched::~T3::and::stream.quality::~REMUX["ᴛ ɪɪɪ  ʀᴇᴍᴜx"||""]}{stream.regexMatched::~bad::istrue::and::stream.quality::~REMUX::isfalse["ʙᴀᴅ           "||""]}{stream.regexMatched::~bad::and::stream.quality::~REMUX["ʙᴀᴅ ʀᴇᴍᴜx"||""]}\n
+
+{stream.message::~Download["{tools.removeLine}\n‎ "||""]}
+</pre>
+
+<h4>Description Template</h4>
+<pre>
+{stream.edition::exists::and::stream.visualTags::~IMAX::isfalse::or::stream.network::exists::or::stream.message::exists::or::stream.upscaled::istrue::or::stream.repack::istrue::or::stream.uncensored::istrue::or::stream.unrated::istrue["★ "||""]}{stream.network::exists["▸{stream.network}◂"||""]}{stream.upscaled::istrue["▸Upscaled◂"||""]}{stream.remastered::istrue::and::stream.edition::~Remastered::isfalse["▸Remastered◂"||""]}{stream.uncensored::istrue["▸Uncensored◂"||""]}{stream.repack::istrue["▸Repacked◂"||""]}{stream.unrated::istrue["▸Unrated◂"||""]}{stream.edition::exists::and::stream.visualTags::~IMAX::isfalse["▸{stream.edition::replace('Theatrical','Theatrical Cut')}◂ "||""]}
+{stream.title::exists::and::stream.library::isfalse["▤  {stream.title}"||""]}{stream.title::exists::and::stream.library::istrue["☁︎  {stream.title} "||""]}{stream.year::exists[" ({stream.year}) "||""]}{stream.seasonEpisode::exists[" {stream.seasonEpisode::join(' · ')}"||""]}
+{stream.message::~Download["\n{stream.message::replace('Download the stream above via your browser','⭳ Click to DL stream')} "||""]}
+{stream.encode::exists["▣  {stream.encode}  "||""]}{stream.visualTags::exists["✧  {stream.visualTags::join(' · ')::replace('DV','🅳🆅')}  "||""]}
+{stream.audioTags::exists["♬  {stream.audioTags::join(' · ')}  "||""]}{stream.audioChannels::exists["☊  {stream.audioChannels::join(' · ')}  "||""]}{stream.uLanguages::exists["⚐  {stream.uSmallLanguageCodes::join(' · ')::replace('ᴅᴜᴀʟ ᴀᴜᴅɪᴏ','ᴅᴜᴏ')::replace('ᴅᴜʙʙᴇᴅ','ᴅᴜʙ')}"||""]}
+{stream.seasonPack::istrue::and::stream.size::>0["⧉  "||""]}{stream.seasonPack::isfalse::and::stream.size::>0["◧  "||""]}[ {stream.size::>0["{stream.size::bytes}"||""]}{stream.folderSize::>0[" / {stream.folderSize::rbytes}"||""]} ]{stream.releaseGroup::exists[" · {stream.releaseGroup}"||""]}
+{stream.proxied::istrue["⛊  "||"⛉  "]}{addon.name}{service.cached::isfalse::or::stream.type::=p2p::and::stream.seeders::>0[" ⇋ {stream.seeders}𖧧"||""]}{stream.age::exists[" · ⟳ {stream.age} "||""]}{stream.indexer::exists::and::stream.type::=usenet[" · {stream.indexer}"||""]}{stream.message::~Download["{tools.removeLine}\n"||""]}
+{stream.message::exists["✎ "||""]}{stream.message::exists["▸{stream.message}. "||""]}{stream.message::~Download["{tools.removeLine}"||""]}
+</pre>
+
+</details>  
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8dd10c07-62e1-49ae-a137-d057af2ac2c5" alt="AIOstreams Format" width="300"/>
+</p>
+
+</br>
+
+### **⌨️ Power-User Control: The Cheatsheet**
+
+> _Stremio Kai is designed to work perfectly out of the box, but power users have full control. Use these hotkeys to adjust the visuals on the fly._
+
+<div align="center">
+
+| Key | Action | Description |
+| :---: | :---: | :---: |
+| Tab | **Smart Skip** | Skips the current intro/outro when prompted. |
+| F12 | Toggle **SVP Motion Smoothing** | Manually enables or disables frame interpolation. |
+| Ctrl+F1 | **Anime4K: Optimized** | A balanced preset for great quality and performance. |
+| Ctrl+F2 | **Anime4K: Eye Candy (Fast)** | A higher-quality preset with a minor performance cost. |
+| Ctrl+F3 | **Anime4K: Eye Candy (HQ)** | The highest-quality preset for powerful machines. |
+| Ctrl+F4 | **Clear All Shaders** | Instantly removes all active GLSL shaders. |
+| F8 | Toggle **ICC Profile** | Toggles automatic ICC color profile correction. |
+| F9 | Toggle **Denoise Filter** | Toggles Temporal + Spatial Denoising Filter. |
+| Ctrl+F10 | Toggle **High Denoise Shader** | Toggles the default subjective denoise filter. |
+
+> *For a full list of all custom shortcuts, please consult the `input.conf` file. For even more, check the [mpv manual](https://mpv.io/manual/master/).*
+
+</div>
+
+## ❓ Frequently Asked Questions
+
+**1. Is there a version for Linux or macOS?**
+  - Currently, Stremio Kai is **Windows-only**. The project is built upon the **[Stremio Community v5](https://github.com/Zaarrg/stremio-community-v5)**, and I am dependent on its developer for cross-platform support. While a **Linux/macOS** version **has been announced, there is no ETA**. Once that foundation is available, I can begin the work of porting Stremio Kai.
+
+**2. What if I don't like the upscaling or motion smoothing?**
+  - This project is designed to be a highly opinionated "_it just works_" setup, but it is not a locked box. **Every visual and performance enhancement**—from Anime4K upscaling to SVP motion smoothing—is fully configurable and **can be disabled**.
+  - If you just want to test how different features work individually, you can easily do it while watching anime content. **Press F12 to disable SVP** motion interpolation or **F4 to disable the Anime4K shaders**.
+  - If you prefer anime exactly as it was created — untouched, unenhanced, and true to the original — **Stremio Kai Zero is the build for you**. It includes everything except the two anime enhancement‑focused features: SVP and Anime4K.
+
+
+## 🔬 Under the Hood
 
 Curious how Stremio Kai achieves all this?  
 The section below breaks down the internal systems, automation scripts, and playback logic that power the experience.
@@ -825,124 +924,6 @@ This is a fire-and-forget script that fixes one of the most significant performa
 </a>
 </p>
 
-# 💻 Is Your PC Ready?
-> **⚠️ System Requirements & User Advisory**
-
-This project is engineered to deliver the best visual quality possible on modest hardware, but "optimized" does not mean "zero-impact." High-quality, real-time video processing is demanding. Please read the following before you begin.
-
-### **⚙️ Performance & Hardware**
-  * **✅ Minimum Specs:** i5/Ryzen 5 (4+ cores), 8GB RAM, and a dedicated GPU (GTX 1050 / RX 560 or better) are recommended for a smooth 1080p experience.
-  * **🌡️ Expect Heavy CPU Usage:** The motion smoothing (SVP) feature is extremely CPU-intensive. It is normal for your CPU temperatures to rise and for your cooling fans to spin up significantly (💨). **This is the sound of the system working as intended.** Ensure your PC or laptop has adequate cooling.
-  * **🎯 Benchmark:** This build was developed and tested on a laptop with an i5-9300H CPU, GTX 1650 GPU, and 16GB of RAM outputting to a 4K display. This proves the system can run well even on modest hardware, but your mileage may vary.
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/5c9e252f-43dd-4f19-8906-91be6516cf8d" alt="Resources Usage"/>
-</p>
-<p align="center">
-<small><i>Typical resource consumption during 4K playback with all features active.</i></small>
-</p>
-
-### **🖥️ Display & Visuals**
-  * **🛑 CRITICAL: HDR Content is for HDR Displays Only.**
-    The HDR profiles are configured for true HDR passthrough. If you play an HDR video on a standard (SDR) monitor, the colors will look grey, washed-out, and incorrect. This is by design. **You must choose video sources that match your display's capabilities.** The AIOstreams add-on can help you filter content correctly.
-  * **🎨 A Note on Color Calibration:**
-    All visual profiles were tuned on a calibrated display. If your monitor is not calibrated, the final image may look different from the intended result. Visuals are subjective and will vary based on your screen.
-
-### **🛡️ Antivirus & False Positives**
-  * **You may receive a warning from Windows Defender**, flagging the application with a generic name like `Wacatac`.
-  * **This is a FALSE POSITIVE.** The detection is triggered simply because the app's original icon was modified, a change that heuristic-based security software can view as suspicious. The application is completely safe to use.
-  * **A submission has been made to Microsoft to have the application whitelisted.** In the meantime, you can safely resolve this by adding an exclusion for the Stremio Kai folder in your antivirus settings.
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/f855d5b7-a3e3-42a5-bb8a-634e5f1c4a1e" alt="VirusTotal Results"/>
-</p>
-
-### **🔧 Configuration & Usage**
-  * **🔌 This is a "Plug-and-Play" Build:**
-    The scripts and configurations have been custom-built to work together out of the box. The goal is to provide a seamless experience with minimal user tinkering.
-  * **🔬 For Advanced Users:**
-    While most default settings are optimal, power users can adjust `.conf` files for each script. Only modify these settings if you understand what they do. This is a personalized setup, and while it's designed to be universal, unique hardware or software combinations may lead to unpredictable issues.
-
-### (Optional) Use the provided [AIOstreams Template](https://github.com/allecsc/Stremio-Kai/blob/main/aiostreams-config-TEMPLATE.json)
-* To help you identify the right video source, this package includes a pre-configured template for the **AIOstreams** addon. This template formats the search results to clearly display critical information like resolution, HDR format (HDR10+, DV), audio type (Atmos), and file size, so you can pick the best source for your display with confidence. It would look like this:
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/51474bf4-5b92-4594-a489-f8737b28bc42" alt="AIOstreams Format" width="300"/>
-</p>
-
-<details>
-<summary><strong>How to set up AIOstreams and use the template</strong></summary></br>
-  
-> *The template file is included in the Stremio Kai package. To use it, you'll need to configure one of the AIOstreams addons. Below are two of the most popular ones.*
-
-#### Setup Instructions:
-
-1. Navigate to one of the AIOstreams configuration pages:  
-   * https://aiostreams.elfhosted.com/stremio/configure ⇨ _This one is the most updated but doesn't allow Torrentio._
-   * https://aiostreamsfortheweak.nhyira.dev/stremio/configure ⇨ _This one allows Torrentio. You need to manually turn it on the Addons page_
-2. Click the **Import** button and select the template file provided with Stremio Kai.  
-3. Click **Install to Stremio** if you don't have it installed, or **Save** to apply the template, if you're already using the addon.
-</details>
-
-<details> 
-<summary><strong>AIOstreams Custom Formatter Settings</strong></summary>
-
-<h4>Name Template</h4>
-<pre>
-{stream.seeders::exists::and::stream.seeders::>=10::or::service.cached::istrue["⚡"||"🐢 "]}{stream.resolution::exists["{stream.resolution::replace('2160p','4K UHD')::replace('1080p','Full HD')::replace('720p','HD')}"||"Unknown"]}
-</pre>
-
-<h4>Description Template</h4>
-<pre>
-{stream.filename::exists["🎬 {stream.filename}"||"{stream.title::title}"]}
-{stream.folderName::exists["📁 {stream.folderName}"||""]}
-{stream.visualTags::exists["📺 {stream.visualTags::join(' • ')}"||""]}{stream.quality::exists[" • {stream.quality}"||""]}
-{stream.audioTags::exists["🎧 {stream.audioTags::join(' • ')}"||""]}{stream.languages::exists["📣 {stream.languageEmojis::join(' · ')}"||""]}
-{stream.size::>0["📦 {stream.size::bytes}"||""]}
-{stream.seeders::>=0["🌱 {stream.seeders} Seeders"||""]} {addon.name::exists["📡 {addon.name}"||""]}
-</pre>
-
-</details>  
-</br>
-
-### **⌨️ Power-User Control: The Cheatsheet**
-
-> Stremio Kai is designed to work perfectly out of the box, but power users have full control. Use these hotkeys to adjust the visuals on the fly.
-
-| Key | Action | Description |
-| :---: | :---: | :---: |
-| Tab | **Smart Skip** | Skips the current intro/outro when prompted. |
-| F12 | Toggle **SVP Motion Smoothing** | Manually enables or disables frame interpolation. |
-| Ctrl+F1 | **Anime4K: Optimized** | A balanced preset for great quality and performance. |
-| Ctrl+F2 | **Anime4K: Eye Candy (Fast)** | A higher-quality preset with a minor performance cost. |
-| Ctrl+F3 | **Anime4K: Eye Candy (HQ)** | The highest-quality preset for powerful machines. |
-| Ctrl+F4 | **Clear All Shaders** | Instantly removes all active GLSL shaders. |
-| F8 | Toggle **ICC Profile** | Toggles automatic ICC color profile correction. |
-| F9 | Toggle **Denoise Filter** | Toggles Temporal + Spatial Denoising Filter. |
-| Ctrl+F10 | Toggle **High Denoise Shader** | Toggles the default subjective denoise filter. |
-
-> *For a full list of all custom shortcuts, please consult the `input.conf` file. For even more, check the [mpv manual](https://mpv.io/manual/master/).*
-
-</details>
-
-## ❓ Frequently Asked Questions
-
-**1. Is there a version for Linux or macOS?**
-  - Currently, Stremio Kai is **Windows-only**. The project is built upon the **[Stremio Community v5](https://github.com/Zaarrg/stremio-community-v5)**, and I am dependent on its developer for cross-platform support. While a **Linux/macOS** version **has been announced, there is no ETA**. Once that foundation is available, I can begin the work of porting Stremio Kai.
-
-**2. What if I don't like the upscaling or motion smoothing?**
-  - This project is designed to be a highly opinionated "_it just works_" setup, but it is not a locked box. **Every visual and performance enhancement**—from Anime4K upscaling to SVP motion smoothing—is fully configurable and **can be disabled**.
-  - If you just want to test how different features work individually, you can easily do it while watching anime content. **Press F12 to disable SVP** motion interpolation or **F4 to disable the Anime4K shaders**.
-  - If you prefer anime exactly as it was created — untouched, unenhanced, and true to the original — **Stremio Kai Zero is the build for you**. It includes everything except the two anime enhancement‑focused features: SVP and Anime4K.
-
-**3. How does the "anime detection" work? Will this affect other content?**
-- The system uses an advanced, multi-step process to accurately identify anime and separate it from live-action content.
-    1.  First, it looks for common "fingerprints" in the file's metadata, such as styled subtitles, "Signs & Songs" tracks, or anime-specific chapters. This allows it to detect many anime files, including movies and dubbed versions, regardless of audio language.
-    2.  If those aren't found, it falls back to checking for a combination of an Asian language audio track and a short, episode-like duration.
-- This new system has two important consequences:
-    - **Live-Action Content:** This logic is specifically designed to *fix* the misidentification of other Asian content. Live-action dramas and movies (like K-dramas or J-dramas) will now be correctly identified and receive the standard visual profiles.
-    - **Dubbed Anime:** Because the system can detect anime using more than just the audio language, many dubbed anime files will now be correctly identified automatically.
-
 </details>
 
 ---
@@ -962,6 +943,22 @@ This project stands on the shoulders of giants and wouldn't be possible without 
 * Credit and thanks to the brilliant team behind [**bloc97/Anime4K**](https://github.com/bloc97/Anime4K) for their amazing upscaling shaders.
 
 <br><br>
+
+<div align="center"><h2>💖 Support the Project</h2></p></div>
+<p align="center">If Stremio Kai made your setup smoother and you’d like to support my work, you can <a href="https://ko-fi.com/allecsc">buy me a coffee</a>.</br><strong>Thanks for the kind gesture!</strong></p>
+
+<p align="center">
+  <a href="https://ko-fi.com/allecsc">
+    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi">
+  </a>
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a0f2ef09-2932-4f74-89aa-58d949f65e5f" alt="Crypto Address" width="200"/>
+</p>
+<p align="center">
+  <small><i>Crypto (USDT TRC-20):</br> TE4LPfv6tgYbucSxrUsagSN9DiPimBVrwX</i></small>
+</p>
+<br>
 
 <p align="center">
     <strong>✨ Built with love for the series that keep us up all night. Enjoy the view. ✨</br>- Alt </strong>
