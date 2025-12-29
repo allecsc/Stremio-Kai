@@ -51,6 +51,10 @@ This combination of smart automation and careful tuning elevates the project fro
 **Gallery:**
 
 <div align="center">
+
+<img width="3840" height="2160" alt="Skip-Intro" src="https://github.com/user-attachments/assets/c3b65119-dc74-475f-8659-2201a843bff4" />
+
+> _Skip Opening Notification_
   
 <img height="500" alt="Metadata Panel" src="https://github.com/user-attachments/assets/00a6333b-41b1-4323-98b0-e9851f28b7fd" />
 
@@ -821,8 +825,6 @@ This is a fire-and-forget script that fixes one of the most significant performa
 </a>
 </p>
 
-</details>
-
 # 💻 Is Your PC Ready?
 > **⚠️ System Requirements & User Advisory**
 
@@ -860,13 +862,6 @@ This project is engineered to deliver the best visual quality possible on modest
     The scripts and configurations have been custom-built to work together out of the box. The goal is to provide a seamless experience with minimal user tinkering.
   * **🔬 For Advanced Users:**
     While most default settings are optimal, power users can adjust `.conf` files for each script. Only modify these settings if you understand what they do. This is a personalized setup, and while it's designed to be universal, unique hardware or software combinations may lead to unpredictable issues.
-
-### ⁉️ How to disable features:
-  * Best option is to get **Stremio Kai Zero** which has all the features, except anime specific ones: Anime4K and SVP.
-
-  * IF you want to test how different features work individually before making any permanent changes, you can first identify which feature hinders your experience. While watching anime content, you can quickly **disable** the **SVP** frame rate **by pressing F12**. This a heavy visual filter that uses up the most resources. Check and see if it works fine without it, shaders aren't supposed to be that heavy anyway. If it's still bad, **press F4 to disable the Anime4K shaders**.
-
-  * **To permanently and manually disable the features**, you need to go into `/Stemio Kai/portable_config/` and open `mpv.conf` in Notepad (just drag and drop into an open Notepad). Then, look for the lines starting with `vf=` and `glsl-shaders=` and either delete them, or put a **#** before them. **Save and restart Stremio Kai** and they will be permanently deleted.
 
 ### (Optional) Use the provided [AIOstreams Template](https://github.com/allecsc/Stremio-Kai/blob/main/aiostreams-config-TEMPLATE.json)
 * To help you identify the right video source, this package includes a pre-configured template for the **AIOstreams** addon. This template formats the search results to clearly display critical information like resolution, HDR format (HDR10+, DV), audio type (Atmos), and file size, so you can pick the best source for your display with confidence. It would look like this:
@@ -928,16 +923,17 @@ This project is engineered to deliver the best visual quality possible on modest
 
 > *For a full list of all custom shortcuts, please consult the `input.conf` file. For even more, check the [mpv manual](https://mpv.io/manual/master/).*
 
-<br>
+</details><br>
 
-### ❓ Frequently Asked Questions
+## ❓ Frequently Asked Questions
 
 **1. Is there a version for Linux or macOS?**
   - Currently, Stremio Kai is **Windows-only**. The project is built upon the **[Stremio Community v5](https://github.com/Zaarrg/stremio-community-v5)**, and I am dependent on its developer for cross-platform support. While a **Linux/macOS** version **has been announced, there is no ETA**. Once that foundation is available, I can begin the work of porting Stremio Kai.
 
 **2. What if I don't like the upscaling or motion smoothing?**
-  - This project is designed to be a highly opinionated "_it just works_" setup, but it is not a locked box. **Every visual and performance enhancement**—from Anime4K upscaling to SVP motion smoothing—is fully configurable and **[can be disabled](https://github.com/allecsc/Stremio-Kai/blob/main/README.md#%EF%B8%8F-how-to-disable-features)**.
-  - If you are a purist who prefers the original, unaltered look of an anime, you can easily achieve that. The settings are controlled in the mpv.conf file. If you're not comfortable editing it yourself, please **[open a discussion](https://github.com/allecsc/Stremio-Kai/discussions)**. I will personally guide you on how to tailor the experience to your exact preferences.
+  - This project is designed to be a highly opinionated "_it just works_" setup, but it is not a locked box. **Every visual and performance enhancement**—from Anime4K upscaling to SVP motion smoothing—is fully configurable and **can be disabled**.
+  - If you just want to test how different features work individually, you can easily do it while watching anime content. **Press F12 to disable SVP** motion interpolation or **F4 to disable the Anime4K shaders**.
+  - If you prefer anime exactly as it was created — untouched, unenhanced, and true to the original — **Stremio Kai Zero is the build for you**. It includes everything except the two anime enhancement‑focused features: SVP and Anime4K.
 
 **3. How does the "anime detection" work? Will this affect other content?**
 - The system uses an advanced, multi-step process to accurately identify anime and separate it from live-action content.
