@@ -923,7 +923,7 @@ This project is engineered to deliver the best visual quality possible on modest
 
 > *For a full list of all custom shortcuts, please consult the `input.conf` file. For even more, check the [mpv manual](https://mpv.io/manual/master/).*
 
-</details><br>
+</details>
 
 ## ❓ Frequently Asked Questions
 
