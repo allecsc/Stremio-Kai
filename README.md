@@ -4,10 +4,10 @@
 <div align="center">
 <img width="200" alt="Stremio-Kai-v3.0" src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" />
 
-  <h1>Stremio Kai <br><br> 🚨 v3.0 IS HERE! 🚨 <br> v3.1 COMING SOON! STAY TUNED! </h1>
+  <h1>Stremio Kai</h1>
 
   <p><i>A custom Stremio + MPV build that offers premium features and feels amazing—even on modest hardware.</i></p>
-  </br>
+
   <img src="https://img.shields.io/badge/🪟%20Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
   <img src="https://img.shields.io/badge/%20Stremio-8B57D3?style=for-the-badge&logo=stremio&logoColor=white" alt="Stremio" />
   <img src="https://img.shields.io/badge/🌐%20WebView2-0078D6?style=for-the-badge&logo=microsoftedge&logoColor=white" alt="WebView2" />
@@ -21,53 +21,122 @@
 </div>
 
 ---
+
+<div align="center">
+  
+  <img width="1920" alt="Main Page" src="https://github.com/user-attachments/assets/c185b0da-0c22-4856-a1c1-cd91b67d637c" />
+
+</div>
+
+# **✨What is Stremio Kai?**
+
+The core of Stremio Kai — a fork of Stremio Community Edition — is delivering breathtaking clarity, intelligent automation, and fluid motion on even modest hardware. It behaves exactly like Community Edition for all regular content, with additional automation and *optional* anime-specific playback profiles when applicable.
+
+Why fuss with manual tweaks? Stremio Kai’s scripts think for you: detecting content type automatically, applying ideal playback settings, selecting the best subtitles, and even skipping intros/outros like Netflix — so you can just sit back and enjoy.
+
+This combination of smart automation and careful tuning elevates the project from a simple configuration into a complete, intelligent system. Each component was custom-built or meticulously refined to solve real-world frustrations and deliver an exceptional viewing experience.
+
+### What’s new and noteworthy in v3.0:
+
+- **Complete UI overhaul** — Modernized interface with refined layouts, an improved hero banner, and a richer metadata panel for quick content insights.
+- **Hidden Navigation** — Sidebar and search bar automatically hide and reappear on hover, creating a clean, distraction-free, couch-friendly viewing experience.
+- **OLED (Pure Black) toggle** — Instantly switch to a high-contrast theme ideal for dark setups.
+- **Hover-preview thumbnails** — Thumbnail preview on the seek bar via the ThumbFast/hover time preview script.
+- **Performance & stability improvements** — Faster navigation, reduced UI overhead, and general internal refinements. 
+- **Updated core base** — Now built on [Stremio Community Edition v5.0.21](https://github.com/Zaarrg/stremio-community-v5/releases/tag/5.0.0-beta.21).
+- **Multiple builds** —  
+  - *Stremio Kai* — Full experience including Anime4K and SVP.
+  - *Stremio Kai Zero* — Same UI improvements and quality-of-life features **without** the anime-specific enhancements.
+ 
+**Gallery:**
+
+<div align="center">
+  
+<img height="500" alt="Metadata Panel" src="https://github.com/user-attachments/assets/00a6333b-41b1-4323-98b0-e9851f28b7fd" />
+
+> _Metadata Panel - Shows up on hover over a poster_
+
+<br>
+
+![sidebar-hide](https://github.com/user-attachments/assets/ed26d49a-93ad-4b62-b422-7265e1835f75)
+
+> _Hidden Navigation - Shows up on hover_
+
+<br>
+  
+![oled-toggle](https://github.com/user-attachments/assets/98925c06-bb27-4df5-8e5c-701eb7c32385)
+
+> _Theme toggle_
+
+</div><br>
     
-https://github.com/user-attachments/assets/65835f67-fe45-45d2-84c3-d43e2ab304e2    
+### Coming Soon in v3.1:
 
----
+- **Expanded details view** — Richer movie and series pages with additional ratings, detailed genres, episode overviews, and full cast listings with photos.
+- **Auto fullscreen launch** — Optional setting to start Stremio Kai directly in fullscreen for a seamless living-room experience.
+- **Custom hero banner sources** — Choose from multiple movie and series lists for the hero banner, including support for custom MDBList collections.
+- **TMDB & MDBList API integration** — Use personal API keys for improved metadata accuracy.
+- **More quality-of-life improvements** — Ongoing refinements across UI, automation, and playback.
 
-### 🚀 Core Architecture
-- 🧱 **[Stremio Community v5](https://github.com/Zaarrg/stremio-community-v5) Base**: Fast, open-source, and actively maintained
-- 🖥️ **Windows Desktop App**: Portable, self-contained, and install-free
-- 🌐 **WebView2 Engine**: Always up-to-date with the latest Stremio Web UI
-- 🔔 **Update Notification**: Get notified every time a new version is released
+**v3.1 Early Preview:**
+
+<div align="center">
+  
+<img width="2456" height="1416" alt="Movie Details" src="https://github.com/user-attachments/assets/c9f0b086-3b80-4b59-9150-b178411dfaf7" />
+
+> _Details page for movies will include cast with photos_
+
+<br>
+
+<img width="3840" height="2160" alt="Series Details" src="https://github.com/user-attachments/assets/5718fb1e-faf9-4be0-b24d-c6d73e13a579" />
+
+> _Details page for series will include cast with photos and episode overviews_
+
+</div><br>
+
+## 🧩 Core Capabilities
+
+### 🚀 Foundation
+- **[Stremio Community v5](https://github.com/Zaarrg/stremio-community-v5) Base**: Fast, open-source, and actively maintained
+- **Windows Desktop App**: Portable, self-contained, and install-free
+- **WebView2 Engine**: Always up-to-date with the latest Stremio Web UI
 
 ### 🖥️ Desktop Experience
-- 📝 **Enhanced Metadata**: See more details about shows like more ratings and cast with photos
-- 🎡 **Hero Banner**: Discover newly released movies and series
-- 📺 **Picture-in-Picture Mode**: Multitask while watching
-- 🖼️ **Thumbnail Preview**: Thumbfast support
-- ⚙️ **App Settings**: Customize behavior like PauseOnMinimize, CloseOnExit, etc.
+- **Enhanced Metadata**: See more details about shows like more ratings and cast with photos
+- **Hero Banner**: Discover newly released movies and series
+- **Picture-in-Picture Mode**: Multitask while watching
+- **App Settings**: Customize behavior like PauseOnMinimize, CloseOnExit, etc.
+- **Update Notification**: Get notified every time a new version is released
 
 ### 🎬 MPV Playback Engine
-- 🧠 **Full MPV Integration**: Native playback with full config access
-- 🖥️ **Hardware Decoding**: Supports Vulkan, OpenGL, D3D, and HDR
-- 🔊 **Bit-Perfect Audio**: Dolby Atmos, DTS-HD, and lossless passthrough
-
-### 👀 Anime Enhancements
-- 🎨 **Anime4K Shader Presets**: Custom chains for upscaling, line thinning, and denoise
-- ⏩ **SVP Motion Interpolation**: Smooth playback with fallback logic and cleanup
-- 🎡 **Anime Catalog**: See today's episode releases through the hero banner
+- **Full MPV Integration**: Native playback with full config access
+- **Hardware Decoding**: Supports Vulkan, OpenGL, D3D, and HDR
+- **Bit-Perfect Audio**: Dolby Atmos, DTS-HD, and lossless passthrough
+- **Thumbnail Preview**: Thumbfast support
 
 ### 🧠 Smart Automation
-- 🔄 **Auto Profile Switching**: Detects resolution, language, and HDR
-- 🔡 **Smart Subtitle Selector**: Filters out karaoke, signs, and junk tracks
-- ⏭️ **Smart Skip**: Detects and skips intros, outros, and previews
-- ⚡ **Reactive VF Bypass**: Prevents lag during seeks by temporarily disabling filters
-- 🧹 **SVP Cleanup**: Clears filters between episodes to prevent crashes
+- **Auto Profile Switching**: Detects resolution, language, and HDR
+- **Smart Subtitle Selector**: Filters out karaoke, signs, and junk tracks
+- **Smart Skip**: Detects and skips intros, outros, and previews
+- **Reactive VF Bypass**: Prevents lag during seeks by temporarily disabling filters
+- **SVP Cleanup**: Clears filters between episodes to prevent crashes
 
 ### 📁 Local & Torrent Support
-- 📦 **Drag-and-Drop Playback**: Supports any file MPV can handle
-- 🔠 **Local Subtitles**: Add external subs (.srt, .ass) with drag and drop
-- 🎨 **Subtitle Styling**: Customize fonts, colors, and positioning via MPV
-- 🌀 **Torrent Support**: Play `.torrent` files and magnet links directly
+- **Drag-and-Drop Playback**: Supports any file MPV can handle
+- **Local Subtitles**: Add external subs (.srt, .ass) with drag and drop
+- **Subtitle Styling**: Customize fonts, colors, and positioning via MPV
+- **Torrent Support**: Play `.torrent` files and magnet links directly
 
 ### 🌐 Addons & Integration
-- ➕ **One-Click Addon Install**: No copy-pasting URLs
-- 📦 **AIOstreams Template**: Helps pick the best source for your setup
-- 💬 **Discord Rich Presence**: Show what you're watching in real-time
+- **One-Click Addon Install**: No copy-pasting URLs
+- **AIOstreams Template**: Helps pick the best source for your setup
+- **Discord Rich Presence**: Show what you're watching in real-time
 
----
+### 👀 Anime Enhancements _(Optional – only applied when anime is detected)_
+- **Anime4K Shader Presets**: Custom chains for upscaling, line thinning, and denoise
+- **SVP Motion Interpolation**: Smooth playback with fallback logic and cleanup
+- **Anime Catalog**: See today's episode releases through the hero banner
+
 
 ## **🚀 Installation**
 
@@ -84,7 +153,7 @@ Grab the latest Stremio-Kai_vX.X.7z **OR** Stremio-Kai_vX.X-Zero from [releases]
 - 🐛 Bug Reports & Feature Requests: Please open an issue on GitHub
 - 💬 Feedback Welcome: Suggestions that improve usability or performance are appreciated
 
-</br>
+<br>
 
 <div align="center"><h2>💖 Support the Project</h2></p></div>
 <p align="center">If Stremio Kai made your setup smoother and you’d like to support my work, you can <a href="https://ko-fi.com/allecsc">buy me a coffee</a>.</br><strong>Thanks for the kind gesture!</strong></p>
@@ -101,331 +170,257 @@ Grab the latest Stremio-Kai_vX.X.7z **OR** Stremio-Kai_vX.X-Zero from [releases]
   <small><i>Crypto (USDT TRC-20):</br> TE4LPfv6tgYbucSxrUsagSN9DiPimBVrwX</i></small>
 </p>
 
+---
 
+# 🔬 Under the Hood
 
-# **⭐ Features**
+Curious how Stremio Kai achieves all this?  
+The section below breaks down the internal systems, automation scripts, and playback logic that power the experience.
 
-Why fuss with manual tweaks? Stremio Kai's scripts think for you, detecting content type and applying perfect settings automatically. It knows if you're binging anime or a movie, picks the right subtitles, and skips intros like Netflix—freeing you to relax.
+<details>
+<summary><strong>How Stremio Kai Works (Technical Deep Dive)</strong></summary>
 
-This is what elevates the project from a simple configuration to a complete, intelligent system. Each component was custom-built or meticulously tuned to solve real-world frustrations and deliver the ultimate anime viewing experience.
+<br>
 
-The core of Stremio Kai is ~a visual pipeline engineered for anime,~ delivering breathtaking clarity and fluid motion without requiring a high-end PC.
+## I: Intelligent Automation Suite
+
+This is where Stremio Kai truly shines. A suite of custom-built scripts work silently in the background to automate the tedious parts of media playback, letting you focus on watching.
+
+### 🔔 Skip Intro w/ Notification
+
+Binge-watch like a pro. This script provides a configurable, Netflix-style system for skipping intros, outros, and previews, with a multi-layered detection system that uses chapter titles, positions, and even silence to know when to offer a skip.  
 
 <details>
 <summary><strong>Find out more</strong></summary>
-    
-</br>
 
-## 🎨 I: The Visual Enhancement Suite
+  > *An automated system for skipping intros, outros, and previews.*
 
-This is the heart of the project's visual philosophy. It's a curated collection of advanced shaders and carefully tuned profiles that work together to upscale, sharpen, and denoise content in real-time. Forget blurry, low-resolution anime; this suite ensures every frame is clean, sharp, and perfectly optimized for your display, from vintage 480p classics to modern 1080p releases.
+#### 😤 The Problem This Solves
 
-</br>
+During a binge-watching session, the flow between episodes is constantly interrupted by opening credits, ending credits, and previews. This forces you to manually skip forward, which is tedious, imprecise, and breaks immersion.
 
-### 🤩 Visually Stunning Predefined Profiles
+#### ✨ The Solution
 
-| Profile&nbsp;Name | Content&nbsp;Type | Core&nbsp;Function |
-| :----: | :----: | :----: |
-| **[anime-sdr]** | Standard Definition (SD) & High Definition (HD) Anime | Enables the  full suite of enhancements: SVP motion smoothing, Anime4K upscaling, and the custom anime audio mix. |
-| **[anime-hdr]** | High Dynamic Range (HDR) Anime | Builds on the anime profile but adds true HDR passthrough for vibrant colors an brightness on compatible displays. |
-| **[anime-old]** | Legacy & Interlaced Anime (480i, 576i) | A special profile for older shows. It enables a high-quality deinterlacer (bwdif) to fix visual combing artifacts before sending it to the SVP engine. |
-| **[hdr]** | HDR Movies & TV Shows | A minimalist profile designed for cinematic HDR content. It disables anime-specific shaders and enables pure HDR passthrough for a true-to-source experience. |
-| **[sdr]** | SDR Movies & TV Shows | The default for all non-anime, non-HDR content. Uses high-quality scaling algorithms and a cinematic audio mix. |
+This script elevates your viewing experience by intelligently identifying skippable content and presenting a clean, non-intrusive toast notification, just like on major streaming services. It uses a sophisticated, multi-layered detection system to handle files with or without chapters, ensuring you can seamlessly move between episodes with a single keypress.
 
-> *You never need to touch these, but it helps to know how Stremio Kai selects and defines its view. Advanced users can fine-tune the specific settings for each of these profiles directly in the mpv.conf file.*
+#### 🤔 How It Works: A Multi-Layered Approach
 
-</br>
+The script analyzes each file using a hierarchy of detection methods to ensure the highest possible accuracy.
 
-### 🪄 Real-time Upscaling with Anime4K
-> _A collection of advanced, real-time shaders designed to upscale, clean, and refine anime for high-resolution displays._
+1.  **Chapter-Based Detection (Primary Method)**
+    This is the most accurate mode, used on files with embedded chapters. The script analyzes the chapter list to find skippable segments.
+      * **High Confidence:** If a chapter has a descriptive title matching known patterns (e.g., "Intro," "Ending," "Outro"), it's considered a high-confidence match.
+      * **Medium Confidence:** If a chapter is untitled (e.g., "Chapter 1") but is in a common position for an intro, it's considered a medium-confidence match.
 
-Bring your favorite anime into the 4K era with the powerful [Anime4K](https://github.com/bloc97/Anime4K) shader suite pre-installed and expertly configured. 
+2.  **Intelligent Fallback (For Chapter-less Files)**
+    If a video file has no chapters, the script switches to its intelligent fallback mode.
+      * **Time-Gated Scanning:** To avoid interrupting actual content, this mode only scans for breaks during the **first and last few minutes** of the file, where intros and outros are expected.
+      * **Silence Detection:** Within these time windows, the script actively listens for periods of silence that typically precede or follow a skippable segment.
+      * **Contextual Prompts:** Based on *when* the silence is detected, it will generate a contextual notification (e.g., "Skip Intro" or "Skip Outro").
 
-* **Pre-Tuned Presets:** No need to mess with individual shader files. Several high-quality shader chains have been curated into easy-to-use presets, accessible via simple hotkeys.  
-* **Optional Denoise:** A gentle denoise shader (denoise3.glsl) is enabled by default on anime profiles. It's a subjective touch that softens shadows and adds a subtle sense of depth. If you prefer a sharper image, it can be disabled with a single key press (see the cheatsheet below) or permanently through the mpv.conf file.
+3.  **Proactive Notifications**
+    In all cases, the script's default behavior is to proactively display a skip notification, giving you the choice to act. For those who prefer a fully automated experience, an `auto_skip` option can be enabled for high-confidence (titled) chapters.
 
-#### 😤 The Annoying Problem This Fixes
+#### **😯 Real Example (Anime with Chapters):**
 
-- Much of the anime we love wasn't created for modern 4K screens. When stretched to fit these displays, older or lower-resolution content can look soft, blurry, or washed out. You also see distracting artifacts like color banding in gradients and compression noise (mosquito noise) in dark areas, which pull you out of the experience.
-
-### 🎭 Comparison
-> _A quick look at how Anime4K transforms the source frame using one of Stremio Kai’s custom presets._
-
-</br>
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/3fe98a39-a125-4556-991d-88bdca8d6f69" alt="Original Frame" width="400"/>
-  <img src="https://github.com/user-attachments/assets/9bb0875d-6352-4f4b-aee2-8d0e7e0e84da" alt="Eye Candy HQ + Denoise" width="400"/>
-</p>
-<p align="center">
-  <small><i>No Filters vs Anime4K Eye Candy (HQ) + Denoise</i></small>
-</p>
-<p align="center">
-  <strong>🔍 Want to see all presets side-by-side? Check out the <a href="https://imgsli.com/NDE0Mjgx/1/4">interactive comparison slider</a>.</strong>
-</p>
-</br>
-
----
-
-## ⏩ II: The Smooth Motion Suite
-
-This system delivers a stable and natural viewing experience through a custom-engineered VapourSynth pipeline. Instead of crudely forcing all content to 60fps, it employs smart frame doubling to enhance motion authentically, transforming 24fps anime into a silky-smooth 48fps and boosting 30fps sources to 60fps. This advanced performance is built on a foundation of rock-solid stability. This custom pipeline has been painstakingly debugged to eliminate memory leaks and crashes, ensuring you can binge-watch an entire series without a single hiccup because high-quality visuals mean nothing if the player is unstable or unresponsive. These utilities ensure the experience is always smooth, stable, and under your control.
-
-</br>
-
-### 🏍️ The Engine
-
-Forget choppy 24fps pans. This build integrates a heavily customized SVP (SmoothVideo Project) setup that provides an intelligent and stable frame interpolation experience. **Designed for anime.** _Should work for other forms of content as well, but results can vary._
-
-<details>
-<summary><strong>SVP Frame Interpolation</strong></summary>
-
-> *The core script that transforms standard video into a high-framerate, ultra-smooth visual experience.*
-
-#### 😤 The Annoying Problem This Solves
-
-Standard animation and film are shot at 24 frames per second (fps). While cinematic, this can cause noticeable judder and motion blur, especially in high-action scenes or smooth panning shots. The motion isn't as fluid as the eye can perceive, breaking immersion.
-
-#### ✨ The Smart Solution
-
-This script integrates the powerful **SVP (SmoothVideo Project)** engine directly into the player's video pipeline. It uses advanced algorithms to generate new, intermediate frames in real-time, targeting a fluid 48fps.
-
-The result is exceptionally smooth, clear motion that removes distracting judder and allows you to see every detail, even during the most intense sequences.
-
-#### Why 48fps? The "Integer Scaling" Advantage
-
-Pushing video to an arbitrary 60fps from a 24fps source is a common mistake that can introduce motion artifacts. The ideal approach is to use an integer multiple of the original framerate.
-
-By doubling 24fps to exactly 48fps (a 2x multiple), each original frame is given one perfectly timed, computer-generated frame in between. This maintains the original cadence and timing of the source material, resulting in a cleaner, more natural-looking smoothness. It's the technically correct choice for preserving motion integrity.
-
-#### Key Capabilities:
-
-  - **🧠 Intelligent Interpolation:** Converts 24fps video to a pristine 48fps for superior motion clarity.
-  - **🎯 Anime-Tuned:** The processing algorithm is specifically optimized for the visual characteristics of animation.
-  - **🤖 Smart Fallback Logic:** Automatically detects if a video is already high-framerate (e.g., 60fps) and intelligently bypasses processing to prevent artifacts.
-  - **⚡ Performance Optimized:** Tuned to deliver maximum smoothness without overburdening system resources on typical hardware.
+Chapters found:  
+✅ "Opening"        → Skippable\! Notification appears.  
+❌ "Part A"         → Not skippable.  
+❌ "Part B"         → Not skippable.  
+✅ "Ending"         → Skippable\! Notification appears.  
+✅ "Next Preview"   → Skippable\! Notification appears.
 
 ### 🚀 Quick Setup
-
-#### Required Dependencies:
-
-  - **VapourSynth R72**: The video processing framework used to apply the SVP filters.
 
 #### File Placement:
 
 ```
 📁 portable_config/
-├── 📁 script-opts/
-│   └── 📄 svp.conf          ← For custom settings
-└── 📄 svp_main.vpy          ← The core motion engine script
-```
-
-### 🎛️ Advanced Configuration (For Power Users)
-
-This script is tuned for a "set it and forget it" experience. However, for those who wish to fine-tune performance, the optional `svp.conf` file can be adjusted. **Do not modify these settings unless you understand their purpose.**
-
-#### 🔧 **Power Settings (`svp.conf`)**
-
-```ini
-num_threads = auto      # Recommended. Allows the script to detect your CPU's capabilities.
-```
-
-**Translation**: More threads can increase processing speed, but performance gains diminish significantly after 6 threads. The `auto` setting is almost always optimal.
-
-#### 🧠 **Memory Allocation (`svp.conf`)**
-
-```ini
-max_cache_size = 2048   # Optimal for systems with 16GB of RAM or more.
-```
-
-**Translation**: A larger cache can lead to smoother seeking in video files, but it consumes more system RAM.
-
-#### 🐛 **Debug Mode (`svp.conf`)**
-
-```ini
-DEBUG_OVERLAY = false   # Keep this disabled for normal viewing.
-```
-
-**Translation**: When enabled, this displays a real-time overlay with processing statistics. It is only useful for troubleshooting performance issues.
-
-### ⚠️ A Note on Performance
-
-#### Heavy Resource Consumption
-
-Be advised: real-time frame interpolation is one of the most demanding tasks you can ask of a CPU. While this script is highly optimized, it is still resource-intensive.
-
-  - **Laptops**: It is normal for your cooling fans to spin up significantly. This indicates the script is working as intended.
-  - **Temperatures**: Expect your CPU temperatures to rise. Ensure your system has adequate cooling.
-
-#### "Worst-Case" Benchmark
-
-This configuration was successfully tested on a modest laptop (i5-9300H CPU, GTX 1650 GPU, 16GB RAM) outputting to a 4K HDR display. This is a demanding scenario, and the script performed well. On standard 1080p displays, performance is excellent.
-
-### 🎉 The Bottom Line
-Drop these files in MPV, watch anime, enjoy buttery smooth animation that'll make you question why you ever watched anime any other way.
-</details></br>
-
-
-### 🧹 The Broom
-
-The perfect companion for binge-watching. This tiny, zero-configuration script prevents hangs and crashes between episodes by ensuring SVP is completely shut down and cleaned up before the next file loads.
-
-<details>
-<summary><strong>SVP Cleanup Utility</strong></summary>
-
-  > *Because playlists shouldn't crash between episodes.*
-
-#### 😤 The Annoying Problem This Fixes
-
-You're binge-watching a series. An episode finishes, the screen goes black, and the next file is supposed to load. Instead... nothing. MPV hangs, becomes unresponsive, or flat-out crashes. You have to kill the process and restart, completely breaking your flow.
-
-This often happens because SVP doesn't shut down cleanly, leaving leftover processes that interfere with loading the next video.
-
-#### ✨ The Smart Solution
-
-This is a tiny, zero-configuration "cleanup crew" script. Its only job is to run between files and make sure SVP has been completely torn down before the next video loads.
-
-It's a fire-and-forget utility that dramatically improves the stability of watching sequential files (like in a playlist) with SVP active.
-
-### 🚀 Quick Setup
-
-#### Drop The File:
-```
-
-📁 portable_config/
-└── 📁 scripts/
-    └── 📄 svp_cleanup.lua        ← The Janitor
-
-```
-That's it. There is no configuration. It just works.
-
-#### 🤔 How It Actually Works
-
-The script is brutally simple and effective:
-
-1.  **Detects End-of-File**: It patiently waits for a video to finish playing.
-2.  **Checks for SVP**: The moment the file ends, it checks if an SVP or VapourSynth filter was active.
-3.  **Takes Out the Trash**: If SVP was running, the script forcibly clears the entire video filter chain.
-4.  **Waits a Beat**: It imposes a 1-second delay, giving all the SVP processes enough time to fully terminate before mpv proceeds to load the next file.
-
-This ensures that every new video starts with a perfectly clean slate, eliminating a major cause of instability.
-
-### 🎉 The Bottom Line
-If you ever watch multiple videos in a row with SVP enabled, drop this script into your folder. It's a tiny insurance policy against hangs and crashes.
-</details>
-
-</br>
-
-### ⚡ The Clutch
-
-Heavy filters like SVP can cause debilitating lag when seeking. This script acts like a performance clutch, instantly and temporarily disengaging the filter chain the moment you seek, allowing for instantaneous rewinds and fast-forwards.  
-
-<details>
-<summary><strong>Instant Seeker - Reactive Filter Bypass</strong></summary>
-
-  > *Because seeking shouldn't require a coffee break.*
-
-#### 😤 The Annoying Problem This Fixes
-
-You're watching a buttery-smooth, 60fps interpolated video thanks to SVP and other heavy filters. You miss a line of dialogue and tap the left arrow key to jump back 5 seconds.
-
-**...and the video freezes.**
-
-The audio skips back instantly, but the video stutters and hangs for what feels like an eternity as the CPU screams, trying to re-process everything. That "quick rewind" just shattered your immersion. Seeking is supposed to be instant, not a punishment for using high-quality filters.
-
-#### ✨ The Smart Solution
-
-This script is like a performance clutch for your video player. It's smart enough to know that seeking doesn't require complex video processing. The moment you seek, it temporarily disengages the heavy filters, letting you zip around the timeline instantly. Once you stop seeking, it seamlessly re-engages them.
-
-The result? You get instant, lag-free seeking *and* the full quality of your video filters during normal playback. It’s the best of both worlds.
-
-#### Why It's Better Than Other Scripts:
-- **🧠 Reactive, Not Dumb**: It doesn't just turn filters off and on. It validates its own actions against yours, so it never fights you if you manually toggle SVP.
-- **💪 Rock Solid**: Handles rapid-fire seeks (like holding down the arrow key) and seeking while paused without breaking a sweat.
-- **🎯 Surgical Precision**: It only targets the heavy filters you specify (like SVP) and leaves everything else alone.
-
-### 🚀 Quick Setup
-
-#### Drop These Files:
-```
-
-📁 portable_config/
 ├── 📁 scripts/
-│   └── 📄 reactive_vf_bypass.lua    ← The Clutch
+│   └── 📄 smart_skip.lua
 └── 📁 script-opts/
-    └── 📄 vf_bypass.conf            ← The Target List
-
+    └── 📄 smart_skip.conf
 ```
 
-#### ⚙️ Configuration Magic
+#### ⚙️ Configuration
 
-Edit `vf_bypass.conf` to tell the script which filters are "heavy" enough to be disabled during seeks.
+The script's behavior is controlled via `smart_skip.conf`. These settings are read directly from the script's code:
 
 ```ini
-# Keywords that identify your heavy filters (comma-separated)
-# If a video filter contains any of these words, the script will manage it.
-svp_keywords=SVP,vapoursynth
+opening_patterns=OP|Opening|Intro
+ending_patterns=ED|Ending|Outro
+preview_patterns=Preview|Coming Up
+
+# Auto-skip detected intro/outro chapters
+auto_skip=no
+
+# Maximum duration for skippable chapters (seconds)
+# Chapters longer than this will never be marked as skippable
+max_skip_duration=200
+
+# Set the time limit for untitled Chapter 1 to 4 minutes (240 seconds)
+max_intro_chapter_duration=240
+
+# Time window for manual skip (seconds)
+# Allow skip when skippable chapter starts within this time
+skip_window=3
+
+# Silence detection settings (for files without chapters)
+# Maximum noise level in dB to consider as silence
+quietness=-30
+
+# Minimum silence duration in seconds to trigger skip
+silence_duration=0.5
+
+# Show OSD notification when skippable content is detected
+show_notification=yes
+
+# Duration to show notification in seconds
+notification_duration=30
 ```
-
-Most users will never need to change this. The default `SVP,vapoursynth` covers 99% of motion interpolation setups.
-
-*Note: The 1.5-second restore delay is hardcoded in the script for maximum stability and to prevent race conditions. It's the sweet spot between responsiveness and reliability.*
-
-#### 🤔 How It Actually Works (The Clutch Analogy)
-
-Think of playing a video with SVP like driving a car in first gear—lots of power, but not nimble.
-
-1.  **Pressure Detected**: The moment you press a seek key, the script detects it.
-2.  **Clutch In**: It instantly disengages the heavy video filters. The player is now in "neutral"—lightweight and incredibly responsive.
-3.  **Shift Gears**: You can now seek backwards and forwards instantly, with zero lag or stuttering. If you keep seeking, the "clutch" stays in.
-4.  **Clutch Out**: A moment after your *last* seek, the script smoothly re-engages the exact same filter chain. You're back in gear, enjoying buttery-smooth playback as if nothing happened.
-
-The entire process is so fast, it's almost imperceptible. All you notice is that seeking finally works the way it's supposed to.
 
 ### 🔧 Troubleshooting
 
-#### 😵‍💫 **"It's not doing anything\!"**
+  * **If it's not skipping anything:**
+      * Ensure the `.lua` and `.conf` files are in the correct folders. 
+      * Check the MPV console (`~` key) for any error messages.
+      * The video file may not contain any chapters or silent periods for the script to detect.
+  * **If it tries to skip the whole episode:**
+      * This is prevented by the `max_skip_duration=200` safety feature in the script, which stops it from ever skipping more than approximately 3 minutes.
 
-  - Make sure your active video filter actually contains one of the keywords from `vf_bypass.conf` (e.g., "SVP"). If it doesn't, the script will correctly ignore it.
-  - Check the mpv console (`~` key) for logs. The script is very talkative and will tell you if it's loading and what it's doing.
+#### 🙏 Credits & Origins
 
-#### 😡 **"The filters aren't coming back\!"**
+This script merges and modernizes concepts from two foundational scripts. Full credit goes to the original authors:
 
-  - This is extremely unlikely due to the script's validation logic. However, if it happens, it means another script or manual command is interfering. The logs will reveal the culprit. The script is designed to be defensive and will reset itself if it detects external changes.
+  * [po5/chapterskip](https://github.com/po5/chapterskip)
+  * [rui-ddc/skip-intro](https://github.com/rui-ddc/skip-intro)
+
+### **🎉 The Bottom Line**
+Go right to your favorite part! This script provides a polished, pop-up notification that gives you precise, one-press control to skip content exactly when you want. It’s a quality-of-life upgrade that makes your player feel less like a tool and more like a premium service.
+</details>
+
+<div align="center">
+  <img width="3840" height="2160" alt="Skip-Intro" src="https://github.com/user-attachments/assets/c3b65119-dc74-475f-8659-2201a843bff4" />
+</div>
+
+</br>
+
+### 🖼️ Timestamp & Thumbnails Preview
+
+Instant visual and time-accurate previews while scrubbing through video. Stremio Kai adds hover-based seek bar previews with clear thumbnails ([ThumbFast](https://github.com/po5/thumbfast)) and precise timestamp feedback, making it easy to jump to the exact moment you want without blind seeking.
+
+* Visual thumbnail preview when hovering over the seek bar
+* Exact timestamp displayed during hover
+* Corrected thumbnail rendering for reliable, consistent previews
+
+<div align="center">
+
+![Image](https://github.com/user-attachments/assets/e56347a2-bd48-4a55-924a-2b252fc23607)
+
+</div>
+
+</br>
+
+### ✔️ Smart Subtitle Selector
+
+Ends the nightmare of manually cycling through subtitle tracks. This script intelligently scans and selects the best subtitle track based on your preferences, automatically rejecting "Forced" or "Commentary" tracks.  
+
+<details>
+<summary><strong>Find out more</strong></summary>
+
+  > *An intelligent script to automatically select the correct subtitle track.*
+
+#### 😤 The Problem This Solves
+
+When playing media with multiple subtitle tracks, MPV's default behavior often selects an undesirable track, such as "Signs & Songs" or "Forced," leading to a frustrating user experience. The user must then manually cycle through all available tracks on every single file to find the main dialogue track.
+
+#### ✨ The Solution
+
+This script replaces MPV's default logic with an intelligent, priority-based system. It analyzes the titles of all available subtitle tracks and automatically selects the one that best matches the user's configured preferences, ignoring commentary or utility tracks.
+
+This provides a "set it and forget it" solution that ensures the correct dialogue track is selected automatically, every time.
+
+#### 🤔 How It Works:
+
+The script ranks subtitle tracks based on a tiered priority system:
+
+1.  **Priority Tier:** First, it searches for tracks containing keywords that indicate a primary dialogue track (e.g., "dialogue," "full").
+2.  **Normal Tier:** If no priority tracks are found, it falls back to any standard subtitle track that isn't explicitly rejected.
+3.  **Rejected Tier:** It actively ignores any track containing keywords that mark it as a utility track (e.g., "signs," "songs," "commentary").
+
+#### 😯 Real Example:
+```
+Available tracks:
+❌ English [Forced] 
+❌ English [Signs/Songs]
+✅ English [Full Dialogue] ← This one gets picked!
+❌ Commentary Track
+```
+
+### 🚀 Quick Setup
+
+#### 1\. File Placement
+
+```
+📁 portable_config/
+├── 📁 scripts/
+│   └── 📄 smart_subs.lua
+└── 📁 script-opts/
+    └── 📄 smart_subs.conf
+```
+
+#### 2\. MPV Configuration
+
+For the script to take control, you must disable MPV's default subtitle selection logic. In your `mpv.conf` file, comment out or delete the following line:
+
+```ini
+# sid=auto
+```
+
+#### ⚙️ Configuration
+
+The script's behavior is controlled via `smart_subs.conf`.
+
+```ini
+# Languages to select, in order of preference.
+preferred_langs = en,eng
+
+# Keywords that identify a high-priority dialogue track.
+priority_keywords = dialogue,full,complete
+
+# Keywords that identify tracks to be ignored.
+reject_keywords = signs,songs,commentary
+```
+
+#### Example Configurations:
+
+  * **For Multi-Language Users:** `preferred_langs = en,eng,jp,jpn`
+  * **For Anime Fans:** `reject_keywords = signs,songs,commentary,forced,karaoke`
+  * **For Movie Fans (with accessibility):** `priority_keywords = dialogue,full,complete,sdh`
+
+### 🔧 Troubleshooting
+
+  * **If the script isn't working:**
+    1.  Ensure the `.lua` and `.conf` files are in the correct folders.
+    2.  Confirm that `sid=auto` has been removed from `mpv.conf`.
+  * **If the wrong track is selected:**
+    1.  Check the track titles in your media file.
+    2.  Add any unwanted keywords (e.g., "Forced") to `reject_keywords`.
+    3.  Add any desired keywords to `priority_keywords`.
+  * **To see the script's decision-making process:**
+    1.  Enable the MPV console (press `~`). The script will log its actions, such as `Subtitle Selector: Found a PRIORITY track. Activating subtitle track #2`.
 
 ### 🎉 The Bottom Line
-This is a fire-and-forget script that fixes one of the most significant performance bottlenecks when using heavy video filters. Install it and enjoy a snappy, responsive player without sacrificing visual quality.
+Install once, configure to your taste, then never think about subtitles again. The script just quietly does the right thing while you focus on actually watching your content.
 </details>
 </br>
 
-### ▶️ See it in Action
-
-> _A short clip that showcases SVP’s frame interpolation in a fast-paced anime fight. See how motion transforms from choppy to fluid—especially during camera pans and impact frames._
-> **Click the thumbnail below to watch the full demo.**
-
-</br>
-
-<p align="center">
-<a href="https://streamable.com/ck3853">
-<img src="https://github.com/user-attachments/assets/71e2dd57-a2a6-40e3-8353-c9cd569508d8" alt="Watch the demo video">
-</a>
-</p>
-
-</br>
-
-
----
-
-## 🤖 III: Intelligent Automation Suite
-
-This is where Stremio Kai truly shines. A suite of custom-built scripts work silently in the background to automate the tedious parts of media playback, letting you focus on watching.
-
-### 🧠 The Brain
+### 🧠 Profile Manager
 
 This script is the central nervous system of the entire configuration. It completely eliminates the need for manual profile switching by intelligently analyzing every file you play and applying the perfect profile for the content.  
 
 <details>
-<summary><strong>Automatic Profile Manager</strong></summary>
+<summary><strong>Find out more</strong></summary>
 
   > *Because your 4K HDR movies shouldn't look like 20-year-old anime (and vice-versa)*
 
@@ -539,227 +534,304 @@ Install it, clean your `mpv.conf`, and enjoy a player that is finally smart enou
 </details>
 </br>
 
-### 🍷 The Selection
+---
 
-Ends the nightmare of manually cycling through subtitle tracks. This script intelligently scans and selects the best subtitle track based on your preferences, automatically rejecting "Forced" or "Commentary" tracks.  
+## II: The Visual Enhancement Suite
 
-<details>
-<summary><strong>Smart Subtitle Selector</strong></summary>
+This is the heart of the project's visual philosophy. It's a curated collection of advanced shaders and carefully tuned profiles that work together to upscale, sharpen, and denoise content in real-time. Forget blurry, low-resolution anime; this suite ensures every frame is clean, sharp, and perfectly optimized for your display, from vintage 480p classics to modern 1080p releases.
 
-  > *An intelligent script to automatically select the correct subtitle track.*
-
-#### 😤 The Problem This Solves
-
-When playing media with multiple subtitle tracks, MPV's default behavior often selects an undesirable track, such as "Signs & Songs" or "Forced," leading to a frustrating user experience. The user must then manually cycle through all available tracks on every single file to find the main dialogue track.
-
-#### ✨ The Solution
-
-This script replaces MPV's default logic with an intelligent, priority-based system. It analyzes the titles of all available subtitle tracks and automatically selects the one that best matches the user's configured preferences, ignoring commentary or utility tracks.
-
-This provides a "set it and forget it" solution that ensures the correct dialogue track is selected automatically, every time.
-
-#### 🤔 How It Works:
-
-The script ranks subtitle tracks based on a tiered priority system:
-
-1.  **Priority Tier:** First, it searches for tracks containing keywords that indicate a primary dialogue track (e.g., "dialogue," "full").
-2.  **Normal Tier:** If no priority tracks are found, it falls back to any standard subtitle track that isn't explicitly rejected.
-3.  **Rejected Tier:** It actively ignores any track containing keywords that mark it as a utility track (e.g., "signs," "songs," "commentary").
-
-#### 😯 Real Example:
-```
-Available tracks:
-❌ English [Forced] 
-❌ English [Signs/Songs]
-✅ English [Full Dialogue] ← This one gets picked!
-❌ Commentary Track
-```
-
-### 🚀 Quick Setup
-
-#### 1\. File Placement
-
-```
-📁 portable_config/
-├── 📁 scripts/
-│   └── 📄 smart_subs.lua
-└── 📁 script-opts/
-    └── 📄 smart_subs.conf
-```
-
-#### 2\. MPV Configuration
-
-For the script to take control, you must disable MPV's default subtitle selection logic. In your `mpv.conf` file, comment out or delete the following line:
-
-```ini
-# sid=auto
-```
-
-#### ⚙️ Configuration
-
-The script's behavior is controlled via `smart_subs.conf`.
-
-```ini
-# Languages to select, in order of preference.
-preferred_langs = en,eng
-
-# Keywords that identify a high-priority dialogue track.
-priority_keywords = dialogue,full,complete
-
-# Keywords that identify tracks to be ignored.
-reject_keywords = signs,songs,commentary
-```
-
-#### Example Configurations:
-
-  * **For Multi-Language Users:** `preferred_langs = en,eng,jp,jpn`
-  * **For Anime Fans:** `reject_keywords = signs,songs,commentary,forced,karaoke`
-  * **For Movie Fans (with accessibility):** `priority_keywords = dialogue,full,complete,sdh`
-
-### 🔧 Troubleshooting
-
-  * **If the script isn't working:**
-    1.  Ensure the `.lua` and `.conf` files are in the correct folders.
-    2.  Confirm that `sid=auto` has been removed from `mpv.conf`.
-  * **If the wrong track is selected:**
-    1.  Check the track titles in your media file.
-    2.  Add any unwanted keywords (e.g., "Forced") to `reject_keywords`.
-    3.  Add any desired keywords to `priority_keywords`.
-  * **To see the script's decision-making process:**
-    1.  Enable the MPV console (press `~`). The script will log its actions, such as `Subtitle Selector: Found a PRIORITY track. Activating subtitle track #2`.
-
-### 🎉 The Bottom Line
-Install once, configure to your taste, then never think about subtitles again. The script just quietly does the right thing while you focus on actually watching your content.
-</details>
 </br>
 
-### 🔔 The Note
+### 🤩 Visually Stunning Predefined Profiles
 
-Binge-watch like a pro. This script provides a configurable, Netflix-style system for skipping intros, outros, and previews, with a multi-layered detection system that uses chapter titles, positions, and even silence to know when to offer a skip.  
+| Profile&nbsp;Name | Content&nbsp;Type | Core&nbsp;Function |
+| :----: | :----: | :----: |
+| **[sdr]** | SDR Movies & TV Shows | The default for all non-anime, non-HDR content. Uses high-quality scaling algorithms and a cinematic audio mix. |
+| **[hdr]** | HDR Movies & TV Shows | A minimalist profile designed for cinematic HDR content. It disables anime-specific shaders and enables pure HDR passthrough for a true-to-source experience. |
+| **[anime-sdr]** | Standard Definition (SD) & High Definition (HD) Anime | Enables the  full suite of enhancements: SVP motion smoothing, Anime4K upscaling, and the custom anime audio mix. |
+| **[anime-hdr]** | High Dynamic Range (HDR) Anime | Builds on the anime profile but adds true HDR passthrough for vibrant colors an brightness on compatible displays. |
+| **[anime-old]** | Legacy & Interlaced Anime (480i, 576i) | A special profile for older shows. It enables a high-quality deinterlacer (bwdif) to fix visual combing artifacts before sending it to the SVP engine. |
+
+> *You never need to touch these, but it helps to know how Stremio Kai selects and defines its view. Advanced users can fine-tune the specific settings for each of these profiles directly in the mpv.conf file.*
+
+</br>
+
+### 🪄 Real-time Upscaling with Anime4K _(Optional – only applied when anime is detected)_
+> _A collection of advanced, real-time shaders designed to upscale, clean, and refine anime for high-resolution displays._
+
+Bring your favorite anime into the 4K era with the powerful [Anime4K](https://github.com/bloc97/Anime4K) shader suite pre-installed and expertly configured. 
+
+* **Pre-Tuned Presets:** No need to mess with individual shader files. Several high-quality shader chains have been curated into easy-to-use presets, accessible via simple hotkeys.  
+* **Optional Denoise:** A gentle denoise shader (denoise3.glsl) is enabled by default on anime profiles. It's a subjective touch that softens shadows and adds a subtle sense of depth. If you prefer a sharper image, it can be disabled with a single key press (see the cheatsheet below) or permanently through the mpv.conf file.
+
+#### 😤 The Annoying Problem This Fixes
+
+- Much of the anime we love wasn't created for modern 4K screens. When stretched to fit these displays, older or lower-resolution content can look soft, blurry, or washed out. You also see distracting artifacts like color banding in gradients and compression noise (mosquito noise) in dark areas, which pull you out of the experience.
+
+### 🎭 Comparison
+> _A quick look at how Anime4K transforms the source frame using one of Stremio Kai’s custom presets._
+
+</br>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3fe98a39-a125-4556-991d-88bdca8d6f69" alt="Original Frame" width="400"/>
+  <img src="https://github.com/user-attachments/assets/9bb0875d-6352-4f4b-aee2-8d0e7e0e84da" alt="Eye Candy HQ + Denoise" width="400"/>
+</p>
+<p align="center">
+  <small><i>No Filters vs Anime4K Eye Candy (HQ) + Denoise</i></small>
+</p>
+<p align="center">
+  <strong>🔍 Want to see all presets side-by-side? Check out the <a href="https://imgsli.com/NDE0Mjgx/1/4">interactive comparison slider</a>.</strong>
+</p>
+</br>
+
+---
+
+## III: The Smooth Motion Suite _(Optional – only applied when anime is detected)_
+
+This system delivers a stable and natural viewing experience through a custom-engineered VapourSynth pipeline. Instead of crudely forcing all content to 60fps, it employs smart frame doubling to enhance motion authentically, transforming 24fps anime into a silky-smooth 48fps and boosting 30fps sources to 60fps. This advanced performance is built on a foundation of rock-solid stability. This custom pipeline has been painstakingly debugged to eliminate memory leaks and crashes, ensuring you can binge-watch an entire series without a single hiccup because high-quality visuals mean nothing if the player is unstable or unresponsive. These utilities ensure the experience is always smooth, stable, and under your control.
+
+</br>
+
+### ⏩ SVP Motion Interpolation Frame Rate Converter
+
+Forget choppy 24fps pans. This build integrates a heavily customized SVP (SmoothVideo Project) setup that provides an intelligent and stable frame interpolation experience. **Designed for anime.** _Should work for other forms of content as well, but results can vary._
 
 <details>
-<summary><strong>Notify Skip</strong></summary>
+<summary><strong>Find out more</strong></summary>
 
-  > *An automated system for skipping intros, outros, and previews.*
+> *The core script that transforms standard video into a high-framerate, ultra-smooth visual experience.*
 
-#### 😤 The Problem This Solves
+#### 😤 The Annoying Problem This Solves
 
-During a binge-watching session, the flow between episodes is constantly interrupted by opening credits, ending credits, and previews. This forces you to manually skip forward, which is tedious, imprecise, and breaks immersion.
+Standard animation and film are shot at 24 frames per second (fps). While cinematic, this can cause noticeable judder and motion blur, especially in high-action scenes or smooth panning shots. The motion isn't as fluid as the eye can perceive, breaking immersion.
 
-#### ✨ The Solution
+#### ✨ The Smart Solution
 
-This script elevates your viewing experience by intelligently identifying skippable content and presenting a clean, non-intrusive toast notification, just like on major streaming services. It uses a sophisticated, multi-layered detection system to handle files with or without chapters, ensuring you can seamlessly move between episodes with a single keypress.
+This script integrates the powerful **SVP (SmoothVideo Project)** engine directly into the player's video pipeline. It uses advanced algorithms to generate new, intermediate frames in real-time, targeting a fluid 48fps.
 
-#### 🤔 How It Works: A Multi-Layered Approach
+The result is exceptionally smooth, clear motion that removes distracting judder and allows you to see every detail, even during the most intense sequences.
 
-The script analyzes each file using a hierarchy of detection methods to ensure the highest possible accuracy.
+#### Why 48fps? The "Integer Scaling" Advantage
 
-1.  **Chapter-Based Detection (Primary Method)**
-    This is the most accurate mode, used on files with embedded chapters. The script analyzes the chapter list to find skippable segments.
-      * **High Confidence:** If a chapter has a descriptive title matching known patterns (e.g., "Intro," "Ending," "Outro"), it's considered a high-confidence match.
-      * **Medium Confidence:** If a chapter is untitled (e.g., "Chapter 1") but is in a common position for an intro, it's considered a medium-confidence match.
+Pushing video to an arbitrary 60fps from a 24fps source is a common mistake that can introduce motion artifacts. The ideal approach is to use an integer multiple of the original framerate.
 
-2.  **Intelligent Fallback (For Chapter-less Files)**
-    If a video file has no chapters, the script switches to its intelligent fallback mode.
-      * **Time-Gated Scanning:** To avoid interrupting actual content, this mode only scans for breaks during the **first and last few minutes** of the file, where intros and outros are expected.
-      * **Silence Detection:** Within these time windows, the script actively listens for periods of silence that typically precede or follow a skippable segment.
-      * **Contextual Prompts:** Based on *when* the silence is detected, it will generate a contextual notification (e.g., "Skip Intro" or "Skip Outro").
+By doubling 24fps to exactly 48fps (a 2x multiple), each original frame is given one perfectly timed, computer-generated frame in between. This maintains the original cadence and timing of the source material, resulting in a cleaner, more natural-looking smoothness. It's the technically correct choice for preserving motion integrity.
 
-3.  **Proactive Notifications**
-    In all cases, the script's default behavior is to proactively display a skip notification, giving you the choice to act. For those who prefer a fully automated experience, an `auto_skip` option can be enabled for high-confidence (titled) chapters.
+#### Key Capabilities:
 
-#### **😯 Real Example (Anime with Chapters):**
-
-Chapters found:  
-✅ "Opening"        → Skippable\! Notification appears.  
-❌ "Part A"         → Not skippable.  
-❌ "Part B"         → Not skippable.  
-✅ "Ending"         → Skippable\! Notification appears.  
-✅ "Next Preview"   → Skippable\! Notification appears.
+  - **🧠 Intelligent Interpolation:** Converts 24fps video to a pristine 48fps for superior motion clarity.
+  - **🎯 Anime-Tuned:** The processing algorithm is specifically optimized for the visual characteristics of animation.
+  - **🤖 Smart Fallback Logic:** Automatically detects if a video is already high-framerate (e.g., 60fps) and intelligently bypasses processing to prevent artifacts.
+  - **⚡ Performance Optimized:** Tuned to deliver maximum smoothness without overburdening system resources on typical hardware.
 
 ### 🚀 Quick Setup
+
+#### Required Dependencies:
+
+  - **VapourSynth R72**: The video processing framework used to apply the SVP filters.
 
 #### File Placement:
 
 ```
 📁 portable_config/
-├── 📁 scripts/
-│   └── 📄 smart_skip.lua
-└── 📁 script-opts/
-    └── 📄 smart_skip.conf
+├── 📁 script-opts/
+│   └── 📄 svp.conf          ← For custom settings
+└── 📄 svp_main.vpy          ← The core motion engine script
 ```
 
-#### ⚙️ Configuration
+### 🎛️ Advanced Configuration (For Power Users)
 
-The script's behavior is controlled via `smart_skip.conf`. These settings are read directly from the script's code:
+This script is tuned for a "set it and forget it" experience. However, for those who wish to fine-tune performance, the optional `svp.conf` file can be adjusted. **Do not modify these settings unless you understand their purpose.**
+
+#### 🔧 **Power Settings (`svp.conf`)**
 
 ```ini
-opening_patterns=OP|Opening|Intro
-ending_patterns=ED|Ending|Outro
-preview_patterns=Preview|Coming Up
-
-# Auto-skip detected intro/outro chapters
-auto_skip=no
-
-# Maximum duration for skippable chapters (seconds)
-# Chapters longer than this will never be marked as skippable
-max_skip_duration=200
-
-# Set the time limit for untitled Chapter 1 to 4 minutes (240 seconds)
-max_intro_chapter_duration=240
-
-# Time window for manual skip (seconds)
-# Allow skip when skippable chapter starts within this time
-skip_window=3
-
-# Silence detection settings (for files without chapters)
-# Maximum noise level in dB to consider as silence
-quietness=-30
-
-# Minimum silence duration in seconds to trigger skip
-silence_duration=0.5
-
-# Show OSD notification when skippable content is detected
-show_notification=yes
-
-# Duration to show notification in seconds
-notification_duration=30
+num_threads = auto      # Recommended. Allows the script to detect your CPU's capabilities.
 ```
+
+**Translation**: More threads can increase processing speed, but performance gains diminish significantly after 6 threads. The `auto` setting is almost always optimal.
+
+#### 🧠 **Memory Allocation (`svp.conf`)**
+
+```ini
+max_cache_size = 2048   # Optimal for systems with 16GB of RAM or more.
+```
+
+**Translation**: A larger cache can lead to smoother seeking in video files, but it consumes more system RAM.
+
+#### 🐛 **Debug Mode (`svp.conf`)**
+
+```ini
+DEBUG_OVERLAY = false   # Keep this disabled for normal viewing.
+```
+
+**Translation**: When enabled, this displays a real-time overlay with processing statistics. It is only useful for troubleshooting performance issues.
+
+### ⚠️ A Note on Performance
+
+#### Heavy Resource Consumption
+
+Be advised: real-time frame interpolation is one of the most demanding tasks you can ask of a CPU. While this script is highly optimized, it is still resource-intensive.
+
+  - **Laptops**: It is normal for your cooling fans to spin up significantly. This indicates the script is working as intended.
+  - **Temperatures**: Expect your CPU temperatures to rise. Ensure your system has adequate cooling.
+
+#### "Worst-Case" Benchmark
+
+This configuration was successfully tested on a modest laptop (i5-9300H CPU, GTX 1650 GPU, 16GB RAM) outputting to a 4K HDR display. This is a demanding scenario, and the script performed well. On standard 1080p displays, performance is excellent.
+
+### 🎉 The Bottom Line
+Drop these files in MPV, watch anime, enjoy buttery smooth animation that'll make you question why you ever watched anime any other way.
+</details></br>
+
+
+### 🧹 SVP Cleanup Utility
+
+The perfect companion for binge-watching. This tiny, zero-configuration script prevents hangs and crashes between episodes by ensuring SVP is completely shut down and cleaned up before the next file loads.
+
+<details>
+<summary><strong>Find out more</strong></summary>
+
+  > *Because playlists shouldn't crash between episodes.*
+
+#### 😤 The Annoying Problem This Fixes
+
+You're binge-watching a series. An episode finishes, the screen goes black, and the next file is supposed to load. Instead... nothing. MPV hangs, becomes unresponsive, or flat-out crashes. You have to kill the process and restart, completely breaking your flow.
+
+This often happens because SVP doesn't shut down cleanly, leaving leftover processes that interfere with loading the next video.
+
+#### ✨ The Smart Solution
+
+This is a tiny, zero-configuration "cleanup crew" script. Its only job is to run between files and make sure SVP has been completely torn down before the next video loads.
+
+It's a fire-and-forget utility that dramatically improves the stability of watching sequential files (like in a playlist) with SVP active.
+
+### 🚀 Quick Setup
+
+#### Drop The File:
+```
+
+📁 portable_config/
+└── 📁 scripts/
+    └── 📄 svp_cleanup.lua        ← The Janitor
+
+```
+That's it. There is no configuration. It just works.
+
+#### 🤔 How It Actually Works
+
+The script is brutally simple and effective:
+
+1.  **Detects End-of-File**: It patiently waits for a video to finish playing.
+2.  **Checks for SVP**: The moment the file ends, it checks if an SVP or VapourSynth filter was active.
+3.  **Takes Out the Trash**: If SVP was running, the script forcibly clears the entire video filter chain.
+4.  **Waits a Beat**: It imposes a 1-second delay, giving all the SVP processes enough time to fully terminate before mpv proceeds to load the next file.
+
+This ensures that every new video starts with a perfectly clean slate, eliminating a major cause of instability.
+
+### 🎉 The Bottom Line
+If you ever watch multiple videos in a row with SVP enabled, drop this script into your folder. It's a tiny insurance policy against hangs and crashes.
+</details>
+
+</br>
+
+### ⚡ Instant Seeker - Reactive Filter Bypass
+
+Heavy filters like SVP can cause debilitating lag when seeking. This script acts like a performance clutch, instantly and temporarily disengaging the filter chain the moment you seek, allowing for instantaneous rewinds and fast-forwards.  
+
+<details>
+<summary><strong>Find out more</strong></summary>
+
+  > *Because seeking shouldn't require a coffee break.*
+
+#### 😤 The Annoying Problem This Fixes
+
+You're watching a buttery-smooth, 60fps interpolated video thanks to SVP and other heavy filters. You miss a line of dialogue and tap the left arrow key to jump back 5 seconds.
+
+**...and the video freezes.**
+
+The audio skips back instantly, but the video stutters and hangs for what feels like an eternity as the CPU screams, trying to re-process everything. That "quick rewind" just shattered your immersion. Seeking is supposed to be instant, not a punishment for using high-quality filters.
+
+#### ✨ The Smart Solution
+
+This script is like a performance clutch for your video player. It's smart enough to know that seeking doesn't require complex video processing. The moment you seek, it temporarily disengages the heavy filters, letting you zip around the timeline instantly. Once you stop seeking, it seamlessly re-engages them.
+
+The result? You get instant, lag-free seeking *and* the full quality of your video filters during normal playback. It’s the best of both worlds.
+
+#### Why It's Better Than Other Scripts:
+- **🧠 Reactive, Not Dumb**: It doesn't just turn filters off and on. It validates its own actions against yours, so it never fights you if you manually toggle SVP.
+- **💪 Rock Solid**: Handles rapid-fire seeks (like holding down the arrow key) and seeking while paused without breaking a sweat.
+- **🎯 Surgical Precision**: It only targets the heavy filters you specify (like SVP) and leaves everything else alone.
+
+### 🚀 Quick Setup
+
+#### Drop These Files:
+```
+
+📁 portable_config/
+├── 📁 scripts/
+│   └── 📄 reactive_vf_bypass.lua    ← The Clutch
+└── 📁 script-opts/
+    └── 📄 vf_bypass.conf            ← The Target List
+
+```
+
+#### ⚙️ Configuration Magic
+
+Edit `vf_bypass.conf` to tell the script which filters are "heavy" enough to be disabled during seeks.
+
+```ini
+# Keywords that identify your heavy filters (comma-separated)
+# If a video filter contains any of these words, the script will manage it.
+svp_keywords=SVP,vapoursynth
+```
+
+Most users will never need to change this. The default `SVP,vapoursynth` covers 99% of motion interpolation setups.
+
+*Note: The 1.5-second restore delay is hardcoded in the script for maximum stability and to prevent race conditions. It's the sweet spot between responsiveness and reliability.*
+
+#### 🤔 How It Actually Works (The Clutch Analogy)
+
+Think of playing a video with SVP like driving a car in first gear—lots of power, but not nimble.
+
+1.  **Pressure Detected**: The moment you press a seek key, the script detects it.
+2.  **Clutch In**: It instantly disengages the heavy video filters. The player is now in "neutral"—lightweight and incredibly responsive.
+3.  **Shift Gears**: You can now seek backwards and forwards instantly, with zero lag or stuttering. If you keep seeking, the "clutch" stays in.
+4.  **Clutch Out**: A moment after your *last* seek, the script smoothly re-engages the exact same filter chain. You're back in gear, enjoying buttery-smooth playback as if nothing happened.
+
+The entire process is so fast, it's almost imperceptible. All you notice is that seeking finally works the way it's supposed to.
 
 ### 🔧 Troubleshooting
 
-  * **If it's not skipping anything:**
-      * Ensure the `.lua` and `.conf` files are in the correct folders. 
-      * Check the MPV console (`~` key) for any error messages.
-      * The video file may not contain any chapters or silent periods for the script to detect.
-  * **If it tries to skip the whole episode:**
-      * This is prevented by the `max_skip_duration=200` safety feature in the script, which stops it from ever skipping more than approximately 3 minutes.
+#### 😵‍💫 **"It's not doing anything\!"**
 
-#### 🙏 Credits & Origins
+  - Make sure your active video filter actually contains one of the keywords from `vf_bypass.conf` (e.g., "SVP"). If it doesn't, the script will correctly ignore it.
+  - Check the mpv console (`~` key) for logs. The script is very talkative and will tell you if it's loading and what it's doing.
 
-This script merges and modernizes concepts from two foundational scripts. Full credit goes to the original authors:
+#### 😡 **"The filters aren't coming back\!"**
 
-  * [po5/chapterskip](https://github.com/po5/chapterskip)
-  * [rui-ddc/skip-intro](https://github.com/rui-ddc/skip-intro)
+  - This is extremely unlikely due to the script's validation logic. However, if it happens, it means another script or manual command is interfering. The logs will reveal the culprit. The script is designed to be defensive and will reset itself if it detects external changes.
 
-### **🎉 The Bottom Line**
-Go right to your favorite part! This script provides a polished, pop-up notification that gives you precise, one-press control to skip content exactly when you want. It’s a quality-of-life upgrade that makes your player feel less like a tool and more like a premium service.
+### 🎉 The Bottom Line
+This is a fire-and-forget script that fixes one of the most significant performance bottlenecks when using heavy video filters. Install it and enjoy a snappy, responsive player without sacrificing visual quality.
 </details>
+</br>
 
-<div align="center">
-<img width="730" alt="Screenshot 2025-09-15 143608" src="https://github.com/user-attachments/assets/77f60d4a-2eed-4353-a28a-71b7ba31a6b9" />
-</div>
+### ▶️ See it in Action
+
+> _A short clip that showcases SVP’s frame interpolation in a fast-paced anime fight. See how motion transforms from choppy to fluid—especially during camera pans and impact frames._
+> **Click the thumbnail below to watch the full demo.**
 
 </br>
 
-### 🖼️ The Preview
+<p align="center">
+<a href="https://streamable.com/ck3853">
+<img src="https://github.com/user-attachments/assets/71e2dd57-a2a6-40e3-8353-c9cd569508d8" alt="Watch the demo video">
+</a>
+</p>
 
-[ThumbFast](https://github.com/po5/thumbfast) is an additional script that is included to provide video preview thumbnails when you hover over the seek bar.  
-> *Note: There is a known visual bug where the thumbnails may not align perfectly with the timeline. This is a limitation of the script and currently has no fix.*
-
-</br>
-
----
+</details>
 
 # 💻 Is Your PC Ready?
 > **⚠️ System Requirements & User Advisory**
@@ -800,14 +872,11 @@ This project is engineered to deliver the best visual quality possible on modest
     While most default settings are optimal, power users can adjust `.conf` files for each script. Only modify these settings if you understand what they do. This is a personalized setup, and while it's designed to be universal, unique hardware or software combinations may lead to unpredictable issues.
 
 ### ⁉️ How to disable features:
-  * Before making any permanent changes, you can first identify which feature hinders your experience. While watching anime content, you can quickly **disable** the **SVP** frame rate **by pressing F12**. That's the most heavy thing. Check and see if it works fine without it, shaders aren't supposed to be that heavy. If it's still bad, **press F4 to disable the Anime4K shaders**.
+  * Best option is to get **Stremio Kai Zero** which has all the features, except anime specific ones: Anime4K and SVP.
 
-  * **To permanently disable the features**, you need to go into `/Stemio Kai/portable_config/` and open `mpv.conf` in Notepad (just drag and drop into an open Notepad). Then, look for the lines starting with `vf=` and `glsl-shaders=` and either delete them, or put a **#** before them. **Save and restart Stremio Kai** and they will be permanently deleted.
-  
-  * Best option is to get **Stremio Kai Zero** which has all the features, except anime specific ones: SVP and Anime4K.
+  * IF you want to test how different features work individually before making any permanent changes, you can first identify which feature hinders your experience. While watching anime content, you can quickly **disable** the **SVP** frame rate **by pressing F12**. This a heavy visual filter that uses up the most resources. Check and see if it works fine without it, shaders aren't supposed to be that heavy anyway. If it's still bad, **press F4 to disable the Anime4K shaders**.
 
-</br>
-
+  * **To permanently and manually disable the features**, you need to go into `/Stemio Kai/portable_config/` and open `mpv.conf` in Notepad (just drag and drop into an open Notepad). Then, look for the lines starting with `vf=` and `glsl-shaders=` and either delete them, or put a **#** before them. **Save and restart Stremio Kai** and they will be permanently deleted.
 
 ### (Optional) Use the provided [AIOstreams Template](https://github.com/allecsc/Stremio-Kai/blob/main/aiostreams-config-TEMPLATE.json)
 * To help you identify the right video source, this package includes a pre-configured template for the **AIOstreams** addon. This template formats the search results to clearly display critical information like resolution, HDR format (HDR10+, DV), audio type (Atmos), and file size, so you can pick the best source for your display with confidence. It would look like this:
@@ -890,6 +959,8 @@ This project is engineered to deliver the best visual quality possible on modest
  
 **4. I have a decent PC, why does it run like crap?**
 -  This app was designed to run 1080p anime content, not native 4K, on low and mid range computer specs. Anime4K is supposed to bring you the quality of 4K content, or even better, for 1080p sources. Although, if you have a high end PC, it should run great even with 4K content, **it is** still **recommended to use 1080p content**.
+
+</details>
 </br>
 
 ---
@@ -910,7 +981,8 @@ This project stands on the shoulders of giants and wouldn't be possible without 
 * A massive thank you to **Zaarrg** for creating the original [**stremio-community-v5**](https://github.com/Zaarrg/stremio-community-v5), which provides the essential MPV integration that this entire project is built upon.  
 * Credit and thanks to the brilliant team behind [**bloc97/Anime4K**](https://github.com/bloc97/Anime4K) for their amazing upscaling shaders.
 
-</details>
+</br>
+
 <p align="center">
     <strong>✨ Built with love for the series that keep us up all night. Enjoy the view. ✨</br>- Alt </strong>
 </p>
