@@ -30,11 +30,11 @@
 
 # **✨What is Stremio Kai?**
 
-The core of Stremio Kai — a fork of Stremio Community Edition — is delivering breathtaking clarity, intelligent automation, and fluid motion on even modest hardware. It behaves exactly like Community Edition for all regular content, with additional automation and *optional* anime-specific playback profiles when applicable.
+The heart of Stremio Kai — a refined fork of Stremio Community Edition — is its focus on stunning clarity, smart automation, and smooth motion even on modest hardware. For standard content, it behaves exactly like Community Edition, but adds intelligent automation and *optional* anime‑specific playback profiles when they’re relevant. The “Kai” suffix reflects its purpose: a remastered take on Community Edition, enhancing the engine, UI, and automation for a premium experience.
 
-Why fuss with manual tweaks? Stremio Kai’s scripts think for you: detecting content type automatically, applying ideal playback settings, selecting the best subtitles, and even skipping intros/outros like Netflix — so you can just sit back and enjoy.
+Why bother with manual adjustments? Stremio Kai handles them for you — detecting content type, applying optimal playback settings, choosing the right subtitles, and even skipping intros and outros Netflix‑style, letting you simply relax and watch.
 
-This combination of smart automation and careful tuning elevates the project from a simple configuration into a complete, intelligent system. Each component was custom-built or meticulously refined to solve real-world frustrations and deliver an exceptional viewing experience.
+This blend of automation and precision tuning transforms the project from a configuration into a fully intelligent system. Every component was purpose‑built or carefully refined to eliminate real‑world annoyances and deliver a consistently exceptional viewing experience.
 
 ### What’s new and noteworthy in v3.0:
 
@@ -942,9 +942,6 @@ This project is engineered to deliver the best visual quality possible on modest
 - This new system has two important consequences:
     - **Live-Action Content:** This logic is specifically designed to *fix* the misidentification of other Asian content. Live-action dramas and movies (like K-dramas or J-dramas) will now be correctly identified and receive the standard visual profiles.
     - **Dubbed Anime:** Because the system can detect anime using more than just the audio language, many dubbed anime files will now be correctly identified automatically.
- 
-**4. I have a decent PC, why does it run like crap?**
--  This app was designed to run 1080p anime content, not native 4K, on low and mid range computer specs. Anime4K is supposed to bring you the quality of 4K content, or even better, for 1080p sources. Although, if you have a high end PC, it should run great even with 4K content, **it is** still **recommended to use 1080p content**.
 
 </details>
 
