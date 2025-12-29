@@ -5,15 +5,20 @@
 
   <p><i>A custom Stremio + MPV build that offers premium features and feels amazing—even on modest hardware.</i></p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/PLATFORM-WINDOWS-0078d4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows Only">
   <a href="https://github.com/allecsc/Stremio-Kai/releases/latest">
-    <img src="https://img.shields.io/github/v/release/allecsc/Stremio-Kai?label=DOWNLOAD&style=for-the-badge&color=44cc11&logo=github" alt="Download Latest Release">
+    <img src="https://img.shields.io/github/v/release/allecsc/Stremio-Kai?label=DOWNLOAD&style=for-the-badge&color=44cc11&logo=github" alt="Download">
   </a>
   <a href="https://github.com/allecsc/Stremio-Kai/wiki">
-    <img src="https://img.shields.io/badge/DOCS-WIKI-007ec6?style=for-the-badge&logo=gitbook&logoColor=white" alt="Documentation">
+    <img src="https://img.shields.io/badge/DOCS-WIKI-007ec6?style=for-the-badge&logo=gitbook&logoColor=white" alt="Wiki">
   </a>
   <a href="https://github.com/allecsc/Stremio-Kai/issues">
-    <img src="https://img.shields.io/badge/REPORT-ISSUE-e05d44?style=for-the-badge&logo=github&logoColor=white" alt="Report an Issue">
+    <img src="https://img.shields.io/badge/REPORT-ISSUE-e05d44?style=for-the-badge&logo=github&logoColor=white" alt="Report">
   </a>
+  <img src="https://img.shields.io/github/downloads/allecsc/Stremio-Kai/total?style=for-the-badge&color=6a737d&label=Downloads" alt="Total Downloads">
+</p>
+  
 </div>
 
 ---
@@ -60,7 +65,7 @@ This blend of automation and precision tuning transforms the project from a conf
   - **[Anime4K Upscaling](https://github.com/allecsc/Stremio-Kai/wiki/%F0%9F%94%AC-Under-the-Hood#-real-time-upscaling-with-anime4k-optional)** — Razor-sharp edges for animated content. `[Optional - Full Build Only]`
   - **[SVP Interpolation](https://github.com/allecsc/Stremio-Kai/wiki/%F0%9F%94%AC-Under-the-Hood#iii-the-smooth-motion-suite-optional-find-out-more)** — High-fluidity 48/60fps motion for a smoother experience. `[Optional - Full Build Only]`
 
-> *Note: These enhancements are non-intrusive and automatically bypass standard content.*
+    > *Note: These enhancements are non-intrusive and automatically bypass standard content.*
 
     
 ### 🔜 Coming Soon in v3.1:
@@ -90,17 +95,20 @@ Stremio Kai is a completely self-contained, portable system. All dependencies—
 > The **Full Build** is recommended for the absolute best visual fidelity. The enhancements are intelligently triggered and will not interfere with or degrade your experience when watching standard movies or TV shows. _**Stremio Kai Zero** offers the same core experience without the anime-specific ones: SVP and Anime4K._
 
 ### 1. Download  
-Grab the latest Stremio-Kai_vX.X.7z **OR** Stremio-Kai_vX.X-Zero from [releases](https://github.com/allecsc/Stremio-Kai/releases).
+Grab the latest **Stremio-Kai** or **Stremio-Kai-Zero** archive from the [Releases Page](https://github.com/allecsc/Stremio-Kai/releases/latest).
+
 ### 2. Extract  
-* Unzip the entire contents of the 7z archive to a location of your choice on your computer (e.g., C:\\Program Files\\Stremio Kai or D:\\PortableApps\\Stremio Kai).  
+Unzip the entire contents of the `.7z` archive. 
+> [!CAUTION]
+> To avoid Windows permission issues, **do not** extract to `C:\Program Files\`. Use a user-writeable directory such as `C:\Stremio-Kai` or any location on a non-system drive (e.g., `D:\Apps\Stremio-Kai`).
+
 ### 3. Run  
-* Double-click stremio.exe. That's it. Log in to your Stremio account and enjoy.
+Double-click `stremio.exe`. Log in to your account and enjoy the premium experience.
 
 ### 🔧 Configuration & Usage:
-  * **🔌 This is a "Plug-and-Play" Build:**
-    The scripts and configurations have been custom-built to work together out of the box. The goal is to provide a seamless experience with minimal user tinkering.
-  * **🔬 For Advanced Users:**
-    While most default settings are optimal, power users can adjust `.conf` files for each script. Only modify these settings if you understand what they do. This is a personalized setup, and while it's designed to be universal, unique hardware or software combinations may lead to unpredictable issues. Please consult the wiki for more details about [how Stremio Kai works](https://github.com/allecsc/Stremio-Kai/wiki/%F0%9F%94%AC-Under-the-Hood).
+* **🔌 Plug-and-Play:** Scripts and configurations are custom-tuned to work out of the box. No manual setup is required.
+* **🔬 Advanced Customization:** While default settings are optimized for 99% of users, you can modify `.conf` files within the internal folders.
+  > **Note:** Only perform modifications if you have consulted the [Wiki Documentation](https://github.com/allecsc/Stremio-Kai/wiki/%F0%9F%94%AC-Under-the-Hood) and understand how to do it.
   
 ### 📣 Support & Contributions:
 - 🐛 Bug Reports & Feature Requests: Please [open an issue](https://github.com/allecsc/Stremio-Kai/issues) on GitHub
@@ -112,25 +120,25 @@ Grab the latest Stremio-Kai_vX.X.7z **OR** Stremio-Kai_vX.X-Zero from [releases]
 
 <img height="500" alt="Metadata Panel" src="https://github.com/user-attachments/assets/00a6333b-41b1-4323-98b0-e9851f28b7fd" />
 
-> _Metadata Panel - Shows up on hover over a poster_
+  > _Metadata Panel - Shows up on hover over a poster_
 
 <br>
 
 ![sidebar-hide](https://github.com/user-attachments/assets/ed26d49a-93ad-4b62-b422-7265e1835f75)
 
-> _Hidden Navigation - Shows up on hover_
+  > _Hidden Navigation - Shows up on hover_
 
 <br>
   
 ![oled-toggle](https://github.com/user-attachments/assets/98925c06-bb27-4df5-8e5c-701eb7c32385)
 
-> _Theme toggle_
+  > _Theme toggle_
 
 <br>
 
 <img height="450" alt="Skip-Intro" src="https://github.com/user-attachments/assets/c3b65119-dc74-475f-8659-2201a843bff4" />
 
-> _Skip Opening Notification_
+  > _Skip Opening Notification_
 
 </div>
 
@@ -142,13 +150,13 @@ Grab the latest Stremio-Kai_vX.X.7z **OR** Stremio-Kai_vX.X-Zero from [releases]
   
 <img height="450" alt="Movie Details" src="https://github.com/user-attachments/assets/c9f0b086-3b80-4b59-9150-b178411dfaf7" />
 
-> _Details page for movies will include cast with photos_
+  > _Details page for movies will include cast with photos_
 
 <br>
 
 <img height="450" alt="Series Details" src="https://github.com/user-attachments/assets/5718fb1e-faf9-4be0-b24d-c6d73e13a579" />
 
-> _Details page for series will include cast with photos and episode overviews_
+  > _Details page for series will include cast with photos and episode overviews_
 
 </div>
 
