@@ -34,19 +34,36 @@ Why bother with manual adjustments? Stremio Kai handles them for you — detecti
 
 This blend of automation and precision tuning transforms the project from a configuration into a fully intelligent system. Every component was purpose‑built or carefully refined to eliminate real‑world annoyances and deliver a consistently exceptional viewing experience.
 
-### What’s new and noteworthy in v3.0:
+### ⭐ Key Features
 
-- **Complete UI overhaul** — Modernized interface with refined layouts, an improved hero banner, and a richer metadata panel for quick content insights.
-- **Hidden Navigation** — Sidebar and search bar automatically hide and reappear on hover, creating a clean, distraction-free, couch-friendly viewing experience.
-- **OLED (Pure Black) toggle** — Instantly switch to a high-contrast theme ideal for dark setups.
-- **[Hover-preview thumbnails](https://github.com/allecsc/Stremio-Kai/wiki/%F0%9F%94%AC-Under-the-Hood#%EF%B8%8F-timestamp--thumbnails-preview)** — Thumbnail preview on the seek bar via the ThumbFast/hover time preview script.
-- **Performance & stability improvements** — Faster navigation, reduced UI overhead, and general internal refinements. 
-- **Updated core base** — Now built on [Stremio Community Edition v5.0.21](https://github.com/Zaarrg/stremio-community-v5/releases/tag/5.0.0-beta.21).
-- **Multiple builds** —  
-  - *Stremio Kai* — Full experience including Anime4K and SVP.
-  - *Stremio Kai Zero* — Same UI improvements and quality-of-life features **without** the anime-specific enhancements.
+- **Zero-Config Portability** — A fully self-contained, "extract and play" build. No installation, no registry traces, and zero dependencies—works directly from any folder or USB drive.
+- **Modernized UI/UX**
+  - **Dynamic Discovery** - Feature-rich Hero Banner with daily fresh recommendations for movies and series.
+  - **Metadata Panel** - Rich details for quick content insights on hover. 
+  - **Hidden Navigation** — Sidebar and search bar automatically hide/show on hover for a distraction-free viewing experience.
+  - **OLED (Pure Black) Mode** — High-contrast theme optimized for dark rooms and premium displays.
+  - **Integrated Update System** — Native notifications ensure you are always running the latest features and improvements.
+
+
+- **Intelligent Automation Suite**
+  - **[Skip Opening Notifications](https://github.com/allecsc/Stremio-Kai/wiki/%F0%9F%94%AC-Under-the-Hood#-skip-intro-w-notification-find-out-more)** — Automatically detects intro and outro sequences and offers the ability to skip it by simply pressing a button.
+  - **[Smart Subtitle Selector](https://github.com/allecsc/Stremio-Kai/wiki/%F0%9F%94%AC-Under-the-Hood#%EF%B8%8F-smart-subtitle-selector-find-out-more)** — Remembers your preferred language and subtitle track settings.
+  - **[Hover-Seek Thumbnails](https://github.com/allecsc/Stremio-Kai/wiki/%F0%9F%94%AC-Under-the-Hood#%EF%B8%8F-timestamp--thumbnails-preview)** — Visual preview while seeking through the timeline.
+
+
+- **[Advanced Player Presets](https://github.com/allecsc/Stremio-Kai/wiki/%F0%9F%94%AC-Under-the-Hood#-visually-stunning-predefined-profiles)**
+  - **Hi-Fi Audio** — Cinematic, bit-perfect lossless audio mixing for high-end sound stages.
+  - **Cinematic HDR** — Pure HDR passthrough ensuring a true-to-source, high-dynamic-range experience.
+
+- **For Anime Enthusiasts**
+  - **Daily Schedule** - Track today's latest episode releases directly through the hero banner.
+  - **[Anime4K Upscaling](https://github.com/allecsc/Stremio-Kai/wiki/%F0%9F%94%AC-Under-the-Hood#-real-time-upscaling-with-anime4k-optional)** — Razor-sharp edges for animated content. `[Optional - Full Build Only]`
+  - **[SVP Interpolation](https://github.com/allecsc/Stremio-Kai/wiki/%F0%9F%94%AC-Under-the-Hood#iii-the-smooth-motion-suite-optional-find-out-more)** — High-fluidity 48/60fps motion for a smoother experience. `[Optional - Full Build Only]`
+
+> *Note: These enhancements are non-intrusive and automatically bypass standard content.*
+
     
-### Coming Soon in v3.1:
+### 🔜 Coming Soon in v3.1:
 
 - **Expanded details view** — Richer movie and series pages with additional ratings, detailed genres, episode overviews, and full cast listings with photos.
 - **Auto fullscreen launch** — Optional setting to start Stremio Kai directly in fullscreen for a seamless living-room experience.
@@ -58,10 +75,22 @@ This blend of automation and precision tuning transforms the project from a conf
 # 🚀 Installation
 
 Stremio Kai is a completely self-contained, portable system. All dependencies—SVP, VapourSynth, MPV, shaders, and scripts—are included and pre-configured. No separate installation is required.  
+
+### 📦 Choose Your Build
+
+| Feature | Stremio Kai (Full) | Stremio Kai Zero |
+| --- | --- | --- |
+| **Modern UI & OLED Mode** | ✅ | ✅ |
+| **Automation & Smart Subs** | ✅ | ✅ |
+| **Skip Intro & Seek Thumbnails** | ✅ | ✅ |
+| **Anime4K Upscaling** | ✅ | ❌ |
+| **SVP Motion Interpolation** | ✅ | ❌ |
+
+> [!NOTE]
+> The **Full Build** is recommended for the absolute best visual fidelity. The enhancements are intelligently triggered and will not interfere with or degrade your experience when watching standard movies or TV shows. _**Stremio Kai Zero** offers the same core experience without the anime-specific ones: SVP and Anime4K._
+
 ### 1. Download  
 Grab the latest Stremio-Kai_vX.X.7z **OR** Stremio-Kai_vX.X-Zero from [releases](https://github.com/allecsc/Stremio-Kai/releases).
-> [!NOTE]
-> _**Stremio Kai Zero** has all the features, except anime specific ones: SVP and Anime4K._
 ### 2. Extract  
 * Unzip the entire contents of the 7z archive to a location of your choice on your computer (e.g., C:\\Program Files\\Stremio Kai or D:\\PortableApps\\Stremio Kai).  
 ### 3. Run  
