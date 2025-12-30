@@ -31,7 +31,7 @@
 </div>
 
 
-# ✨What is Stremio Kai?
+<div align="center"><h2>✨ What is Stremio Kai?</h2></div>
 
 The heart of Stremio Kai — a refined fork of Stremio Community Edition — is its focus on stunning clarity, smart automation, and smooth motion even on modest hardware. For standard content, it behaves exactly like Community Edition, but adds intelligent automation and *optional* anime‑specific playback profiles when they’re relevant. The “Kai” suffix reflects its purpose: a remastered take on Community Edition, enhancing the engine, UI, and automation for a premium experience.
 
@@ -76,8 +76,9 @@ This blend of automation and precision tuning transforms the project from a conf
 - **TMDB & MDBList API integration** — Use personal API keys for improved metadata accuracy.
 - **More quality-of-life improvements** — Ongoing refinements across UI, automation, and playback.
 
+---
 
-# 🚀 Installation
+<div align="center"><h2>🚀 Installation</h2></div>
 
 Stremio Kai is a completely self-contained, portable system. All dependencies—SVP, VapourSynth, MPV, shaders, and scripts—are included and pre-configured. No separate installation is required.  
 
@@ -114,9 +115,11 @@ Double-click `stremio.exe`. Log in to your account and enjoy the premium experie
 - 🐛 Bug Reports & Feature Requests: Please [open an issue](https://github.com/allecsc/Stremio-Kai/issues) on GitHub
 - 💬 Feedback Welcome: Suggestions that improve usability or performance are appreciated
 
-# 🖼️ Gallery
+---
 
 <div align="center">
+  
+  <h2>🖼️ Gallery</h2>
 
 <img height="500" alt="Metadata Panel" src="https://github.com/user-attachments/assets/00a6333b-41b1-4323-98b0-e9851f28b7fd" />
 
@@ -160,25 +163,24 @@ Double-click `stremio.exe`. Log in to your account and enjoy the premium experie
 
 </div>
 
-<br>
 
 ---
 
-## ⚠️ Disclaimer
+<div align="center"><h2>⚠️ Disclaimer</h2></div>
 Stremio Kai is an independent, fan-driven project and is not affiliated with the official Stremio team or any third-party plugin developers.
 This software is provided “as is,” without warranties of any kind. The maintainers do not endorse or support illegal streaming or distribution of copyrighted content. Users are solely responsible for ensuring their usage complies with all applicable laws and regulations in their jurisdiction.
 Use responsibly and at your own discretion.
 
----
 
-## 🙏 Acknowledgements
+
+<div align="center"><h2>🙏 Acknowledgements</h2></div>
 
 This project stands on the shoulders of giants and wouldn't be possible without their incredible work.
 
 * A massive thank you to **Zaarrg** for creating the original [**stremio-community-v5**](https://github.com/Zaarrg/stremio-community-v5), which provides the essential MPV integration that this entire project is built upon.  
 * Credit and thanks to the brilliant team behind [**bloc97/Anime4K**](https://github.com/bloc97/Anime4K) for their amazing upscaling shaders.
 
-<br><br>
+
 
 <div align="center"><h2>💖 Support the Project</h2></p></div>
 <p align="center">If Stremio Kai made your setup smoother and you’d like to support my work, you can <a href="https://ko-fi.com/allecsc">buy me a coffee</a>.</br><strong>Thanks for the kind gesture!</strong></p>
