@@ -151,21 +151,6 @@
         }
       },
       {
-        "type": "custom",
-        "instanceId": "63b",
-        "enabled": true,
-        "options": {
-          "name": "TPB+ Wrapped",
-          "manifestUrl": "https://stremthru.13377001.xyz/stremio/wrap/eyJ1cHN0cmVhbXMiOlt7InUiOiJodHRwczovL3RoZXBpcmF0ZWJheS1wbHVzLnN0cmVtLmZ1bi9tYW5pZmVzdC5qc29uIn1dLCJ0b3J6Ijp0cnVlLCJzdG9yZXMiOlt7ImMiOiJyZCIsInQiOiJHTFZJUFVPWFlRS1hQRTdXMkFKN1pRMzZKNTRISVpEQ1FCRlNYUkZDVFJJQVpOQ1JXS0FRIn1dLCJycGRiX2FrZXkiOiJ0MC1mcmVlLXJwZGIifQ==/manifest.json",
-          "timeout": 10000,
-          "resources": [],
-          "mediaTypes": [],
-          "libraryAddon": false,
-          "resultPassthrough": false,
-          "forceToTop": false
-        }
-      },
-      {
         "type": "comet",
         "instanceId": "b0f",
         "enabled": true,
