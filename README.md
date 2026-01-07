@@ -184,20 +184,53 @@ This project stands on the shoulders of giants and wouldn't be possible without 
 
 
 
-<div align="center"><h2>💖 Support the Project</h2></p></div>
-<p align="center">If Stremio Kai made your setup smoother and you’d like to support my work, you can <a href="https://ko-fi.com/allecsc">buy me a coffee</a>.</br><strong>Thanks for the kind gesture!</strong></p>
+<<div align="center">
+  <h2>💖 Support the Project</h2>
+</div>
 
+<p align="center">
+  If Stremio Kai made your setup smoother and you’d like to support my work,
+  the best way is a direct donation (lowest fees).
+</p>
+
+<!-- REVOLUT PRIMARY -->
+<p align="center">
+  <a href="https://revolut.me/altcelalalt" target="_blank">
+    <img
+      src="https://img.shields.io/badge/Donate%20via-Revolut-5f05ff?style=for-the-badge&logo=revolut&logoColor=white"
+      alt="Donate via Revolut"
+    />
+  </a>
+</p>
+
+<p align="center">
+  <small><i>Lowest fees • Instant • Any amount</i></small>
+</p>
+
+<br>
+
+<!-- KOFI SECONDARY -->
 <p align="center">
   <a href="https://ko-fi.com/allecsc">
     <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi">
   </a>
 </p>
+
+<p align="center">
+  <small><i>Ko-fi (card payments, higher fees)</i></small>
+</p>
+
+<br>
+
+<!-- CRYPTO -->
 <p align="center">
   <img src="https://github.com/user-attachments/assets/a0f2ef09-2932-4f74-89aa-58d949f65e5f" alt="Crypto Address" width="200"/>
 </p>
+
 <p align="center">
-  <small><i>Crypto (USDT TRC-20):</br> TE4LPfv6tgYbucSxrUsagSN9DiPimBVrwX</i></small>
+  <small><i>Crypto (USDT TRC-20):<br>TE4LPfv6tgYbucSxrUsagSN9DiPimBVrwX</i></small>
 </p>
+
 <br>
 
 <p align="center">
