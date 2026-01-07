@@ -1,3 +1,6 @@
+
+<img height="0" alt="AIO-logo-allecsc" src="https://github.com/user-attachments/assets/c56a2e62-4ca2-4bbb-a4c3-05b04436541e" />
+
 <div align="center">
 <img width="200" alt="Stremio-Kai-v3.0" src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" />
 
