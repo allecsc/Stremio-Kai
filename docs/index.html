@@ -1,185 +1,384 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stremio Kai - Premium Streaming Experience</title>
-    <meta
-      name="description"
-      content="A refined all-in-one Stremio build with enhanced metadata, smart automation, and premium features."
-    />
-    <link rel="stylesheet" href="styles.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="icon"
-      href="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00"
-      type="image/x-icon"
-    />
-  </head>
-  <body>
-    <header>
-      <a href="#" class="logo">
-        <img
-          src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00"
-          alt="Stremio Kai Logo"
-        />
-        Stremio Kai
-      </a>
-      <nav>
-        <ul>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#gallery">Gallery</a></li>
-          <li>
-            <a
-              href="https://github.com/allecsc/Stremio-Kai/wiki"
-              target="_blank"
-              >Wiki</a
-            >
-          </li>
-          <li>
-            <a href="https://github.com/allecsc/Stremio-Kai" target="_blank"
-              >GitHub</a
-            >
-          </li>
-        </ul>
-      </nav>
-    </header>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stremio Kai - Premium Stremio Build for Windows</title>
+    <meta name="description" content="A refined Stremio build with HDR passthrough, smart automation, enhanced metadata, and premium features for Windows.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#hero" class="nav-logo">
+                <img src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" alt="Stremio Kai">
+                <span>Stremio Kai</span>
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#gallery">Gallery</a>
+                <a href="#comparison">Compare</a>
+                <a href="changelog.html">Changelog</a>
+                <a href="https://github.com/allecsc/Stremio-Kai/wiki" target="_blank">Wiki</a>
+                <a href="https://github.com/allecsc/Stremio-Kai" target="_blank" class="nav-github">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </nav>
 
-    <div class="hero">
-      <img
-        src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00"
-        alt="Stremio Kai"
-        class="hero-logo"
-      />
-      <h1>Stremio Kai</h1>
-      <p>
-        A custom Stremio + MPV build that offers premium features and feels
-        amazing—even on modest hardware.
-      </p>
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <img src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" alt="Stremio Kai" class="hero-logo">
+            <h1>Stremio Kai</h1>
+            <p class="hero-subtitle">A refined Stremio build with premium features and intelligent automation</p>
+            
+            <div class="badges">
+                <span class="badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    Windows Only
+                </span>
+                <span class="badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Free & Open Source
+                </span>
+                <span class="badge" id="download-count">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Loading...
+                </span>
+            </div>
 
-      <div class="buttons">
-        <a
-          href="https://github.com/allecsc/Stremio-Kai/releases/latest"
-          class="btn btn-primary"
-          >Download v4.0</a
-        >
-        <a
-          href="https://github.com/allecsc/Stremio-Kai/wiki"
-          class="btn btn-secondary"
-          >Read Documentation</a
-        >
-      </div>
+            <div class="hero-buttons">
+                <a href="#" id="download-installer" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download Installer
+                </a>
+                <a href="#" id="download-portable" class="btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    </svg>
+                    Portable Version
+                </a>
+            </div>
 
-      <img
-        src="https://github.com/user-attachments/assets/66b40b66-9888-42af-95c7-2c0b25e15788"
-        alt="Stremio Kai UI"
-        class="hero-image"
-      />
+            <p class="version-info" id="version-info">Loading latest version...</p>
+
+            <img src="https://github.com/user-attachments/assets/66b40b66-9888-42af-95c7-2c0b25e15788" alt="Stremio Kai Interface" class="hero-screenshot">
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </div>
+                    <h3>HDR Passthrough</h3>
+                    <p>Native HDR passthrough for compatible displays with automatic HDR-to-SDR tonemapping for SDR screens. No washed-out colors.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </div>
+                    <h3>Skip Intro Detection</h3>
+                    <p>Automatic intro and outro detection with on-screen skip notifications. Works like Netflix for most shows.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"></path>
+                        </svg>
+                    </div>
+                    <h3>Smart Track Selection</h3>
+                    <p>Intelligent audio and subtitle selection based on preferences. Filters unwanted tracks and handles forced subtitles automatically.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <h3>Enhanced Metadata</h3>
+                    <p>Multiple rating sources, full cast & crew, network badges, localized content in your preferred language, and episode descriptions.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m6.36 6.36l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m6.36-6.36l4.24-4.24"></path>
+                        </svg>
+                    </div>
+                    <h3>UI-Driven Settings</h3>
+                    <p>All player settings, track preferences, and features configurable via UI. No config file editing required.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <h3>Anime Enhancements</h3>
+                    <p>Optional Anime4K upscaling for razor-sharp visuals and SVP interpolation for smooth 48/60 FPS motion, automatically applied to anime content.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <h2>Gallery</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item" data-img="https://github.com/user-attachments/assets/66b40b66-9888-42af-95c7-2c0b25e15788">
+                    <img src="https://github.com/user-attachments/assets/66b40b66-9888-42af-95c7-2c0b25e15788" alt="Main Interface">
+                    <div class="gallery-overlay">
+                        <span>Main Interface</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-img="https://github.com/user-attachments/assets/cf7239d6-7238-4280-8a7a-2b7d60d60d58">
+                    <img src="https://github.com/user-attachments/assets/cf7239d6-7238-4280-8a7a-2b7d60d60d58" alt="Metadata Panel">
+                    <div class="gallery-overlay">
+                        <span>Metadata Panel</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-img="https://github.com/user-attachments/assets/ed26d49a-93ad-4b62-b422-7265e1835f75">
+                    <img src="https://github.com/user-attachments/assets/ed26d49a-93ad-4b62-b422-7265e1835f75" alt="Hidden Navigation">
+                    <div class="gallery-overlay">
+                        <span>Hidden Navigation</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-img="https://github.com/user-attachments/assets/98925c06-bb27-4df5-8e5c-701eb7c32385">
+                    <img src="https://github.com/user-attachments/assets/98925c06-bb27-4df5-8e5c-701eb7c32385" alt="OLED Theme Toggle">
+                    <div class="gallery-overlay">
+                        <span>OLED Theme Toggle</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-img="https://github.com/user-attachments/assets/c3b65119-dc74-475f-8659-2201a843bff4">
+                    <img src="https://github.com/user-attachments/assets/c3b65119-dc74-475f-8659-2201a843bff4" alt="Skip Intro Notification">
+                    <div class="gallery-overlay">
+                        <span>Skip Intro Notification</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-img="https://github.com/user-attachments/assets/3563832e-a366-402f-83fc-d040d3fbf5d4">
+                    <img src="https://github.com/user-attachments/assets/3563832e-a366-402f-83fc-d040d3fbf5d4" alt="Enhanced Movie Details">
+                    <div class="gallery-overlay">
+                        <span>Enhanced Movie Details</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-img="https://github.com/user-attachments/assets/851b2880-827d-44e5-9cde-9a86807598f1">
+                    <img src="https://github.com/user-attachments/assets/851b2880-827d-44e5-9cde-9a86807598f1" alt="Enhanced Series Details">
+                    <div class="gallery-overlay">
+                        <span>Enhanced Series Details</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-img="https://github.com/user-attachments/assets/786eab85-e839-409c-9d54-4c65f0768efe">
+                    <img src="https://github.com/user-attachments/assets/786eab85-e839-409c-9d54-4c65f0768efe" alt="Localized Main Page">
+                    <div class="gallery-overlay">
+                        <span>Localized Main Page</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-img="https://github.com/user-attachments/assets/5ae44d55-649c-4f88-afb6-1078cf3ce35f">
+                    <img src="https://github.com/user-attachments/assets/5ae44d55-649c-4f88-afb6-1078cf3ce35f" alt="Localized Series Details">
+                    <div class="gallery-overlay">
+                        <span>Localized Series Details</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section id="comparison" class="comparison">
+        <div class="container">
+            <h2>Stremio vs Stremio Kai</h2>
+            <div class="comparison-table">
+                <div class="comparison-row comparison-header">
+                    <div class="comparison-feature">Feature</div>
+                    <div class="comparison-vanilla">Vanilla Stremio</div>
+                    <div class="comparison-kai">Stremio Kai</div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-feature">HDR Passthrough</div>
+                    <div class="comparison-vanilla">
+                        <svg class="icon-no" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div class="comparison-kai">
+                        <svg class="icon-yes" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-feature">Skip Intro Detection</div>
+                    <div class="comparison-vanilla">
+                        <svg class="icon-no" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div class="comparison-kai">
+                        <svg class="icon-yes" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-feature">Smart Track Selection</div>
+                    <div class="comparison-vanilla">
+                        <svg class="icon-no" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div class="comparison-kai">
+                        <svg class="icon-yes" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-feature">Enhanced Metadata</div>
+                    <div class="comparison-vanilla">Basic</div>
+                    <div class="comparison-kai">Multiple Sources + Localized</div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-feature">UI-Driven Settings</div>
+                    <div class="comparison-vanilla">Limited</div>
+                    <div class="comparison-kai">Complete Control</div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-feature">Anime4K Upscaling</div>
+                    <div class="comparison-vanilla">
+                        <svg class="icon-no" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div class="comparison-kai">Optional</div>
+                </div>
+                <div class="comparison-row">
+                    <div class="comparison-feature">SVP Motion Interpolation</div>
+                    <div class="comparison-vanilla">
+                        <svg class="icon-no" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div class="comparison-kai">Optional</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>Is this compatible with my existing Stremio account?</h3>
+                    <p>Yes. Stremio Kai is a fork of Stremio Community Edition and uses the same account system. Your addons and settings sync automatically.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Why Windows only?</h3>
+                    <p>The build relies on WebView2 and Windows-specific MPV optimizations. Cross-platform support would require significant architectural changes.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Will my anime enhancements apply to regular movies?</h3>
+                    <p>No. All anime-specific features (Anime4K, SVP) are intelligently detected and only apply when anime content is identified.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Do I need to edit config files?</h3>
+                    <p>No. Starting with v4.0, all settings are accessible via the UI. Advanced users can still edit configs manually if desired.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" alt="Stremio Kai">
+                    <p>Stremio Kai © 2026</p>
+                    <p class="footer-disclaimer">Not affiliated with Stremio</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <a href="https://github.com/allecsc/Stremio-Kai/wiki" target="_blank">Documentation</a>
+                        <a href="changelog.html">Changelog</a>
+                        <a href="https://github.com/allecsc/Stremio-Kai/releases" target="_blank">Releases</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Community</h4>
+                        <a href="https://github.com/allecsc/Stremio-Kai" target="_blank">GitHub</a>
+                        <a href="https://github.com/allecsc/Stremio-Kai/issues" target="_blank">Report Issue</a>
+                        <a href="https://github.com/allecsc/Stremio-Kai/issues/new?labels=enhancement" target="_blank">Request Feature</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Support</h4>
+                        <a href="https://revolut.me/altcelalalt" target="_blank">Revolut</a>
+                        <a href="https://ko-fi.com/allecsc" target="_blank">Ko-fi</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-stats">
+                <img src="https://img.shields.io/github/stars/allecsc/Stremio-Kai?style=social" alt="GitHub stars">
+                <img id="downloads-badge" src="https://img.shields.io/github/downloads/allecsc/Stremio-Kai/total?style=flat-square&color=8B5CF6" alt="Downloads">
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <button class="lightbox-nav prev">⟨</button>
+        <img class="lightbox-content" id="lightbox-img">
+        <button class="lightbox-nav next">⟩</button>
     </div>
 
-    <section id="features">
-      <h2>Features</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <h3>🔔 Smart Skip</h3>
-          <p>
-            Netflix-style intro skipping. Automatically detects intros/outros
-            and offers a skip button with visual notification.
-          </p>
-        </div>
-        <div class="feature-card">
-          <h3>🖥️ Modern UI</h3>
-          <p>
-            Cleaner interface with hidden navigation, OLED dark mode, and
-            enhanced metadata popups on hover.
-          </p>
-        </div>
-        <div class="feature-card">
-          <h3>🧠 Smart Tracks</h3>
-          <p>
-            No more manual switching. Automatically selects the correct audio
-            and subtitle tracks based on your language preferences.
-          </p>
-        </div>
-        <div class="feature-card">
-          <h3>🎨 Anime4K</h3>
-          <p>
-            Real-time upscaling for anime. Sharpen, denoise, and upscale your
-            favorite shows with extensive shader presets.
-          </p>
-        </div>
-        <div class="feature-card">
-          <h3>⏩ SVP Integration</h3>
-          <p>
-            High-fluidity motion interpolation. Watch content in smooth 48fps or
-            60fps with our optimized VapourSynth pipeline.
-          </p>
-        </div>
-        <div class="feature-card">
-          <h3>📦 Portable</h3>
-          <p>
-            Zero dependencies. Runs from any folder. Now available with a
-            streamlined installer for easy setup.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section id="gallery">
-      <h2>Gallery</h2>
-      <div class="gallery-grid">
-        <div class="gallery-item">
-          <img
-            src="https://github.com/user-attachments/assets/cf7239d6-7238-4280-8a7a-2b7d60d60d58"
-            alt="Metadata Panel"
-          />
-          <div class="gallery-caption">Rich Metadata Panel</div>
-        </div>
-        <div class="gallery-item">
-          <img
-            src="https://github.com/user-attachments/assets/ed26d49a-93ad-4b62-b422-7265e1835f75"
-            alt="Hidden Navigation"
-          />
-          <div class="gallery-caption">Distraction-free Hidden Navi</div>
-        </div>
-        <div class="gallery-item">
-          <img
-            src="https://github.com/user-attachments/assets/c3b65119-dc74-475f-8659-2201a843bff4"
-            alt="Skip Intro"
-          />
-          <div class="gallery-caption">Intro Skip Notification</div>
-        </div>
-        <div class="gallery-item">
-          <img
-            src="https://github.com/user-attachments/assets/3563832e-a366-402f-83fc-d040d3fbf5d4"
-            alt="Movie Details"
-          />
-          <div class="gallery-caption">Enhanced Movie Details with Cast</div>
-        </div>
-      </div>
-    </section>
-
-    <footer>
-      <p>Stremio Kai &copy; 2026. Built with love by Alt.</p>
-      <p><small>Not affiliated with Stremio.</small></p>
-
-      <div class="social-links">
-        <a href="https://ko-fi.com/allecsc">
-          <img
-            src="https://ko-fi.com/img/githubbutton_sm.svg"
-            alt="Support me on Ko-fi"
-          />
-        </a>
-        <a href="https://revolut.me/altcelalalt">
-          <img
-            src="https://img.shields.io/badge/Donate%20via-Revolut-5f05ff?style=for-the-badge&logo=revolut&logoColor=white"
-            alt="Revolut"
-          />
-        </a>
-      </div>
-    </footer>
-  </body>
+    <script src="script.js"></script>
+</body>
 </html>
