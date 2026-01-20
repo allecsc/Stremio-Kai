@@ -1,0 +1,572 @@
+/**
+ * Show Page Enhancer Styles
+ * Independent styling for detail pages (Decoupled from Hover Popup)
+ */
+
+/*=============================================
+=            ENHANCED RATINGS            =
+=============================================*/
+
+.show-page-section-ratings {
+    display: flex;
+    align-items: center;
+    gap: 16px; /* Matched to Hero Banner */
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    min-height: 28px;
+}
+
+.show-page-section-ratings .metadata-popup-ratings {
+    margin-bottom: 0 !important;
+    gap: 16px;
+    display: contents; /* Allow children to participate in the flex container directly */
+}
+
+.show-page-section-ratings .metadata-popup-rating-item {
+    cursor: default !important;
+    margin-right: 0 !important; /* Managed by gap */
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.8;
+}
+
+/* Specific overrides for rating items to match Hero Banner */
+.show-page-section-ratings .metadata-popup-rating-imdb,
+.show-page-section-ratings .metadata-popup-rating-tmdb,
+.show-page-section-ratings .metadata-popup-rating-trakt,
+.show-page-section-ratings .metadata-popup-rating-letterboxd,
+.show-page-section-ratings .metadata-popup-rating-mal,
+.show-page-section-ratings .metadata-popup-rating-rt {
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    color: #e0e0e0;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    display: block; /* Ensure it behaves nicely in flex */
+}
+
+/* Logo Sizes */
+.show-page-section-ratings .metadata-popup-rating-logo {
+    height: 18px !important;
+    width: auto !important;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
+
+.show-page-section-ratings .metadata-popup-rating-logo.letterboxd-logo { width: 36px !important; }
+.show-page-section-ratings .metadata-popup-rating-logo.tmdb-logo { width: 24px !important; }
+.show-page-section-ratings .metadata-popup-rating-logo.mdblist-logo { width: 28px !important; }
+
+/* Metacritic & MDBList (Badges) */
+.show-page-section-ratings .metadata-popup-rating-metacritic,
+.show-page-section-ratings .metadata-popup-rating-mdblist {
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    background-color: var(--rating-color, #555); /* Fallback */
+}
+
+/* MAL Rank */
+.show-page-section-ratings .metadata-popup-rating-rank-icon { font-size: 0.8rem; }
+.show-page-section-ratings .metadata-popup-rating-rank { font-size: 0.875rem; color: #e0e0e0; font-weight: 500; }
+
+/* Hide divider if empty */
+.show-page-section-ratings:empty { display: none; }
+
+/*=====  End of ENHANCED RATINGS  ======*/
+
+
+
+
+/*=============================================
+=            TAGLINE, LOGO & META ROW            =
+=============================================*/
+
+/* 1. Tagline: Spacious and Elegant */
+.show-page-tagline {
+    font-size: 1.5rem;
+    font-style: italic;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 1rem 0 1.5rem 0; /* Breathable spacing */
+    line-height: 1.3;
+    display: block;
+    width: 100%;
+    text-wrap: balance;
+}
+
+/* 2. Logo Replacement */
+.logo-X3hTV {
+    object-fit: contain !important;
+    /* Ensure it doesn't get too huge if the source image is massive */
+    max-height: 250px !important; 
+    width: auto !important;
+    max-width: 100% !important;
+}
+
+/* 2.1 Fallback Title (Styled to match Hero Banner) */
+.show-page-missing-logo-title {
+    font-size: clamp(2rem, 4vw, 3.5rem) !important;
+    font-weight: 800 !important;
+    color: white !important;
+    line-height: 1.1 !important;
+    text-shadow: 0 4px 8px rgba(0,0,0,0.6) !important;
+    margin: 0 0 12px 0 !important;
+    display: inline-block !important;
+    width: 100% !important;
+    text-wrap: balance !important;
+}
+
+/* 3. Replaced Meta Row (Flexbox) */
+/* Common text style for Meta items */
+.show-page-meta-text {
+    font-size: 1.15rem; /* Increased size as requested */
+    font-weight: 400;
+    color: rgb(170, 170, 170); /* Match Hero Banner Gray */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* Explicit Separator (JS Injected) */
+.show-page-meta-separator {
+    color: rgba(170, 170, 170, 0.4);
+    font-size: 1rem;
+    margin: 0 10px; /* Space around the dot */
+    line-height: 1;
+}
+
+.show-page-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 0; /* JS separators handle spacing now */
+    width: 100%;
+    margin-bottom: 24px !important; 
+    flex-wrap: wrap;
+    font-size: 1.15rem; /* Match children */
+}
+
+/* Certification Badge */
+.show-page-certification {
+    display: inline-flex;
+    white-space: nowrap;
+    align-items: center;
+    padding: 0.06em 6px 0.15em; 
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1;
+    border-radius: 2px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    margin-right: 2px; /* Slight optical adjustment if needed, but separator handles main gap */
+}
+
+/* Network Badge (integrated into Meta Row) */
+.show-page-network {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* height: 1.5rem; Remove fixed height to align with text */
+    color: rgb(170, 170, 170);
+    font-size: 1.15rem; /* Match text size */
+    font-weight: 400; /* Text only preference per user */
+    vertical-align: middle;
+}
+
+.show-page-network img {
+    max-height: 1.5rem;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(0.8); /* Light gray logo */
+}
+
+/* Hide Native Stremio Elements (We are replacing them) */
+.spe-injected .release-info-label-LPJMB,
+.spe-injected .runtime-label-TzAGI,
+/* Also hide the dot separators Stremio puts in text nodes if possible, 
+   but since they are raw text nodes, we might just hide the whole parent container's visible text? 
+   Actually, Stremio puts them in spans usually. Let's be aggressive. */
+.spe-injected .meta-info-container-ub8AH > span:not(.show-page-network):not(.show-page-certification):not(.show-page-meta-text) {
+    display: none !important;
+}
+
+/* Ensure our injected containers key elements stay visible */
+.spe-injected .show-page-section-ratings, 
+.spe-injected .show-page-section-genres,
+.spe-injected .show-page-tagline,
+.spe-injected .show-page-meta-row {
+    display: flex !important;
+}
+
+
+
+
+/*=============================================
+=            ENHANCED GENRES            =
+=============================================*/
+
+.show-page-section-genres .metadata-popup-genre-badge {
+    color: var(--primary-foreground-color);
+}
+
+/*=====  End of ENHANCED GENRES  ======*/
+
+
+
+
+/*=============================================
+=            SHOW PAGE SECTIONS            =
+=============================================*/
+
+/* General Section Spacing */
+.meta-info-container-ub8AH {
+    max-width: 65rem !important; /* Premium stability: Anchor the content width */
+}
+
+.meta-info-container-ub8AH .show-page-section-genres,
+.meta-info-container-ub8AH .show-page-section-cast {
+    color: var(--primary-foreground-color);
+    font-size: 1rem;
+    font-weight: 400;
+    margin-top: 1rem;
+}
+
+
+
+.show-page-section-genres .metadata-popup-genres {
+    margin-bottom: 0 !important;
+}
+
+.show-page-section-genres .metadata-popup-genres .metadata-popup-genres-list-scroll {
+    mask-image: unset;
+}
+
+.show-page-section-genres .metadata-popup-genres .metadata-popup-genres-list-scroll .metadata-popup-genres-track {
+    flex-wrap: wrap !important;
+}
+
+/* Label Styling */
+.show-page-section-label,
+.meta-info-container-ub8AH .metadata-popup-genres-label {
+    color: var(--primary-foreground-color);
+    font-size: 0.95rem;
+    font-weight: 700;
+    opacity: 0.3;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Updated Layout: Pillar & Mosaic */
+.show-page-persons-layout {
+    display: flex !important;
+    gap: 24px !important;
+    align-items: flex-start !important;
+}
+
+/* Sidebar for Directors (Fixed) */
+.show-page-directors-sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 130px !important;
+    flex-shrink: 0 !important; /* Reserve this column strictly */
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    padding-right: 8px;
+}
+
+/* Grid for Actors (Column flow: leads stay on left) */
+.show-page-cast-mosaic {
+    display: grid !important;
+    grid-template-rows: repeat(2, 1fr) !important; /* Fixed 2 rows */
+    grid-auto-flow: column !important; /* Fill columns first: 1x1, 1x2, 2x1, 2x2... */
+    grid-auto-columns: 1fr; /* Flexible columns */
+    gap: 16px !important;
+    flex-grow: 1 !important;
+}
+
+/* Summary Section Refinement */
+.description-container-yi8iU {
+    min-height: 80px !important;  /* Avoid gap for short text */
+    max-height: 130px !important; /* Cap height for stability */
+    height: auto !important;      /* Allow fluid height within range */
+    overflow-y: auto !important;
+    display: block !important;    
+    position: relative !important;
+    padding-top: 8px !important;
+    margin-top: calc(0.75rem - 8px) !important;
+    /* Dual mask: Fades top and bottom for premium scroll effect */
+    mask-image: linear-gradient(to bottom, 
+        transparent 0%, 
+        black 8%, 
+        black 92%, 
+        transparent 100%
+    ) !important;
+    text-wrap: pretty;
+}
+
+/* Hide scrollbar for Chrome/Safari/Edge but keep functionality */
+.description-container-yi8iU::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* Static Summary Label (Decoupled) */
+.meta-info-container-ub8AH .label-container-_VXZt {
+    position: relative !important;
+    display: block !important;
+    color: var(--primary-foreground-color);
+    font-size: 0.95rem;
+    font-weight: 700;
+    opacity: 0.3;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 1rem !important; /* Visual gap base */
+}
+
+/* Person Item Card */
+.show-page-person-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 8px !important;
+    border-radius: 8px !important;
+    transition: background-color 0.2s, transform 0.2s ease !important;
+    cursor: pointer !important;
+    width: 100% !important; /* Occupy grid/pillar slot */
+}
+
+/* Director specific styling */
+.spec-director {
+    color: var(--accent) !important;
+    font-size: 0.675rem !important;
+}
+
+/* Matching Hover Popup Effect */
+.show-page-person-item:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Person Image */
+.show-page-person-image {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    object-position: center 20% !important;
+    margin-bottom: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.show-page-person-image.fade-in {
+    opacity: 1;
+}
+
+/* Person Name */
+.show-page-person-name {
+    font-size: 0.95rem;
+    font-weight: 500 !important;
+    color: var(--primary-foreground-color);
+    line-height: 1.3 !important;
+}
+
+/* Character Name */
+.show-page-person-character {
+    font-size: 0.8rem !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    margin-top: 2px !important;
+}
+
+/* Action Buttons Refinement */
+.meta-preview-container-o22hc .action-buttons-container-XbKVa {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding-top: 1.5rem !important;
+    padding-right: 0 !important;
+    width: 100% !important;
+    justify-content: flex-start !important; /* Start by default */
+}
+
+/* Primary buttons group */
+.action-buttons-container-XbKVa .action-button-XIZa3.wide {
+    flex-shrink: 0 !important;
+    min-width: 160px !important;
+    justify-content: center !important;
+}
+
+/* Push secondary icons and ratings to the far right */
+.action-buttons-container-XbKVa .ratings-container-eQRLs {
+    margin-left: auto !important;
+    display: flex !important;
+    gap: 16px !important;
+    align-items: center !important;
+    opacity: 0.8;
+}
+
+.action-buttons-container-XbKVa .action-button-XIZa3:not(.wide):hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Episode Description Injection & Layout Overhaul */
+
+/* 1. Redesign the Info Container to use Grid */
+.video-container-ezBpK .info-container-xyynk {
+    display: grid !important;
+    gap: 0px !important;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: min-content 1fr;
+    align-content: stretch !important;
+    justify-content: start !important;
+    
+    /* STABILITY FIX: Force container to fill card height regardless of title lines */
+    height: 100% !important;
+    align-self: stretch !important; 
+    min-height: 8.5vw !important; /* Matches 16:9 thumbnail ratio (15vw * 9/16) */
+    
+    padding-bottom: 2px !important;
+    
+    /* Reset existing flex properties */
+    flex-direction: unset !important;
+}
+
+/* 2. Positioning Title (Top Left) */
+.video-container-ezBpK .info-container-xyynk .title-container-NcfV9 {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    align-self: start; /* Top edge */
+    padding-right: 15px; /* Safety buffer */
+    padding-top: 4px; /* Align with visual top */
+    
+    /* Typography Polish */
+    line-height: 1.2;
+    
+    /* Max 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal !important;
+    text-wrap: balance;
+}
+
+/* 3. Positioning Date/Upcoming (Top Right) */
+.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    align-self: start; /* Top edge */
+    justify-self: end;
+    
+    /* Buffer zone */
+    padding-left: 20px;
+    white-space: nowrap;
+}
+
+/* 4. Description Style (Top Start, Bottom Floor) */
+.episode-description-spe {
+    grid-column: 1 / -1; /* Span full width */
+    grid-row: 2 / 3; /* Row 2 takes remaining space */
+    
+    display: block;
+    align-self: stretch; /* FILL CONTAINER: Starts at top, hits bottom floor */
+
+    width: 100%;
+    height: 100%; /* Ensure it spans the grid row to reach bottom floor */
+    max-height: 125px;
+    margin-bottom: 2px;
+    padding: 4px 4px 8px 0;
+
+    overflow-y: auto;
+    
+    font-size: 0.9em;
+    color: #a0a0a0;
+    opacity: 0.8;
+
+    mask-image: linear-gradient(to bottom, 
+        transparent 0%, 
+        black 8%, 
+        black 92%, 
+        transparent 100%
+    ) !important;
+
+    white-space: break-spaces;
+    text-wrap: pretty;
+}
+
+/*=====  End of SHOW PAGE SECTIONS  ======*/
+
+
+/*=============================================
+=            RESPONSIVE DESIGN            =
+=============================================*/
+
+@media (max-width: 1200px) {
+    .show-page-person-image {
+        width: 80px !important;
+        height: 80px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .show-page-persons-layout {
+        flex-direction: column !important; /* Stack pillar on top for tablet/mobile */
+        gap: 16px !important;
+    }
+
+    .show-page-directors-sidebar {
+        width: 100% !important;
+        flex-direction: row !important; /* Side by side directors on top */
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 12px;
+        justify-content: start;
+    }
+
+    .show-page-directors-sidebar .show-page-person-item {
+        width: 120px !important;
+    }
+    
+    .show-page-person-image {
+        width: 70px !important;
+        height: 70px !important;
+    }
+    
+    .show-page-person-name {
+        font-size: 0.75rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .show-page-cast-mosaic {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* --- Inert State (CSS-only approach) --- */
+/* Applied when player is active or element should be non-interactive */
+.spe-inert {
+    pointer-events: none !important;
+    user-select: none !important;
+}
+
+/* Visual feedback for inert sections during playback */
+.spe-inert.show-page-section-ratings,
+.spe-inert.show-page-section-genres,
+.spe-inert.show-page-section-cast {
+    opacity: 0.5;
+    filter: grayscale(1);
+    z-index: -1 !important;
+}

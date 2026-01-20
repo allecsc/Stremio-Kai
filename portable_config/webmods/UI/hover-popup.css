@@ -1,0 +1,933 @@
+/*=============================================
+=            POPUP CONTAINER            =
+=============================================*/
+
+.metadata-hover-popup {
+    position: fixed !important;
+    z-index: 10000 !important;
+    pointer-events: none !important; /* Disabled by default to prevent blocking interactions */
+    background: var(--background) !important;
+    backdrop-filter: var(--backdrop-filter);
+    border: 1px solid var(--accent) !important;
+    border-radius: var(--border-radius) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+    filter: var(--shadow);
+    width: 435px !important;
+    min-height: 400px !important; /* Enforce minimum height for stable positioning and skeleton UI */
+    height: auto !important; /* Fixed height for transform scaling */
+    overflow: visible !important;
+    opacity: 0 !important;
+    transform: scale(0.95) scaleY(0.075) !important; /* Combined show/hide and expansion scaling */
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important; /* Smooth expansion */
+    font-family: inherit !important;
+    color: var(--primary-foreground-color) !important;
+    overscroll-behavior: contain !important;
+}
+
+/* Active/Visible popup state - enables interactions and visibility */
+.metadata-hover-popup.visible {
+    opacity: 1 !important;
+    transform: scale(1) scaleY(0.075) !important; /* Visible but still compact */
+    pointer-events: auto !important;
+}
+
+/* Dynamic transform-origin based on vertical position */
+.metadata-hover-popup.popup-above {
+    transform-origin: center bottom !important;
+}
+
+.metadata-hover-popup.popup-below {
+    transform-origin: center top !important;
+}
+
+/* Content loaded state - expands popup smoothly */
+.metadata-hover-popup.content-loaded {
+    transform: scale(1) scaleY(1) !important; /* Full expansion with transform */
+    min-height: 0 !important; /* Allow shrinking for sparse content */
+}
+
+/* Ready state - allows overflow content (Oscar, etc.) to be visible */
+.metadata-hover-popup.ready {
+    overflow: visible !important;
+}
+
+/* Popup Content Container */
+.metadata-hover-popup-content {
+    padding: 16px 16px 4px 16px !important;
+    font-size: 0.875rem !important;
+    line-height: 1.4 !important;
+    overflow-x: hidden !important; /* Contain horizontal scroll within ratings */
+}
+
+
+
+
+.metadata-popup-no-data-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 300px !important; /* Take up remaining space */
+    opacity: 0.5 !important;
+}
+
+.metadata-popup-no-data-icon {
+    width: 48px !important;
+    height: 48px !important;
+    margin-bottom: 12px !important;
+}
+
+.metadata-popup-no-data-icon svg {
+    width: 100% !important;
+    height: 100% !important;
+    stroke: currentColor !important;
+}
+
+.metadata-popup-no-data-text {
+    font-size: 0.875rem !important;
+    font-style: italic !important;
+}
+
+/*=====  End of POPUP CONTAINER  ======*/
+
+
+
+
+/*=============================================
+=            TAGLINE            =
+=============================================*/
+
+.metadata-popup-tagline {
+    font-size: 0.8rem !important;
+    font-style: italic !important;
+    font-weight: 400 !important;
+    color: rgba(255, 255, 255, 0.55) !important;
+    margin: 4px 0 6px 0 !important;
+    line-height: 1.3 !important;
+    max-width: 100% !important;
+    text-wrap: balance !important; /* CSS balancing for non-split titles */
+}
+
+/*=====  End of TAGLINE  ======*/
+
+
+
+
+/*=============================================
+=            SKELETON UI            =
+=============================================*/
+
+.skeleton-wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding-bottom: 12px !important;
+}
+
+.skeleton-title,
+.skeleton-meta,
+.skeleton-text,
+.skeleton-tag,
+.skeleton-person {
+    background-color: rgba(255, 255, 255, 0.1) !important; /* Fallback */
+    background-image: linear-gradient(
+        90deg, 
+        rgba(255, 255, 255, 0.1) 25%, 
+        rgba(255, 255, 255, 0.25) 37%, 
+        rgba(255, 255, 255, 0.1) 63%
+    ) !important;
+    background-size: 400% 100% !important;
+    animation: skeleton-shimmer 1.4s cubic-bezier(0.23, 1, 0.32, 1) infinite !important;
+    border-radius: 4px !important;
+    will-change: background-position !important;
+}
+
+.skeleton-title {
+    height: 24px !important;
+    width: 70% !important;
+}
+
+.skeleton-meta {
+    height: 16px !important;
+    width: 40% !important;
+}
+
+.skeleton-text {
+    height: 14px !important;
+    width: 100% !important;
+    margin-bottom: 4px !important;
+}
+
+.skeleton-text:last-child {
+    width: 80% !important;
+}
+
+.skeleton-tags {
+    display: flex !important;
+    gap: 8px !important;
+    margin-top: 4px !important;
+}
+
+.skeleton-tag {
+    height: 20px !important;
+    width: 60px !important;
+}
+
+.skeleton-people {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    margin-top: 12px !important;
+}
+
+.skeleton-person {
+    width: 100% !important; /* Fill the grid cell */
+    height: 60px !important;
+    border-radius: 6px !important;
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+/*=====  End of SKELETON UI  ======*/
+
+
+
+
+/*=============================================
+=            TITLE            =
+=============================================*/
+
+.metadata-popup-title {
+    margin-bottom: 12px !important;
+}
+
+/* Flexbox Header for robust alignment */
+.metadata-popup-header {
+    display: flex !important;
+    align-items: flex-start !important; /* Top align for multiline titles */
+    justify-content: space-between !important;
+    gap: 15px !important;
+    width: 100% !important;
+    margin-bottom: 4px !important;
+}
+
+.metadata-title-block {
+    flex: 1 !important; /* Take remaining space */
+    min-width: 0 !important; /* Allow text truncate magic if needed */
+}
+
+.metadata-popup-title-main {
+    font-size: 1.125rem !important;
+    font-weight: bold !important;
+    text-wrap: balance !important;
+    width: 100% !important;
+    text-align: left !important;
+    /* No padding-right needed thanks to flex gap */
+}
+
+/* Network Badge (Relative Flex Item) */
+.metadata-network-badge {
+    flex-shrink: 0 !important; /* Don't squash me */
+    height: 20px !important;
+    max-width: 70px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    /* pointer-events removed for tooltip */
+    margin-top: 4px !important;
+}
+
+@keyframes network-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.metadata-network-badge img {
+     height: 100% !important;
+     width: auto !important;
+     object-fit: contain !important;
+     /* Base transitional filter */
+     transition: filter 0.3s ease !important;
+     animation: network-fade-in 0.5s ease-out forwards;
+}
+
+.metadata-network-badge img.auto-invert {
+    /* Pure white inversion (0.9 to reduce glare) */
+    filter: invert(0.9) !important;
+}
+
+.metadata-network-badge span {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-transform: uppercase !important;
+}
+
+/* Studio Badge (Badge-ified for dark logos) */
+.metadata-network-badge.is-studio {
+    background: var(--primary-foreground-color);
+    padding: 2px 6px !important;
+    height: 24px !important; /* Slightly taller for padding */
+    border-radius: 4px !important;
+    max-width: none !important; /* Allow natural width */
+    margin-top: 2px !important; /* Adjust alignment */
+}
+
+.metadata-network-badge.is-studio img {
+    max-width: 80px !important; /* Limit width */
+    object-fit: contain !important;
+    filter: none !important; /* Ensure no inversion */
+}
+
+.metadata-network-badge.is-studio span {
+    color: black !important; /* Black text if no logo */
+    font-weight: 700 !important;
+}
+
+.metadata-popup-title-main.has-oscar {
+    /* padding-right already handled by main class, optionally increase if needed */
+    padding-right: 70px !important; 
+}
+
+/* Ensure split title parts have consistent sizing */
+.metadata-popup-title-primary,
+.metadata-popup-title-secondary {
+    font-size: 1.125rem !important;
+    font-weight: bold !important;
+    display: inline-block !important; /* Fix potential layout issues */
+}
+
+.metadata-popup-title-meta {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.metadata-popup-title-year,
+.metadata-popup-title-runtime {
+    font-size: 0.875rem !important;
+    color: #ccc !important;
+}
+
+/* Certification Badge (PG-13, R, TV-MA, etc.) */
+.metadata-popup-certification {
+    display: inline-flex !important;
+    white-space: nowrap !important;
+    align-items: center !important;
+    align-content: center !important;
+    padding: 2px 6px 3px !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    line-height: 1 !important;
+    border-radius: 2px !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.02em !important;
+    flex-shrink: 0 !important;
+}
+
+
+/*=====  End of TITLE  ======*/
+
+
+
+
+/*=============================================
+=            RATINGS            =
+=============================================*/
+
+.metadata-popup-ratings {
+    margin-top: 2px !important;
+    margin-bottom: 12px !important;
+    display: flex !important;
+    gap: 16px !important; 
+    align-items: center !important;
+    /* Horizontal scroll requires explicit width */
+    width: 100% !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE/Edge */
+    /* Fade mask on right edge */
+    mask-image: linear-gradient(to right, black 85%, transparent 100%) !important;
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%) !important;
+    padding-right: 40px !important;
+}
+
+.metadata-popup-ratings::-webkit-scrollbar {
+    display: none !important; /* Chrome/Safari */
+}
+
+.metadata-popup-rating-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important; /* Tight gap between logo and score */
+    flex-shrink: 0 !important; /* Prevent shrinking in scroll */
+    white-space: nowrap !important; /* Keep score on same line */
+    
+    /* Button reset for clickable ratings */
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    opacity: 0.8 !important;
+    transition: opacity 0.3s ease-in-out !important;
+}
+
+.metadata-popup-rating-item:hover {
+    opacity: 1 !important;
+}
+
+/* Non-clickable items (divs) should not show pointer cursor */
+.metadata-popup-rating-item:not(button) {
+    cursor: default !important;
+}
+
+/* Base logo size - all logos get same height */
+.metadata-popup-rating-logo {
+    height: 18px !important;
+    width: auto !important; /* Let width be natural */
+    max-width: 40px !important; /* Cap width */
+    object-fit: contain !important;
+    
+    /* Prevent image dragging */
+    user-select: none !important;
+    -webkit-user-drag: none !important;
+}
+
+.metadata-popup-rating-imdb {
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+}
+
+.metadata-popup-rating-metacritic {
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    color: white !important;
+}
+
+/* Metacritic color coding based on official system */
+.metadata-popup-rating-metacritic.metacritic-high {
+    background-color: #00a562 !important; /* Green for 60+ */
+}
+
+.metadata-popup-rating-metacritic.metacritic-medium {
+    background-color: #a66d00 !important; /* Yellow for 40-59 */
+}
+
+.metadata-popup-rating-metacritic.metacritic-low {
+    background-color: #8e000b !important; /* Red for <40 */
+}
+
+/* MAL Rating Style */
+.metadata-popup-rating-mal {
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    color: #e0e0e0 !important;
+}
+
+/* Rank Style */
+.metadata-popup-rating-rank-icon {
+    font-size: 0.875rem !important;
+    line-height: 1 !important;
+}
+
+.metadata-popup-rating-rank {
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    color: #e0e0e0 !important;
+}
+
+/*=====  End of RATINGS  ======*/
+
+/* Rotten Tomatoes Rating Styles */
+.metadata-popup-rating-rt {
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+}
+
+.metadata-popup-rating-rt.rt-fresh {
+    color: #FA320A !important;
+}
+
+.metadata-popup-rating-rt.rt-rotten {
+    color: #7a7a7a !important;
+}
+
+/* Trakt Rating Styles */
+.metadata-popup-rating-logo.trakt-logo {
+    width: 18px !important;
+    height: 18px !important;
+    /* No filter - SVG already has red fill */
+}
+
+.metadata-popup-rating-trakt {
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    color: #ed1c24 !important;
+}
+
+/* TMDB Rating Styles */
+.metadata-popup-rating-logo.tmdb-logo {
+    width: 24px !important;
+    height: 18px !important;
+}
+
+.metadata-popup-rating-tmdb {
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    color: #01d277 !important;
+}
+
+/* Letterboxd Rating Styles */
+.metadata-popup-rating-logo.letterboxd-logo {
+    width: 36px !important;
+    height: 18px !important;
+    /* Dots logo - no filter needed */
+}
+
+.metadata-popup-rating-letterboxd {
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    color: #ff8000 !important;
+}
+
+/* Removed: flex-wrap now disabled for horizontal scroll */
+
+/* Roger Ebert Rating Styles - simplified icon */
+.metadata-popup-rating-logo.rogerebert-logo {
+    width: 18px !important;
+    height: 18px !important;
+    /* Crop to just the "R" mark on left side */
+    object-fit: cover !important;
+    object-position: left center !important;
+}
+
+.metadata-popup-rating-rogerebert {
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    color: #B99B68 !important;
+}
+
+/* MDBList Rating Styles (Pill) */
+.metadata-popup-rating-logo.mdblist-logo {
+    width: 28px !important;
+    height: 18px !important;
+}
+
+.metadata-popup-rating-mdblist {
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    padding: 4px 4px !important;
+    border-radius: 100% !important;
+    color: white !important;
+    width: 1.5rem !important;
+    text-align: center !important;
+}
+
+/* MDBList color classes */
+.metadata-popup-rating-mdblist.mdblist-excellent { background-color: #007000 !important; }
+.metadata-popup-rating-mdblist.mdblist-great { background-color: #238823 !important; }
+.metadata-popup-rating-mdblist.mdblist-good { background-color: #4caf50 !important; }
+.metadata-popup-rating-mdblist.mdblist-mixed { background-color: #ffbf00 !important; }
+.metadata-popup-rating-mdblist.mdblist-bad { background-color: #d2222d !important; }
+
+/* Rank wrapper (for MAL rank) */
+.metadata-popup-rating-rank-wrapper {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+}
+
+
+
+
+
+
+
+/*==============================================
+= Premium Oscar Statuette - Top Right Position =
+==============================================*/
+
+/* ---------- container: entrance only ---------- */
+.oscar-container {
+    position: absolute !important;
+    top: -26px !important;
+    right: 15.5px !important;
+    z-index: 10 !important;
+    overflow: visible !important;
+    pointer-events: none !important;
+    
+
+    /* entrance baseline */
+    opacity: 0;
+    transform: translateX(20px) scale(0.95);
+    transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+    will-change: transform, opacity;
+    /* promote to its own layer */
+    backface-visibility: hidden;
+    transform-origin: center center;
+}
+
+/* entrance end state (no transform conflict with icon) */
+.oscar-container.oscar-enter {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+/* optional shelf shadow */
+.oscar-container::before {
+    content: "";
+    position: absolute;
+    top: 14px;
+    right: 12px;
+    width: 56px;
+    height: 56px;
+    background: radial-gradient(ellipse at 70% 40%, rgba(0,0,0,0.42), transparent 70%);
+    filter: blur(6px);
+    z-index: -1;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* ---------- icon: baseline + glow/shimmer animations ---------- */
+.oscar-icon {
+    width: 64px !important;
+    height: 64px !important;
+
+    /* keep a stable baseline transform so child animations do not conflict with container */
+    transform: translate3d(0, 0, 0) scale(1);
+    transform-origin: center center;
+    backface-visibility: hidden;
+    will-change: transform, filter;
+
+    /* combined baseline glow */
+    filter:
+        drop-shadow(0 2px 3px rgba(0, 0, 0, 0.65))
+        drop-shadow(0 0 8px rgba(255, 203, 0, 0.15))
+        drop-shadow(0 0 12px rgba(255, 215, 0, 0.075));
+    
+    /* Prevent image dragging */
+    user-select: none !important;
+    -webkit-user-drag: none !important;
+    /* filter transitions ok (we are not transitioning transform here) */
+    transition: filter 360ms cubic-bezier(.2,.9,.2,1);
+}
+
+/* don't use transition on transform (avoids conflict with keyframe transforms) */
+.oscar-icon[data-animating="true"] {
+    transition: filter 360ms cubic-bezier(.2,.9,.2,1);
+}
+
+/* continuous soft breathing glow (use only when class exists) */
+/* note: use translate3d to avoid subpixel snapping */
+.oscar-container.oscar-glow .oscar-icon {
+    animation: oscar-glow-pulse 3.2s ease-in-out infinite;
+    /* small hardware hint */
+    will-change: transform, filter;
+}
+
+/* one-off hover shimmer - returns to baseline cleanly */
+.oscar-container:hover .oscar-icon {
+    animation: oscar-shimmer 1.2s ease-in-out 0s 1;
+    /* animation runs once and returns to baseline state so no jump */
+}
+
+/* ---------- keyframes (use translate3d, not translateY) ---------- */
+@keyframes oscar-glow-pulse {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        filter:
+            drop-shadow(0 2px 3px rgba(0, 0, 0, 0.65))
+            drop-shadow(0 0 5px rgba(255, 215, 0, 0.22));
+    }
+    50% {
+        transform: translate3d(0, -3px, 0) scale(1.02); /* small lift — use whole pixels */
+        filter:
+            drop-shadow(0 4px 6px rgba(0, 0, 0, 0.75))
+            drop-shadow(0 0 12px rgba(255, 215, 0, 0.55));
+    }
+}
+
+@keyframes oscar-shimmer {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+        filter:
+            drop-shadow(0 2px 3px rgba(0, 0, 0, 0.65))
+            drop-shadow(0 0 5px rgba(255, 215, 0, 0.22));
+    }
+    40% {
+        transform: translate3d(0, -4px, 0) scale(1.06);
+        filter:
+            drop-shadow(0 6px 10px rgba(0, 0, 0, 0.8))
+            drop-shadow(0 0 18px rgba(255, 230, 120, 0.8));
+    }
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        filter:
+            drop-shadow(0 2px 3px rgba(0, 0, 0, 0.65))
+            drop-shadow(0 0 5px rgba(255, 215, 0, 0.22));
+    }
+}
+
+
+/*=====  End of OSCAR  ======*/
+
+
+
+
+/*=============================================
+=            TAGS (GENRES + INTERESTS)            =
+=============================================*/
+
+.metadata-popup-genres {
+    margin-bottom: 12px !important;
+}
+
+.metadata-popup-genres-label {
+    font-size: 0.75rem !important;
+    color: #999 !important;
+    margin-bottom: 4px !important;
+}
+
+/* Scroll Container */
+.metadata-popup-genres-list-scroll {
+    width: 100% !important;
+    overflow: hidden !important; /* Hide scrollbar but allow functionality via inner track */
+    position: relative !important;
+    /* Mask for fade effect on the right edge - reduced to 10% to avoid cutting off text too much */
+    mask-image: linear-gradient(to right, black 96%, transparent 100%);
+}
+
+.metadata-popup-genres-track {
+    display: flex !important;
+    flex-wrap: nowrap !important; /* Force single line */
+    gap: 4px !important;
+    overflow-x: auto !important;
+    padding: 1px 10px 1px 0 !important;
+
+    scrollbar-width: none;
+}
+
+
+/* Badges */
+.metadata-popup-genre-badge {
+    background: rgba(255, 255, 255, 0.1) !important;
+    padding: 2px 6px !important;
+    border: 1px solid transparent !important;
+    border-radius: 4px !important;
+    box-shadow: var(--box-shadow);
+    font-size: 0.75rem !important;
+    white-space: nowrap !important; /* Prevent text wrapping inside badge */
+    flex-shrink: 0 !important; /* Prevent badges from shrinking */
+    align-self: center;
+
+    transition: 
+        background 0.25s ease,
+        border 0.25s ease;
+}
+
+/* Genre badge hover feedback */
+.metadata-popup-genre-badge:hover {
+    background: rgba(123, 91, 245, 0.15) !important;
+    border-color: rgba(123, 91, 245, 0.5) !important;
+}
+
+/* Anime Highlights (Isekai, Ecchi, etc.) */
+.metadata-popup-genre-badge.anime-highlight {
+    background: rgba(255, 105, 180, 0.15) !important; /* Hot pink hint */
+    border-color: rgba(255, 105, 180, 0.4) !important;
+    color: #ffb7e0 !important;
+    font-weight: 500 !important;
+    box-shadow: var(--box-shadow);
+    align-self: center;
+}
+
+.metadata-popup-genre-badge.anime-highlight:hover {
+    background: rgba(255, 105, 180, 0.25) !important;
+    border-color: rgba(255, 105, 180, 0.8) !important;
+}
+
+/* Demographics badges - distinct styling for anime classification */
+.metadata-popup-demographic-badge {
+    background: linear-gradient(135deg, #7b5bf5, rgba(123, 91, 245, 0.5)) !important;
+    color: var(--primary-foreground-color);
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    box-shadow: var(--box-shadow);
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+    align-self: center;
+
+    transition: all 0.3s ease-in-out;
+}
+
+.metadata-popup-demographic-badge:hover {
+    background: linear-gradient(135deg, #8b6bff, rgba(139, 107, 255, 0.6));
+    color: white;
+}
+
+/*=====  End of TAGS  ======*/
+
+
+
+
+/*=============================================
+=            PLOT            =
+=============================================*/
+
+.metadata-popup-plot {
+    margin-bottom: 12px !important;
+    position: relative !important;
+}
+
+.metadata-popup-plot-label {
+    font-size: 0.75rem !important;
+    color: #999 !important;
+    margin-bottom: calc(4px - 4px) !important; /* Label margin was 4px, adding 8px padding-top, so we zero this (or go negative if needed) */
+}
+
+.metadata-popup-plot-text {
+    font-size: 0.8rem !important;
+    line-height: 1.4 !important;
+    max-height: 90px !important;
+    overflow-y: auto !important;
+    padding-bottom: 20px !important;
+    padding-top: 8px !important;
+
+    /* text-wrap: balance; */
+
+    /* Dual mask: Fades top and bottom for premium scroll effect */
+    mask-image: linear-gradient(to bottom, 
+        transparent 0%, 
+        black 15%, 
+        black 85%, 
+        transparent 100%
+    ) !important;
+    scroll-behavior: smooth !important; /* Smooth scrolling */
+}
+
+/*=====  End of PLOT  ======*/
+
+
+
+
+/*=============================================
+=            PEOPLE            =
+=============================================*/
+
+.metadata-popup-directors,
+.metadata-popup-cast {
+    margin-bottom: 12px !important;
+}
+
+.metadata-popup-persons-label {
+    font-size: 0.75rem !important;
+    color: #999 !important;
+    margin-bottom: 8px !important;
+}
+
+.metadata-popup-persons-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+    gap: 8px !important;
+}
+
+.metadata-popup-person-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    padding: 6px !important;
+    border-radius: 6px !important;
+    
+    /* Animation & Layout */
+    opacity: 0 !important;
+    transition: background-color 0.2s, opacity 0.3s ease !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+}
+
+.metadata-popup-person-item:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.metadata-popup-person-item.clicked {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.metadata-popup-person-image {
+    width: 72px !important;
+    height: 72px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+ 	object-position: center 20% !important;
+    flex-shrink: 0 !important;
+    
+    /* Prevent image dragging */
+    user-select: none !important;
+    -webkit-user-drag: none !important;
+}
+
+.metadata-popup-person-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    margin-right: 8px !important;
+    flex-shrink: 0 !important;
+    
+    /* Prevent image dragging */
+    user-select: none !important;
+    -webkit-user-drag: none !important;
+}
+
+/* Lazy loading animation for person items */
+.metadata-popup-person-item.loaded {
+    opacity: 1 !important;
+}
+
+.metadata-popup-person-name {
+    font-size: 0.8rem !important;
+    line-height: 1.2 !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.metadata-popup-person-info {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+}
+
+.metadata-popup-person-character {
+    font-size: 0.7rem !important;
+    color: #999 !important;
+    line-height: 1.1 !important;
+    margin-top: 2px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/*=====  End of PEOPLE  ======*/
+
+
+
+
+

@@ -1,0 +1,248 @@
+
+  /*=============================================
+  =            KAI UPDATE TOAST            =
+  =============================================*/
+
+/* Animatable scalar driving the blend */
+@property --t {
+syntax: '<number>';
+initial-value: 0;
+inherits: false;
+}
+
+.kai-update-toast {
+    position: absolute;
+    left: 90px;
+    top: 5px;
+    z-index: 10000;
+    cursor: pointer;
+
+    backdrop-filter: var(--backdrop-filter);
+    border-radius: var(--border-radius);
+
+    /* Ensure border exists; color is blended below */
+    border-width: 1px;
+    border-style: solid;
+
+    /* Continuous blend between primary and accent driven by --t */
+    border-color: color-mix(in oklch,
+    var(--primary-accent-color) calc(var(--t) * 100%), 
+    var(--accent) calc((1 - var(--t)) * 100%));
+
+    /* Breathing glow (outer halo) — also driven by --t */
+    box-shadow:
+    inset 0 0 0 1px currentColor,
+    0 0 calc(8px + 8px * var(--t))
+        color-mix(in oklch, var(--primary-accent-color) calc(30% + 40% * var(--t)), transparent);
+
+    /* Play slide-in, then start pulse after it finishes */
+    animation:
+    toastSlideIn 300ms ease-out,
+    pulseVars 2400ms ease-in-out 300ms infinite;
+
+    /* Keep transform/opacity transitions snappy for hover/press */
+    transition: transform 200ms ease-in-out;
+}
+
+.toast-content {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 480px;
+}
+
+/* Hover should not break the pulse — avoid !important on border-color */
+.kai-update-toast:hover {
+    border-color: var(--primary-accent-color);
+}
+
+/* Active: slight press without killing pulse */
+.kai-update-toast:active {
+    background: var(--background);
+    transform: scale(0.97) translateY(3px);
+}
+
+.toast-icon {
+    font-size: 1.75rem;
+}
+
+.toast-text {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+}
+
+.toast-title {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.25rem;
+    text-align: center;
+}
+
+.toast-message {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    margin-top: 2px;
+    text-align: center;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.125rem;
+    cursor: pointer;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    transition: color 0.2s ease;
+}
+
+.toast-close:hover {
+    color: #ffffff;
+}
+
+/* Slide-in */
+@keyframes toastSlideIn {
+    from { transform: translateY(-10px); opacity: 0; }
+    to   { transform: translateY(0);     opacity: 1; }
+}
+
+/* Drive the scalar --t for blending (0 -> 1 -> 0) */
+@keyframes pulseVars {
+    0%   { --t: 0; }
+    50%  { --t: 1; }
+    100% { --t: 0; }
+}
+
+/* Optional: respect reduced motion without losing the toast */
+@media (prefers-reduced-motion: reduce) {
+    .kai-update-toast {
+    animation: toastSlideIn 300ms ease-out;
+    box-shadow: inset 0 0 0 1px var(--primary-accent-color);
+    }
+}
+
+.horizontal-nav-bar-container-Y_zvK .logo-container-jteMT {
+    overflow: visible;
+}
+
+.horizontal-nav-bar-container-Y_zvK .logo-container-jteMT .logo-oPx1q {
+    transform: scale(1.2);
+}
+
+/* Logo pulse — keep, but align timing with toast if desired */
+.logo-oPx1q.update-available {
+    animation: updatePulse 2400ms ease-in-out 300ms infinite;
+}
+    
+@keyframes updatePulse {
+    0%, 100% {
+        transform: scale(1.2);
+        filter: drop-shadow(0 0 8px rgba(123, 91, 245, 0.6));
+    }
+    50% {
+        transform: scale(1.4);
+        filter: drop-shadow(0 0 16px rgba(123, 91, 245, 0.85));
+    }
+}
+
+
+
+    /*=====  End of KAI UPDATE TOAST  ======*/
+
+    /*=============================================
+    =            DONATION BUTTON            =
+    =============================================*/
+
+    .kai-donate-btn {
+        position: relative;
+        text-decoration: none;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: white;
+        background: #111;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        overflow: hidden;
+        transition: transform 0.2s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        /* Width is handled by flex container now, or fit-content */
+        max-width: fit-content; 
+    }
+
+    /* Container for the entire row (Github Link <-> Donation Group) */
+    .kai-links-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding-right: 2rem;
+    }
+
+    /* Group for "Text + Button" */
+    .kai-donation-group {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding-top: 10px;
+    }
+
+    .kai-donation-text {
+        font-size: 0.95rem;
+        font-weight: 200;
+        color: var(--primary-foreground-color);
+        opacity: 0.7;
+        transition: 0.3s all ease-in-out;
+    }
+
+    .kai-donation-text:hover {
+        color: white;
+        opacity: 1;
+    }
+      
+    .kai-donate-btn::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        border-radius: 50px; 
+        padding: 2px; /* Border width */
+        background: linear-gradient(
+            90deg, 
+            #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #8B00FF, #FF0000
+        );
+        background-size: 400% 100%;
+        filter: saturate(0.75);
+
+        animation: rainbow 24s linear infinite;
+        mask: 
+            linear-gradient(#fff 0 0) content-box, 
+            linear-gradient(#fff 0 0);
+        -webkit-mask: 
+            linear-gradient(#fff 0 0) content-box, 
+            linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        -webkit-mask-composite: xor;
+        pointer-events: none;
+    }
+      
+    .kai-donate-btn:hover {
+        transform: translateY(-2px);
+    }
+      
+    .kai-donate-btn svg {
+         fill: #ffffff; /* Explicit white override */
+    }
+
+    @keyframes rainbow {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 400% 50%; }
+    }

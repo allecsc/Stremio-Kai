@@ -1,0 +1,306 @@
+
+/* Drop-shadow for all elements */
+.metadetails-container-K_Dqa .metadetails-content-Uz5EV .meta-preview-ES0h3,
+.videos-list-container-NepX5,
+.streams-list-container-xYMJo {
+    filter: var(--shadow);
+}
+
+/* Dropdown menu fix */
+.label-container-XOyzm .menu-container-B6cqK.menu-direction-bottom-right-aJ89V {
+    background: var(--background);
+}
+
+.metadetails-container-K_Dqa {
+    background: var(--background);
+}
+
+/*=============================================
+=            DESCRIPTION CONTAINER            =
+=============================================*/
+
+.meta-preview-container-o22hc .meta-info-container-ub8AH,
+.meta-preview-container-o22hc .action-buttons-container-XbKVa {
+    padding-left: 20px;
+}
+
+.meta-links-container-dh69_ .links-container-C8Mw9,
+.meta-preview-container-o22hc .meta-info-container-ub8AH .meta-links-Xiao3 {
+    overflow: visible;
+}
+
+.meta-preview-container-o22hc .meta-info-container-ub8AH .runtime-release-info-container-BGd_r {
+    overflow: visible;
+}
+
+/*=====  End of DESCRIPTION CONTAINER  ======*/
+
+
+
+/*=============================================
+=            BUTTONS            =
+=============================================*/
+
+.meta-preview-container-o22hc .action-buttons-container-XbKVa .action-button-XIZa3,
+.meta-links-container-dh69_ .links-container-C8Mw9 .link-container-gHxPW,
+.meta-preview-container-o22hc .ratings-zUtHH,
+.multiselect-menu-qMdaj,
+.seasons-bar-container-nOZjG .prev-season-button-bs1GQ,
+.seasons-bar-container-nOZjG .next-season-button-RrYAq,
+.streams-list-container-xYMJo .select-choices-wrapper-xGzfs .back-button-container-cJ4bk {
+    border: 1px solid transparent;
+    box-shadow: var(--box-shadow);
+
+    transition: 0.2s all ease-in-out;
+}
+
+.meta-preview-container-o22hc .action-buttons-container-XbKVa .action-button-XIZa3:hover,
+.meta-links-container-dh69_ .links-container-C8Mw9 .link-container-gHxPW:hover,
+.meta-preview-container-o22hc .ratings-zUtHH:hover,
+.multiselect-menu-qMdaj:hover,
+.seasons-bar-container-nOZjG .prev-season-button-bs1GQ:hover,
+.seasons-bar-container-nOZjG .next-season-button-RrYAq:hover,
+.streams-list-container-xYMJo .select-choices-wrapper-xGzfs .back-button-container-cJ4bk:hover {
+    background: none;
+    backdrop-filter: var(--backdrop-filter);
+
+    border-color: var(--primary-accent-color);
+    box-shadow: var(--box-shadow), var(--outer-glow);
+
+    outline: var(--focus-outline-size) solid var(--primary-accent-color);
+}
+
+.meta-preview-container-o22hc .action-buttons-container-XbKVa .action-button-XIZa3:active,
+.meta-links-container-dh69_ .links-container-C8Mw9 .link-container-gHxPW:active,
+.meta-preview-container-o22hc .ratings-zUtHH:active,
+.seasons-bar-container-nOZjG .prev-season-button-bs1GQ:active,
+.seasons-bar-container-nOZjG .next-season-button-RrYAq:active,
+.streams-list-container-xYMJo .select-choices-wrapper-xGzfs .back-button-container-cJ4bk:active {
+    background: var(--background);
+
+    border-color: var(--accent);
+    box-shadow: var(--box-shadow);
+    
+    transform: scale(0.95);
+}
+
+.imdb-button-container-gGjxp {
+    border: 1px solid transparent;
+    border-radius: 99px !important;
+
+    transition: 0.2s all ease-in-out;
+}
+
+.imdb-button-container-gGjxp:hover {
+    background: none;
+    backdrop-filter: var(--backdrop-filter);
+
+    border-color: var(--primary-accent-color) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow);
+}
+
+.imdb-button-container-gGjxp:active {
+    background: var(--background);
+
+    border-color: var(--accent);
+    box-shadow: var(--box-shadow);
+    
+    transform: scale(0.95);
+}
+
+.multiselect-menu-qMdaj:active {
+    background: var(--background);
+
+    border-color: var(--accent);
+    box-shadow: var(--box-shadow);
+}
+
+
+/*=====  End of BUTTONS  ======*/
+
+
+
+
+/*=============================================
+=            EPISODE LIST            =
+=============================================*/
+
+/* Episodes Container */
+.metadetails-container-K_Dqa .metadetails-content-Uz5EV .videos-list-nE0LJ, .metadetails-container-K_Dqa .metadetails-content-Uz5EV .streams-list-Y1lCM {
+    border-left: 1px solid var(--accent);
+    border-top: 1px solid var(--accent);
+    border-bottom-left-radius: 0;
+    box-shadow: var(--box-shadow), var(--outer-glow)!important;
+    backdrop-filter: none;
+}
+
+.metadetails-container-K_Dqa .metadetails-content-Uz5EV .videos-list-nE0LJ,
+.metadetails-container-K_Dqa .metadetails-content-Uz5EV .streams-list-Y1lCM {
+    flex: 0 0 50rem;
+}
+
+.videos-list-container-NepX5 .videos-container-msX8s {
+    z-index: -1;
+}
+
+/* Thumbnail size always fits container */
+.video-container-ezBpK .thumbnail-container-Zm8Cl .thumbnail-J81W3,
+.video-container-ezBpK .thumbnail-container-Zm8Cl .placeholder-icon-GNOI3 {
+	height: 100%;
+	width: 100%;
+}
+
+/* Thumbnail container */
+.video-container-ezBpK .thumbnail-container-Zm8Cl {
+    width: clamp(30px, 15vw, 350px);
+    aspect-ratio: 16 / 9;
+}
+
+/* Episode's progress bar */
+.video-container-ezBpK .thumbnail-container-Zm8Cl .progress-bar-container-w8eFT {
+    backdrop-filter: var(--backdrop-filter);
+}
+
+.video-container-ezBpK .thumbnail-container-Zm8Cl .progress-bar-container-w8eFT .progress-bar-E23CT {
+    height: 0.6rem;
+    background-color: var(--tertiary-accent-color);
+}
+
+/* Episode's released text */
+.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .released-container-XLPqf {
+    font-size: 1rem;
+    margin-right: 4px;
+}
+
+/* Remove search bar for episodes */
+.videos-list-nE0LJ.videos-list-container-NepX5 .search-bar-container-p4tSt {
+    display: none;
+}
+
+.stream-container-JPdah .description-container-vW_De {
+    text-wrap: auto;
+}
+
+/*=====  End of EPISODE LIST  ======*/
+
+
+
+
+
+/*=============================================
+=            UPCOMING/WATCHED            =
+=============================================*/
+
+/* Container Position */
+.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+    overflow: visible;
+}
+
+/* Container Style */
+.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .upcoming-container-LXfQ7,
+.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .watched-container-gvzs3 {
+    background: var(--background) !important;
+    border: 1px solid var(--accent) !important;
+    border-radius: 99px;
+    backdrop-filter: var(--backdrop-filter) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow);
+}
+
+/* TEXT Labels */
+.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .upcoming-container-LXfQ7 .flag-label-zJloD,
+.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .upcoming-container-LXfQ7 .flag-icon-RDrvf {
+    color: #cacaca;
+}
+
+.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .watched-container-gvzs3 .flag-label-zJloD,
+.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .watched-container-gvzs3 .flag-icon-RDrvf {
+    color: var(--tertiary-accent-color);
+}
+
+/*=====  End of UPCOMING/WATCHED  ======*/
+
+
+
+/*=============================================
+=            PLAY BUTTON            =
+=============================================*/ 
+
+.stream-container-JPdah .icon-rAZvO {
+    backdrop-filter: var(--backdrop-filter) !important;
+    background-color: var(--background) !important;
+    box-shadow: 10px 10px 25px 0.1rem var(--accent) inset;
+    transition: all 0.2s ease-in-out;
+}
+
+.stream-container-JPdah .icon-rAZvO:hover {
+    color: var(--tertiary-accent-color);
+    transform: scale(1.15);
+}
+
+.stream-container-JPdah .icon-rAZvO:active {
+    transform: scale(0.95);
+}
+
+
+/*=====  End of PLAY BUTTON  ======*/
+
+
+
+/*=============================================
+=            PLAYER            =
+=============================================*/
+
+.title-DGh6h {
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+}
+
+/* Player action menus */
+.player-container-wIELK .layer-qalDW.menu-layer-HZFG9 {
+    background: var(--background) !important;
+    border: 1px solid var(--accent) !important;
+
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+    filter: var(--shadow);
+}
+
+/*=====  End of PLAYER  ======*/
+
+
+
+
+
+/*=============================================
+=            SIDE DRAWER MENU            =
+=============================================*/
+
+.side-drawer-button-lVLKS {
+    background: var(--background) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+}
+
+.seasons-bar-container-nOZjG .seasons-popup-label-container-fZcu4 {
+    z-index: 1;
+}
+
+.side-drawer-r9EuA {
+    max-width: 42rem;
+    background: var(--background) !important;
+    border-left: 1px solid var(--accent) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+    filter: var(--shadow);
+    border-radius: 0;
+}
+
+/* Search button center */
+.side-drawer-r9EuA .info-hhNTg .side-drawer-meta-preview-pB8v6 .action-buttons-container-XbKVa {
+    margin-top: 20px;
+    justify-content: flex-end !important;
+    position: absolute;
+    top: -30px;
+}
+
+/*=====  End of SIDE DRAWER MENU  ======*/

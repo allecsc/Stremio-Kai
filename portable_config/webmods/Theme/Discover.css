@@ -1,0 +1,11 @@
+
+/* Remove preview container */
+.discover-container-L6OGL .discover-content-CRsRg .meta-preview-container-CoWs5 {
+    display: none;
+}
+
+/* Titles container -> Add some padding around to fit better */
+.discover-container-L6OGL .discover-content-CRsRg .catalog-container-VNK_T .meta-items-container-n8vNz {
+    padding-left: 2rem;
+    margin: 0;
+}

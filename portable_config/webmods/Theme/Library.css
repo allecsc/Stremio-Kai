@@ -1,0 +1,148 @@
+
+.library-container-zM_bj .library-content-PgX4O .meta-items-container-IKrND {
+    padding-left: 2rem;
+}
+
+.library-container-zM_bj .library-content-PgX4O .selectable-inputs-container-hR3or {
+    padding: 1.5rem 2rem;
+}
+
+
+/*=============================================
+=            SORTING BUTTONS            =
+=============================================*/
+
+.chip-L3r9A.active-jnhyP {
+    background-color: var(--accent);
+    box-shadow: var(--box-shadow) !important;
+}
+
+.chip-L3r9A {
+    transition: 0.2s all ease-in-out;
+}
+
+.chip-L3r9A:hover {
+    box-shadow: var(--box-shadow);
+}
+
+.chip-L3r9A:active {
+    transform: scale(0.95);
+}
+
+/*=====  End of SORTING BUTTONS  ======*/
+
+
+
+
+/*=============================================
+=            WATCHED FLAG GLASS            =
+=============================================*/
+
+.meta-item-container-Tj0Ib .poster-container-qkw48,
+.meta-item-container-Tj0Ib .poster-image-NiV7O {
+    position: relative !important; /* ensure overlay absolutely positions over poster */
+}
+
+/* Make sure the watched layer covers the full poster image (not the small icon circle) */
+.meta-item-container-Tj0Ib .watched-icon-layer-bi3DO {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  background: rgba(0, 0, 0, 0.55) !important; /* darken the poster image */
+  color: #fff !important;
+  border-radius: inherit !important;
+  border: 0 !important;
+  pointer-events: none !important; /* let clicks pass through if needed */
+  opacity: 1 !important;
+  transition: opacity 0.25s ease !important;
+}
+
+/* Fade out on hover */
+.meta-item-container-Tj0Ib:hover .watched-icon-layer-bi3DO {
+  opacity: 0 !important;
+}
+
+/* Hide any existing inner icons/svg so only our pseudo-elements show */
+.meta-item-container-Tj0Ib .watched-icon-layer-bi3DO svg,
+.meta-item-container-Tj0Ib .watched-icon-layer-bi3DO .icon {
+  display: none !important;
+}
+
+/* Ensure no padding/margins interfere with centering */
+.meta-item-container-Tj0Ib .watched-icon-layer-bi3DO {
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* White checkmark */
+.meta-item-container-Tj0Ib .watched-icon-layer-bi3DO::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 20px;
+  border-left: 4px solid #fff;
+  border-bottom: 4px solid #fff;
+  transform: rotate(-45deg);
+  margin-bottom: 6px; /* spacing between check and label */
+  box-sizing: border-box;
+}
+
+/* Watched label */
+.meta-item-container-Tj0Ib .watched-icon-layer-bi3DO::after {
+  content: 'Watched';
+  display: block;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.6px;
+  text-transform: none;
+}
+
+
+/*=====  End of WATCHED FLAG GLASS  ======*/
+
+
+
+
+/*=============================================
+=            3DOT DROPDOWN MENU            =
+=============================================*/
+
+.meta-item-container-Tj0Ib .title-bar-container-1Ba0x .menu-label-container-ChuX8 .menu-container-B6cqK.menu-direction-top-right-tmrFG {
+    left: 25px !important;
+    bottom: 1% !important;
+
+    border: 1px solid var(--primary-accent-color);
+}
+
+.meta-item-container-Tj0Ib .title-bar-container-1Ba0x .menu-label-container-ChuX8 .menu-container-B6cqK.menu-direction-bottom-right-aJ89V {
+    left: 25px !important;
+    top: -1% !important;
+
+    border: 1px solid var(--primary-accent-color);
+}
+
+.meta-item-container-Tj0Ib .title-bar-container-1Ba0x .menu-label-container-ChuX8 .menu-container-B6cqK.menu-direction-bottom-left-Dvtqk {
+    right: 25px !important;
+    top: -1% !important;
+
+    border: 1px solid var(--primary-accent-color);
+}
+
+.meta-item-container-Tj0Ib .title-bar-container-1Ba0x .menu-label-container-ChuX8 .menu-container-B6cqK.menu-direction-top-left-ongjn {
+    bottom: -200% !important;
+    right: 25px !important;
+
+    border: 1px solid var(--primary-accent-color);
+}
+
+/*=====  End of 3DOT DROPDOWN MENU  ======*/
+
