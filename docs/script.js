@@ -175,7 +175,8 @@ function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
       const href = this.getAttribute("href");
-      if (href !== "#" && href !== "") {
+      // Only smooth scroll if it's an anchor link and not just "#"
+      if (href && href.startsWith("#") && href !== "#") {
         e.preventDefault();
         const target = document.querySelector(href);
         if (target) {
