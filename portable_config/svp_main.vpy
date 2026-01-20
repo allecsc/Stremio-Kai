@@ -180,10 +180,10 @@ def prepare_clip_svp(clip, params):
         
         if params['resize_kernel'] == 'Bicubic':
             # --- FINAL ENHANCEMENT: Added high-quality dithering ---
-            clip = core.resize.Bicubic(clip, format=params['format'], matrix_in=matrix_in, matrix_s="709", range_in=range_in, range_s="limited", chromaloc_in_s="left", chromaloc_s="left", dither_type="error_diffusion")
+            clip = core.resize.Bicubic(clip, format=params['format'], matrix_in=matrix_in, matrix_s="709", range_in=range_in, range_s="limited", chromaloc_in_s="left", chromaloc_s="left", dither_type="ordered")
         else:
-            # --- FINAL ENHANCEMENT: Added high-quality dithering ---
-            clip = core.resize.Spline36(clip, format=params['format'], matrix_in=matrix_in, matrix_s="709", range_in=range_in, range_s="limited", chromaloc_in_s="left", chromaloc_s="left", dither_type="error_diffusion")
+            # --- OPTIMIZED: Switched to ordered dithering for i5-9300H performance ---
+            clip = core.resize.Spline36(clip, format=params['format'], matrix_in=matrix_in, matrix_s="709", range_in=range_in, range_s="limited", chromaloc_in_s="left", chromaloc_s="left", dither_type="ordered")
 
     # Early prop locking for stability across reinits
     clip = core.std.SetFrameProp(clip, prop="_ColorRange", intval=1)
@@ -243,7 +243,7 @@ def interpolate_mvtools(clip, target_fps):
                 del first_frame
 
         # --- FINAL ENHANCEMENT: Added high-quality dithering ---
-        clip = core.resize.Spline36(clip, format=vs.YUV420P8, matrix_in=matrix_in, matrix_s="709", range_in=range_in, range_s="limited", chromaloc_in_s="left", chromaloc_s="left", dither_type="error_diffusion")
+        clip = core.resize.Spline36(clip, format=vs.YUV420P8, matrix_in=matrix_in, matrix_s="709", range_in=range_in, range_s="limited", chromaloc_in_s="left", chromaloc_s="left", dither_type="ordered")
         clip = core.std.SetFrameProp(clip, prop="_ColorRange", intval=1)
         clip = core.std.SetFrameProp(clip, prop="_Matrix", intval=1)
         clip = core.std.SetFrameProp(clip, prop="_Transfer", intval=1)
@@ -337,7 +337,7 @@ def process_interpolation(clip):
                 
                 if clip.format != vs.YUV420P8:
                     # --- FINAL ENHANCEMENT: Added high-quality dithering ---
-                    mvtools_clip = core.resize.Spline36(clip, format=vs.YUV420P8, matrix_in=matrix_in, matrix_s="709", range_in=range_in, range_s="limited", chromaloc_in_s="left", chromaloc_s="left", dither_type="error_diffusion")
+                    mvtools_clip = core.resize.Spline36(clip, format=vs.YUV420P8, matrix_in=matrix_in, matrix_s="709", range_in=range_in, range_s="limited", chromaloc_in_s="left", chromaloc_s="left", dither_type="ordered")
                 else:
                     mvtools_clip = clip
                 
@@ -366,7 +366,7 @@ def process_interpolation(clip):
                     
                     if clip.format != vs.YUV420P8:
                         # --- FINAL ENHANCEMENT: Added high-quality dithering ---
-                        safe_clip = core.resize.Bicubic(clip, format=vs.YUV420P8, matrix_in=matrix_in, matrix_s="1", range_in=range_in, range_s="limited", chromaloc_in_s="left", chromaloc_s="left", dither_type="error_diffusion")
+                        safe_clip = core.resize.Bicubic(clip, format=vs.YUV420P8, matrix_in=matrix_in, matrix_s="1", range_in=range_in, range_s="limited", chromaloc_in_s="left", chromaloc_s="left", dither_type="ordered")
                     else:
                         safe_clip = clip
                     

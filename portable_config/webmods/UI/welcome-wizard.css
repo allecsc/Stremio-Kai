@@ -1,0 +1,464 @@
+/*=============================================
+=            KAI WELCOME WIZARD             =
+=============================================*/
+
+:root {
+    /* Integration with Kai Global Variables */
+    --kai-wiz-bg: var(--background, rgba(26, 23, 62, 0.95));
+    --kai-wiz-backdrop: rgba(0, 0, 0, 0.7);
+    --kai-wiz-accent: var(--primary-accent-color, #7b5bf5);
+    --kai-wiz-text: var(--primary-foreground-color, #fff);
+    --kai-wiz-subtext: color-mix(in srgb, var(--kai-wiz-text), transparent 40%);
+    --kai-wiz-border: 1px solid var(--accent, rgba(123, 91, 245, 0.3));
+    --kai-wiz-shadow: var(--box-shadow);
+}
+
+.kai-wizard-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--kai-wiz-backdrop);
+    backdrop-filter: var(--backdrop-filter, blur(12px));
+    box-shadow: var(--kai-wiz-shadow);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+    pointer-events: none;
+}
+
+.kai-wizard-overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.kai-wizard-card {
+    background: var(--kai-wiz-bg);
+    width: 90%;
+    max-width: 550px;
+    border-radius: 20px;
+    border: var(--kai-wiz-border);
+    box-shadow: var(--kai-wiz-shadow), var(--outer-glow);
+    position: relative;
+    overflow: visible; /* Changed from hidden to allow dropdowns */
+    display: flex;
+    flex-direction: column;
+    animation: kaiWizardPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-sizing: border-box;
+}
+
+@keyframes kaiWizardPop {
+    from { transform: scale(0.9) translateY(20px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Header Area */
+.kai-wizard-header {
+    padding: 2.5rem 2rem 1.5rem;
+    text-align: center;
+}
+
+.kai-wizard-logo {
+    width: 80px;
+    height: auto;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 0 15px var(--kai-wiz-accent));
+}
+
+.kai-wizard-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-accent-color);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.kai-wizard-subtitle {
+    font-size: 1.1rem;
+    color: var(--kai-wiz-subtext);
+    line-height: 1.5;
+    text-wrap: balance;
+}
+
+/* Content Area */
+.kai-wizard-content {
+    padding: 0 2.5rem;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Steps Transition */
+.kai-wizard-step {
+    display: none;
+}
+
+.kai-wizard-step.active {
+    display: block;
+    animation: kaiFadeIn 0.3s ease-out;
+}
+
+@keyframes kaiFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* UI Elements inside Wizard */
+.kai-wizard-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.kai-wizard-option:last-child {
+    border-bottom: none;
+}
+
+.kai-wizard-opt-info {
+    flex: 1;
+    padding-right: 20px;
+}
+
+.kai-wizard-opt-title {
+    font-weight: 600;
+    color: var(--kai-wiz-text);
+    margin-bottom: 0.2rem;
+    font-size: 1rem;
+}
+
+.kai-wizard-opt-desc {
+    font-size: 0.85rem;
+    color: var(--kai-wiz-subtext);
+    line-height: 1.4;
+    text-wrap: balance;
+}
+
+/* Multi-select/Dropdown styling inside wizard (Native Select) */
+.kai-wizard-select {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--kai-wiz-text);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    outline: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    appearance: none;
+    box-shadow: var(--box-shadow);
+    transition: all 0.2s ease-in-out;
+}
+
+.kai-wizard-select:hover {
+    border-color: var(--primary-accent-color);
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+}
+
+.kai-wizard-select:active {
+    background-color: var(--background) !important;
+    border-color: var(--accent);
+    box-shadow: var(--box-shadow);
+}
+
+.kai-wizard-select option {
+    background: var(--secondary-background-color);
+    color: var(--kai-wiz-text);
+}
+
+/* Dropdown Container */
+.kai-wizard-dropdown-wrapper {
+    position: relative;
+    width: 200px;
+}
+
+/* Footer Actions */
+.kai-wizard-footer {
+    padding: 2rem 2.5rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.15);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+.kai-wizard-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.kai-wizard-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: background 0.3s;
+}
+
+.kai-wizard-dot.active {
+    background: var(--kai-wiz-accent);
+    box-shadow: 0 0 10px var(--kai-wiz-accent);
+}
+
+.kai-wizard-btns {
+    overflow: visible;
+}
+
+.kai-wizard-btn {
+    padding: 0.9rem 2rem;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, color 0.2s ease-in-out;
+    border: none;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.kai-wizard-btn-next {
+    background: var(--kai-wiz-accent);
+    color: white;
+    box-shadow: var(--box-shadow);
+}
+
+.kai-wizard-btn-next:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: var(--box-shadow), var(--outer-glow);
+}
+
+.kai-wizard-btn-next:active {
+    transform: translateY(0);
+}
+
+.kai-wizard-btn-back {
+    background: transparent;
+    color: var(--kai-wiz-subtext);
+}
+
+.kai-wizard-btn-back:hover {
+    transform: translateY(-2px);
+    color: var(--kai-wiz-text);
+    box-shadow: var(--box-shadow), var(--outer-glow);
+}
+
+/* Toggle Switch (Wizard Version) */
+.kai-wizard-toggle {
+    width: 48px;
+    height: 26px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid transparent;
+    border-radius: 20px;
+    box-shadow: var(--box-shadow);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    flex-shrink: 0;
+}
+
+.kai-wizard-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.kai-wizard-toggle.active {
+    background-color: var(--primary-accent-color);
+    box-shadow: var(--box-shadow);
+}
+
+.kai-wizard-toggle.active::after {
+    transform: translateX(22px);
+}
+
+.kai-wizard-toggle:hover {
+    border-color: var(--accent);
+    box-shadow: var(--box-shadow), var(--outer-glow);
+}
+
+/* Subtle Donation Link */
+.kai-wizard-donation {
+    font-size: 0.8rem;
+    color: var(--kai-wiz-subtext);
+    text-decoration: none;
+    transition: color 0.2s;
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    padding-bottom: 2rem;
+}
+
+.kai-wizard-donation:hover {
+    color: var(--primary-foreground-color);
+    text-decoration: none !important;
+}
+
+/* Wizard SVG Icon Micro-animations */
+.kai-wizard-icon {
+    /* ease-out for premium feel, no bounce */
+    transition: transform 0.2s ease-out, fill 0.2s ease-out;
+    fill: none;
+    vertical-align: middle;
+}
+
+.kai-wizard-donation:hover .kai-wizard-icon {
+    fill: currentColor;
+    /* Base hover scale for all icons */
+    transform: scale(1.04);
+}
+
+.kai-wizard-donation:hover .kai-wizard-icon-heart {
+    /* Single heart beat */
+    animation: kaiHeartBeat 0.4s ease-out 1 forwards;
+}
+
+.kai-wizard-donation:hover .kai-wizard-icon-star {
+    /* No rotation, just subtle scale */
+    transform: scale(1.04);
+}
+
+/* Donation Prompt Button States */
+#kz-donate-now:hover {
+    filter: brightness(1.15);
+    transform: scale(1.03) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow);
+}
+
+#kz-snooze:hover {
+    color: var(--kai-wiz-text) !important;
+    text-decoration: underline;
+    opacity: 1 !important;
+}
+
+
+#kz-dismiss:hover {
+    color: var(--kai-wiz-text) !important;
+    opacity: 1 !important;
+}
+
+/* API Key Inputs (Wizard) */
+.kai-wizard-input-group {
+    margin-bottom: 1.5rem;
+}
+
+.kai-wizard-input-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--kai-wiz-text);
+}
+
+.kai-wizard-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.kai-wizard-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--kai-wiz-text);
+    padding: 0.8rem 1rem;
+    padding-right: 2.5rem; /* Space for status icon */
+    border-radius: 12px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.kai-wizard-input:focus {
+    border-color: var(--kai-wiz-accent);
+    box-shadow: 0 0 0 2px rgba(123, 91, 245, 0.2);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.kai-wizard-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.kai-wizard-note {
+    font-size: 0.85rem;
+    color: #ffab00;
+    margin-top: 1.5rem;
+    border: 1px dashed rgba(255,171,0,0.3);
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.kai-wizard-hint {
+    font-size: 0.8rem;
+    color: var(--kai-wiz-subtext);
+    margin-top: 0.4rem;
+}
+
+.kai-wizard-hint a {
+    color: var(--kai-wiz-accent);
+    text-decoration: none;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+
+.kai-wizard-hint a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+/* Validation Badges */
+.kai-wizard-status {
+    position: absolute;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.kai-wizard-status-icon {
+    font-size: 1rem;
+}
+
+.status-loading {
+    animation: spin 1s linear infinite;
+}
+
+.status-valid {
+    color: #4ade80;
+}
+
+.status-invalid {
+    color: #f87171;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

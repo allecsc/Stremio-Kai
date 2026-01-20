@@ -1,0 +1,788 @@
+
+.hero-container {
+    position: relative !important;
+    top: calc(-1 * var(--horizontal-nav-bar-size)) !important;
+    flex: 1 1 auto;
+    height: auto !important;
+    min-height: 0 !important;
+    width: 100%;
+    overflow: visible;
+    display: inline-block;
+    z-index: 1;
+    right: 0;
+}
+
+.hero-image {
+    position: absolute;
+    right: -100px;
+    width: 80vw;
+    height: 70vh;
+    object-fit: cover;
+    object-position: center 20%;
+    display: block;
+    filter: contrast(1.05);
+
+    mask-image: linear-gradient(to top, transparent, black 35%),
+      linear-gradient(to right, transparent, black 35%),
+      radial-gradient(at top, black 60%, transparent),
+      radial-gradient(at right, black 60%, transparent);
+
+    mask-repeat: no-repeat;
+    mask-size: cover;
+    mask-composite: intersect;
+    
+    /* Prevent image dragging */
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+}
+
+/* =========================================================================
+   HERO METADATA CONTAINER (FLEXBOX ARCHITECTURE)
+   ========================================================================= */
+
+.hero-overlay {
+    position: absolute;
+    top: var(--horizontal-nav-bar-size);
+    left: 8rem;
+    width: clamp(100px, 45vw, 600px);
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+    z-index: 10;
+    margin: 0;
+    pointer-events: none;
+    overflow: hidden;
+    filter: var(--shadow);
+    transition: opacity 0.3s ease;
+}
+
+/* Vertical Media Queries for Overlay Compactness */
+@media (max-height: 700px) {
+    .hero-overlay {
+        gap: 8px; /* Tighter gaps on short screens */
+    }
+}
+
+/* Enable pointer events for interactive children */
+.hero-overlay > * {
+    pointer-events: auto;
+}
+
+/* --- 1. LOGO / TITLE --- */
+/* Responsive Container: Shrinks but maintains minimum presence */
+.hero-logo-container {
+    max-width: 450px;
+    /* Reduced min-height to 80px to fit in 45vh on small screens */
+    height: clamp(80px, 20vh, 200px); 
+    display: flex;
+    align-items: center; 
+    flex-shrink: 0; /* Scaling handled by clamp, don't flex-shrink */
+    overflow: visible;
+}
+
+.hero-overlay-image {
+    width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: left center;
+
+    /* A dual-layer subtle lift */
+    /* filter: drop-shadow(0 0 1px rgba(255,255,255,0.4)) 
+            drop-shadow(0 0 8px rgba(255,255,255,0.15)); */
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.3)) 
+            drop-shadow(0 0 1px rgba(255, 255, 255, 0.15));
+    
+    transition: opacity 0.3s ease;
+    
+    /* Prevent image dragging */
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.hero-title-text {
+    font-size: clamp(1.5rem, 3vw, 4rem);
+    font-weight: 800;
+    color: white;
+    line-height: 1.1;
+    text-shadow: 0 4px 8px rgba(0,0,0,0.6);
+    margin-bottom: 4px;
+    display: inline-block;
+    overflow: visible;
+}
+
+/* --- 1.5. TAGLINE --- */
+.hero-tagline {
+    font-size: 1.25rem;
+    font-style: italic;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    margin: 4px 0 8px 0;
+    line-height: 1.3;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* --- 2. METADATA ROW (KISS: Simple inline structure) --- */
+.hero-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 16px; 
+    width: 100%;
+    height: 28px;
+    /* margin-bottom: handled by parent gap */
+    flex-wrap: wrap;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.hero-meta-text {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: rgb(170 170 170);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+}
+
+/* Certification Badge (PG-13, R, TV-MA, etc.) */
+.hero-certification {
+    display: inline-flex;
+    white-space: nowrap;
+    align-items: center;
+    padding: 0.06em 4px 0.15em;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1;
+    border-radius: 2px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+}
+
+.hero-ratings-row {
+    margin-top: 4px;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    transition: opacity 0.3s ease-in-out;
+}
+
+
+.hero-rating-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0; /* Prevent shrinking in scroll */
+    white-space: nowrap;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.hero-rating-item:hover {
+    opacity: 1;
+}
+
+/* Ensure non-clickable items don't show cursor */
+.hero-rating-item:not(button) {
+    cursor: default;
+}
+
+.hero-rating-logo {
+    height: 18px;
+    width: auto;
+    max-width: 40px;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+    
+    /* Prevent image dragging */
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.hero-rating-text {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #e0e0e0;
+    line-height: 1;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    overflow: visible;
+    padding-right: 5px;
+}
+
+.hero-rating-imdb,
+.hero-rating-tmdb,
+.hero-rating-trakt,
+.hero-rating-letterboxd,
+.hero-rating-rogerebert,
+.hero-rating-mal,
+.hero-rating-rt {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #e0e0e0;
+    line-height: 1;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    overflow: visible;
+    padding-right: 5px;
+}
+
+/* Metacritic color coding based on official system */
+.hero-rating-metacritic {
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.hero-rating-metacritic.metacritic-high {
+    background-color: #00a562; /* Green for 60+ */
+}
+
+.hero-rating-metacritic.metacritic-medium {
+    background-color: #a66d00; /* Yellow for 40-59 */
+}
+
+.hero-rating-metacritic.metacritic-low {
+    background-color: #8e000b; /* Red for <40 */
+}
+
+/* MAL Rating Specifics (Overrides standard text style slightly) */
+.hero-rating-mal {
+    padding: 0 4px; /* Reduced padding */
+    line-height: 20px;
+    display: inline-block;
+    margin-left: -6px;
+}
+
+/* MAL Rank Styles */
+.hero-rating-rank-icon {
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+.hero-rating-rank {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: #e0e0e0;
+}
+
+/* Rank wrapper */
+.hero-rating-rank-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Rotten Tomatoes Rating Styles */
+.hero-rating-rt {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.hero-rating-rt.rt-fresh {
+    color: #FA320A;
+}
+
+.hero-rating-rt.rt-rotten {
+    color: #7a7a7a;
+}
+
+/* Trakt Rating Styles - SVG has native red fill, no filter */
+.hero-rating-logo.trakt-logo {
+    width: 18px !important;
+    height: 18px !important;
+}
+
+.hero-rating-trakt {
+    color: #ed1c24;
+}
+
+/* TMDB Rating Styles */
+.hero-rating-logo.tmdb-logo {
+    width: 24px !important;
+    height: 18px !important;
+}
+
+.hero-rating-tmdb {
+    color: #01d277;
+}
+
+/* Letterboxd Rating Styles */
+.hero-rating-logo.letterboxd-logo {
+    width: 36px !important;
+    height: 18px !important;
+}
+
+.hero-rating-letterboxd {
+    color: #ff8000;
+}
+
+/* Roger Ebert Rating Styles */
+.hero-rating-logo.rogerebert-logo {
+    width: 18px !important;
+    height: 18px !important;
+    object-fit: cover !important;
+    object-position: left center !important;
+}
+
+.hero-rating-rogerebert {
+    color: #B99B68;
+}
+
+/* MDBList Rating Styles */
+.hero-rating-logo.mdblist-logo {
+    width: 28px !important;
+    height: 18px !important;
+}
+
+.hero-rating-mdblist {
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 4px 5px; /* Adjusted padding */
+    border-radius: 999px; /* Pill shape */
+    color: white;
+    text-align: center;
+    min-width: 1.5rem;
+    display: inline-block;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* MDBList color classes */
+.hero-rating-mdblist.mdblist-excellent { background-color: #007000; }
+.hero-rating-mdblist.mdblist-great { background-color: #238823; }
+.hero-rating-mdblist.mdblist-good { background-color: #4caf50; }
+.hero-rating-mdblist.mdblist-mixed { background-color: #ffbf00; }
+.hero-rating-mdblist.mdblist-bad { background-color: #d2222d; }
+
+/* Helper to hide divider if no ratings exist */
+.display-only-if-ratings:empty { display: none; }
+
+
+/* --- 3. TAGS ROW (Scrollable & Clickable, Parity with Hover Popup) --- */
+/* Scroll Container */
+.hero-tags-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    mask-image: linear-gradient(to right, black 90%, transparent 100%);
+    /* margin-bottom: handled by parent gap */
+    transition: opacity 0.3s ease-in-out;
+}
+
+.hero-tags-track {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    overflow-x: auto;
+    padding: 1px 60px 1px 0;
+    scrollbar-width: none;
+}
+
+.hero-badge {
+    background: var(--overlay-color); /* rgba(255, 255, 255, 0.1) */
+    padding: 2px 6px;
+    border: 1px solid transparent;
+    box-shadow: var(--box-shadow);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    color: var(--primary-foreground-color);
+    text-shadow: none;
+    flex-shrink: 0;
+    cursor: pointer;
+    align-self: center;
+
+    transition: background 0.3s ease-in-out, border 0.3s ease-in-out;
+}
+
+.hero-badge:hover {
+    background: rgba(123, 91, 245, 0.15);
+    border-color: rgba(123, 91, 245, 0.5);
+    transform: none; /* No jump */
+}
+
+/* Visual feedback for click */
+.hero-badge.clicked {
+    background: rgba(123, 91, 245, 0.25);
+    border-color: rgba(123, 91, 245, 0.8);
+}
+
+/* Demographic */
+.hero-badge-demo {
+    background: linear-gradient(135deg, #7b5bf5, rgba(123, 91, 245, 0.5));
+    color: var(--primary-foreground-color);
+    font-weight: 500;
+    border: none;
+    box-shadow: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    align-self: center;
+    
+    transition: all 0.3s ease-in-out;
+}
+
+.hero-badge-demo:hover {
+    background: linear-gradient(135deg, #8b6bff, rgba(139, 107, 255, 0.6));
+    color: white;
+}
+
+/* Highlight */
+.hero-badge-highlight {
+    background: rgba(255, 105, 180, 0.15);
+    border-color: rgba(255, 105, 180, 0.4);
+    color: #ffb7e0;
+    font-weight: 500;
+    align-self: center;
+    
+    transition: background 0.3s ease-in-out, border 0.3s ease-in-out;
+}
+
+.hero-badge-highlight:hover {
+    background: rgba(255, 105, 180, 0.25);
+    border-color: rgba(255, 105, 180, 0.8);
+}
+
+
+/* --- 4. DESCRIPTION (Sacrificial Element) --- */
+.hero-description-container {
+    width: 100%;
+    /* Start at 140px, but allow shrinking aggressively */
+    flex-basis: 130px; 
+    flex-grow: 0;
+    flex-shrink: 10; /* High shrink priority: Collapse this before anything else */
+    min-height: 0; /* Allow shrinking to 0 */
+    max-height: 100px;
+    padding-top: 8px !important;
+    
+    /* Dual mask: Fades top and bottom for premium scroll effect */
+    mask-image: linear-gradient(to bottom, 
+        transparent 0%, 
+        black 12%, 
+        black 88%, 
+        transparent 100%
+    ) !important;
+    
+    overflow: hidden;
+    /* Removed height transition to fix sizing lag */
+    transition: opacity 0.3s ease;
+}
+
+/* Hide description content completely on very short screens to preserve metadata */
+@media (max-height: 600px) {
+    .hero-description-container {
+        display: none !important;
+    }
+    
+    /* Ensure Meta/Tags don't get crushed when Description is gone */
+    .hero-overlay {
+        justify-content: center; /* Center remaining content if needed */
+    }
+}
+
+.hero-overlay-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--primary-foreground-color);
+    width: 100%;
+    height: 100%; /* Fill container */
+    overflow-y: auto; /* Scrollable if long */
+
+    padding-bottom: 36px; /* Required padding for clean scroll end */
+    
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    pointer-events: auto; /* Allow scrolling */
+    scrollbar-width: none;
+
+    text-wrap: balance;
+}
+.hero-overlay-description::-webkit-scrollbar { display: none; }
+
+/* --- 5. ACTIONS --- */
+
+.hero-overlay-button-watch {
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  box-shadow: var(--box-shadow);
+  backdrop-filter: var(--backdrop-filter);
+  outline: 0;
+  padding: 8px 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px; /* Standardized */
+  font-size: 0.925rem;
+  cursor: pointer;
+  margin: 0;
+  transition: all 0.3s ease-in-out;
+  
+  /* Button styling */
+  background: var(--primary-foreground-color);
+  color: var(--secondary-foreground-color);
+  font-weight: 700;
+}
+
+span.play-icon {
+  font-family: system-ui;
+}
+
+.hero-overlay-button-watch:hover {
+  background: var(--background);
+  color: var(--primary-foreground-color);
+  border-color: var(--primary-accent-color);
+  box-shadow: var(--box-shadow), var(--outer-glow);
+}
+
+.hero-overlay-button-watch:active {
+  box-shadow: var(--box-shadow);
+  border-color: var(--accent);
+  transform: translateY(1px) scale(0.98);
+}
+
+.hero-overlay-button-watch svg {
+  margin-right: 4px;
+}
+
+/* =========================================================================
+   UTILITIES & CONTROLS
+   ========================================================================= */
+
+/* Hero Navigation Controls */
+.hero-controls {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2px;
+  z-index: 2;
+  pointer-events: none; /* Allow clicks only on buttons */
+  overflow: visible;
+}
+
+/* Navigation arrows - glassy text effect without background/borders */
+.hero-controls .hero-control-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease-out !important;
+  font-size: 40px !important; /* Much larger arrows */
+  font-weight: 300 !important;
+  width: 70px !important;
+  height: 70px !important;
+  padding-bottom: 8px !important; /* Added padding for scaling buffer */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto; /* Re-enable clicks */
+}
+
+.hero-controls .hero-control-btn:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+  transform: scale(1.15) !important; /* Reduced scale for better consistency */
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8),
+    0 0 25px rgba(255, 255, 255, 0.6), 0 0 35px rgba(255, 255, 255, 0.4),
+    2px 2px 3px rgba(0, 0, 0, 0.9) !important;
+}
+
+.hero-controls .hero-control-btn:active {
+  transform: scale(0.95) !important;
+  transition: all 0.1s ease-out !important;
+}
+
+/* Hero Catalog Toggle (In Nav Bar) */
+.hero-catalog-btn {
+  position: fixed !important;
+  top: 1rem;
+  right: 9rem;
+  z-index: 15 !important;
+  overflow: visible;
+  border: 1px solid transparent;
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius) !important;
+  backdrop-filter: var(--backdrop-filter) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  cursor: pointer !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  padding: 8px 12px !important;
+  transition: 0.2s all ease-in-out, font-size 0s;
+  outline: none !important;
+  width: 4.5rem;
+  height: 3.5rem;
+  align-self: center;
+  word-break: keep-all;
+}
+
+.hero-catalog-btn:hover {
+  background-color: var(--background) !important;
+  border-color: var(--primary-accent-color) !important;
+  box-shadow: var(--box-shadow), var(--outer-glow) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.hero-catalog-btn:active {
+  border-color: var(--accent) !important;
+  box-shadow: var(--box-shadow) !important;
+}
+
+.hero-catalog-btn:active {
+  font-size: 0.675rem !important;
+}
+
+.hero-indicators {
+  position: absolute;
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+  padding: 100px 100px 10px;
+  transition: 0.2s all ease-in-out;
+  opacity: 0;
+  overflow: visible;
+}
+
+.hero-indicators:hover {
+  opacity: 1;
+}
+
+.hero-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hero-indicator:hover {
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(1.2);
+}
+
+.hero-indicator.active {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.hero-indicator:active {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(1px) scale(0.98) !important;
+  transition: all 0.1s ease-out !important;
+}
+
+#heroImage,
+#heroLogo,
+#heroDescription,
+#heroInfo {
+  transition: opacity 0.3s ease-in-out;
+}
+
+
+
+/* =============================================
+=            IN-BANNER LOADING STATE            =
+=============================================*/
+
+/* Banner Internal Loader */
+.hero-banner-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 140%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.hero-banner-loader.visible {
+    opacity: 1 !important;
+    pointer-events: auto;
+}
+
+.hero-banner-loader .loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 15px;
+}
+
+.hero-banner-loader .banner-loading-text {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.banner-loading-catalog {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.banner-loading-progress {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 16px;
+}
+
+.banner-loading-bar {
+  width: 300px;
+  height: 3px;
+  background: var(--overlay-color); /* rgba(255, 255, 255, 0.1) */
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.banner-loading-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-foreground-color), var(--primary-accent-color));
+  width: 0%;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Network Logo in Meta Row */
+.hero-meta-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 15px !important;
+    width: 100% !important;
+}

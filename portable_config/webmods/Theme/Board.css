@@ -1,0 +1,217 @@
+
+/*=============================================
+=            GRID            =
+=============================================*/
+
+/* Main Layout Container */
+.main-nav-bars-container-wNjS5 .nav-content-container-zl9hQ {
+    left: 0;
+
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: visible !important;
+    justify-content: flex-end; /* Align to bottom so Hero takes top */
+}
+
+.main-nav-bars-container-wNjS5 .horizontal-nav-bar-ji5GB {
+    z-index: 5;
+}
+
+/* Board Content (Bottom - Priority) */
+body.hero-active .board-container-DTN_b .board-content-container-ToQTz .board-content-nPWv1 {
+    position: relative !important; /* Reset absolute */
+    /* top: calc(-1 * var(--horizontal-nav-bar-size)) !important; */
+
+    flex: 0 0 42vh !important; /* Target height */
+    min-height: 300px !important; /* GUARANTEE visibility */
+    bottom: auto !important;
+    width: 100%;
+    z-index: 5; /* Ensure above hero if overlap ever happened (shouldn't with flex) */
+    
+    scrollbar-width: none;
+
+    scroll-snap-type: y mandatory;
+    overflow-y: auto;
+}
+
+.board-row-CoJrZ {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+}
+
+/*=====  End of GRID  ======*/
+
+
+
+/*=============================================
+=            SEE ALL BUTTON            =
+=============================================*/
+
+.meta-row-container-xtlB1 .header-container-tR3Ev {
+    overflow: visible;
+}
+
+.see-all-container-MoOtW {
+    border: 1px solid transparent;
+    box-shadow: var(--box-shadow);
+    transform: translateY(12px);
+    transition: all 0.2s ease-in-out;
+    backdrop-filter: var(--backdrop-filter);
+}
+
+.see-all-container-MoOtW:hover {
+    border-color: var(--accent) !important;
+    filter: var(--shadow);
+}
+
+.see-all-container-MoOtW:active {
+    border-color: var(--accent) !important;
+    box-shadow: var(--box-shadow) !important;
+    transform: scale(0.95) translateY(14px) !important;
+    background: none !important;
+}
+
+/*=====  End of SEE ALL BUTTON  ======*/
+
+
+
+
+/*=============================================
+=            POSTER           =
+=============================================*/
+
+
+/* Poster container - Gap between items */
+.meta-item-container-Tj0Ib {
+	padding: 0.03rem;
+}
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 {
+	position: relative;
+	z-index: unset;
+	background-color: unset;
+
+    border: 1px solid transparent;
+	border-radius: 3px;
+	margin: 30px auto auto;
+
+    transform-origin: bottom center;
+	transition: all 0.3s ease-out;
+}
+
+.meta-item-container-Tj0Ib:hover .poster-container-qkw48, .meta-item-container-Tj0Ib:focus .poster-container-qkw48, .meta-item-container-Tj0Ib.active .poster-container-qkw48, .meta-item-container-Tj0Ib.selected .poster-container-qkw48 {
+	z-index: 10;
+
+	box-shadow: 0 8px 20px rgb(0, 0, 0, 1);
+	border-color: white;
+
+	transform: scale(1.05) translateY(-10px);
+}
+
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .poster-image-layer-KimPZ .poster-image-NiV7O:hover {
+	filter: brightness(100%) saturate(105%);
+}
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .poster-image-layer-KimPZ .poster-image-NiV7O {
+	object-fit: cover;
+    opacity: 1;
+	filter: brightness(90%);
+	transition: filter 0.3s ease-out;
+}
+
+/* Disable poster zoom-in animation on hover */
+.meta-item-container-Tj0Ib:hover .poster-container-qkw48 .poster-image-layer-KimPZ, 
+.meta-item-container-Tj0Ib:focus .poster-container-qkw48 .poster-image-layer-KimPZ,
+.meta-item-container-Tj0Ib.active .poster-container-qkw48 .poster-image-layer-KimPZ,
+.meta-item-container-Tj0Ib.selected .poster-container-qkw48 .poster-image-layer-KimPZ {
+    transform: unset; 
+}
+
+/* Dismiss top left corner button */
+.meta-item-container-Tj0Ib .poster-container-qkw48 .dismiss-icon-layer-BWztF {
+    filter: var(--shadow);
+    box-shadow: var(--box-shadow);
+    border: 1px solid transparent;
+    transition: 0.2s all ease;
+}
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .dismiss-icon-layer-BWztF:hover {
+    background: var(--background);
+    border-color: var(--tertiary-accent-color) !important;
+}
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .dismiss-icon-layer-BWztF:active {    
+    transform: scale(0.85);
+    border-color: transparent !important;
+}
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .dismiss-icon-layer-BWztF .dismiss-icon-db3fv {
+    color: var(--tertiary-accent-color);
+    opacity: 0.6;
+}
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .dismiss-icon-layer-BWztF .dismiss-icon-db3fv:hover {
+    opacity: 1;
+}
+
+
+/*=====  End of POSTER  ======*/
+
+
+
+
+/*=============================================
+=            PLAY BUTTON            =
+=============================================*/
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .play-icon-layer-vpQIo {
+    border-radius: 100%;
+    box-shadow: var(--box-shadow);
+    filter: var(--shadow) !important;
+    transition: all 0.2s ease;
+    transform: scale(1.2);
+}
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .play-icon-layer-vpQIo:hover {
+    backdrop-filter: var(--backdrop-filter) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow);
+
+    transform: scale(1.4);
+}
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .play-icon-layer-vpQIo:active {
+    transform: scale(1);
+}
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .play-icon-layer-vpQIo .play-icon-QmEEA {
+    color: var(--primary-foreground-color);
+    transition: color 0.8s ease;
+}
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .play-icon-layer-vpQIo .play-icon-QmEEA:hover {
+    color: var(--tertiary-accent-color);
+}
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .play-icon-layer-vpQIo .play-icon-outer-r3iKR {
+    backdrop-filter: var(--backdrop-filter) !important;
+    background-color: var(--background) !important;
+    box-shadow: 10px 10px 25px 0.1rem var(--accent) inset;
+    border-radius: 100%;
+
+    transition: all 0.2s ease;
+}
+
+
+.meta-item-container-Tj0Ib .poster-container-qkw48 .play-icon-layer-vpQIo .play-icon-background-Uazjh {
+    background-color: var(--background) !important;
+}
+/*=====  End of PLAY BUTTON  ======*/
+
+
+
+
+
+
+
+

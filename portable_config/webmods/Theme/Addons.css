@@ -1,0 +1,51 @@
+.modal-container-OuxEF .modal-dialog-container-DZMKq .modal-dialog-content-Xgv7Z .buttons-container-e_JoR {
+    overflow: visible;
+    margin: 2rem 1rem !important;
+}
+
+.addons-container-ogGYu .addons-content-zhFBl .selectable-inputs-container-tUul1 {
+    padding: 1.5rem 2rem;
+}
+
+.addons-container-ogGYu .addons-content-zhFBl .addons-list-container-Ovr2Z {
+    padding-left: 2rem;
+}
+
+.addon-container-lC5KN .buttons-container-g0xXr .configure-button-container-VwVAQ,
+.addons-container-ogGYu .addons-content-zhFBl .selectable-inputs-container-tUul1 .add-button-container-SkafT,
+.addon-details-modal-container-aBFaQ .cancel-button-zuUX6,
+.addon-container-lC5KN .buttons-container-g0xXr .uninstall-button-container-oV4Yo,
+.action-button-eprQG {
+    background: var(--accent);
+
+    border: 2px solid transparent;
+
+    box-shadow: var(--box-shadow);
+    
+    outline-color: transparent!important;
+
+    transition: 0.2s all ease-in-out;
+}
+
+.addon-container-lC5KN .buttons-container-g0xXr .configure-button-container-VwVAQ:hover,
+.addons-container-ogGYu .addons-content-zhFBl .selectable-inputs-container-tUul1 .add-button-container-SkafT:hover,
+.addon-container-lC5KN .buttons-container-g0xXr .uninstall-button-container-oV4Yo,
+.action-button-eprQG:hover,
+.addon-details-modal-container-aBFaQ .cancel-button-zuUX6:hover {
+    border-color: var(--primary-accent-color) !important;
+    outline-color: var(--primary-accent-color);
+
+    box-shadow: var(--box-shadow) !important;
+}
+
+.addon-container-lC5KN .buttons-container-g0xXr .configure-button-container-VwVAQ:active,
+.addons-container-ogGYu .addons-content-zhFBl .selectable-inputs-container-tUul1 .add-button-container-SkafT:active,
+.addon-container-lC5KN .buttons-container-g0xXr .uninstall-button-container-oV4Yo:active,
+.addon-details-modal-container-aBFaQ .cancel-button-zuUX6:active,
+.action-button-eprQG:active {
+    background-color: var(--background) !important;
+    border-color: var(--accent) !important;
+    box-shadow: var(--box-shadow) !important;
+    
+    transform: scale(0.95);
+}

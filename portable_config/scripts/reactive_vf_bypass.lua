@@ -1,7 +1,30 @@
--- seeking_vf_bypass.lua
--- Reactive VF bypass for MPV - validates reality vs expectations
--- Only manages SVP-containing VF chains
--- FIXED VERSION: Hardcoded restore delay for safety, context-specific validation
+--[[
+  @name Reactive VF Bypass
+  @description Temporarily disables heavy video filters (SVP/Vapoursynth) during seeks
+               to improve UI responsiveness and prevent hangs on lower-end hardware
+  @version 1.1
+  @author allecsc
+  
+  @changelog
+    v1.0 - Initial implementation with seek debouncing and state validation
+    v1.1 - Added get_vf()/fmt_vf() helpers, configurable restore_delay, moved config
+           to script init, fixed shadow variable and unreachable code path
+  
+  @requires
+    - Optional: script-opts/vf_bypass.conf for custom settings
+  
+  Configuration (script-opts/vf_bypass.conf):
+    svp_keywords    = SVP,vapoursynth    -- Filter keywords to detect (comma-separated)
+    restore_delay   = 3.0                -- Seconds to wait before restoring (0.5-10.0)
+  
+  Behavioral Flow:
+    1. On file load:   Detects SVP filter in VF chain, stores it
+    2. On seek:        Removes SVP filter, starts restore timer
+    3. On timer fire:  Re-adds stored SVP filter after delay
+    4. On VF change:   Updates stored filter if externally modified
+    5. On pause/resume: Validates state consistency
+--]]
+-- luacheck: read globals mp
 
 local mp = require "mp"
 
@@ -16,13 +39,25 @@ local expected_state = "normal"  -- Track script phases: "normal", "cleared_for_
 local last_seek_time = 0  -- For debouncing rapid seek events to prevent infinite loops
 local DEBOUNCE_THRESHOLD = 0.2  -- Ignore seeks within 200ms of previous (prevents loop during pause+seek)
 
--- Configuration (keywords from file, delay hardcoded for safety)
+-- Configuration (keywords and delay from config file)
 local config = {
     svp_keywords = {"SVP", "vapoursynth"},
-    restore_delay = 1.5  -- Hardcoded - For optimal safety use 3s delay after seeks
+    restore_delay = 3.0  -- Default 3s, configurable via vf_bypass.conf
 }
 
-mp.msg.info("Reactive VF Bypass FIXED script loaded")
+-- Helper: Get normalized VF property
+local function get_vf()
+    local v = mp.get_property("vf")
+    if not v or v == "NONE" then return "" end
+    return tostring(v)
+end
+
+-- Helper: Format VF value for logging
+local function fmt_vf(val)
+    return (val ~= "" and val or "<empty>")
+end
+
+mp.msg.info("Reactive VF Bypass script loaded")
 
 -- Load configuration file (only keywords, delay is hardcoded)
 local function load_config()
@@ -51,8 +86,15 @@ local function load_config()
                         table.insert(config.svp_keywords, keyword)
                     end
                     mp.msg.info("Loaded SVP keywords: " .. table.concat(config.svp_keywords, ", "))
+                elseif key == "restore_delay" then
+                    local delay = tonumber(value)
+                    if delay and delay >= 0.5 and delay <= 10.0 then
+                        config.restore_delay = delay
+                        mp.msg.info("Loaded restore_delay: " .. config.restore_delay .. "s")
+                    else
+                        mp.msg.warn("Invalid restore_delay (must be 0.5-10.0): " .. value)
+                    end
                 end
-                -- Note: restore_delay is hardcoded and not loaded from config to prevent user breakage
             end
         end
     end
@@ -60,25 +102,28 @@ local function load_config()
     file:close()
 end
 
--- Check if VF chain contains SVP keywords
-local function contains_svp(vf_chain)
+-- Extract the SVP-containing filter from a VF chain
+local function extract_svp_filter(vf_chain)
     if not vf_chain or vf_chain == "" or vf_chain == "NONE" then
-        return false
+        return nil
     end
     
-    for _, keyword in ipairs(config.svp_keywords) do
-        if vf_chain:find(keyword) then
-            return true
+    -- Split the chain by commas to get individual filters
+    for filter in vf_chain:gmatch("([^,]+)") do
+        filter = filter:match("^%s*(.-)%s*$") -- trim whitespace
+        -- Check if this individual filter contains SVP keywords
+        for _, keyword in ipairs(config.svp_keywords) do
+            if filter:find(keyword, 1, true) then -- Use plain search for keywords
+                return filter
+            end
         end
     end
-    return false
+    
+    return nil
 end
 
--- Normalize VF property value
-local function norm_vf(v)
-    if not v or v == "NONE" then return "" end
-    return tostring(v)
-end
+-- Load config once at script init
+load_config()
 
 -- Cancel any pending restore operation (don't reset is_restoring here - let timer handle it)
 local function cancel_pending_restore(reason)
@@ -102,11 +147,11 @@ end
 
 -- Validate before seek: Ensure current VF matches stored before clearing (skip strict check if paused)
 local function validate_before_seek()
-    local current_vf = norm_vf(mp.get_property("vf"))
+    local current_vf = get_vf()
     
     mp.msg.verbose("[SEEK PHASE] Validating before seek:")
-    mp.msg.verbose("  Current VF: '" .. (current_vf ~= "" and current_vf or "<empty>") .. "'")
-    mp.msg.verbose("  Stored VF:  '" .. (stored_vf ~= "" and stored_vf or "<empty>") .. "'")
+    mp.msg.verbose("  Current VF: '" .. fmt_vf(current_vf) .. "'")
+    mp.msg.verbose("  Stored VF:  '" .. fmt_vf(stored_vf) .. "'")
     mp.msg.verbose("  Paused: " .. tostring(paused))
     mp.msg.verbose("  Expected state: " .. expected_state)
     
@@ -120,26 +165,27 @@ local function validate_before_seek()
         return true
     end
     
-    if current_vf == stored_vf then
-        mp.msg.verbose("[SEEK PHASE] Validation passed: Current matches stored")
+    local current_svp = extract_svp_filter(current_vf)
+    if current_svp == stored_vf then
+        mp.msg.verbose("[SEEK PHASE] Validation passed: Current SVP matches stored")
         return true
     else
-        mp.msg.info("[SEEK PHASE] Validation failed: Current VF doesn't match stored before seek")
-        mp.msg.info("  Expected: " .. stored_vf)
-        mp.msg.info("  Found:    " .. current_vf)
+        mp.msg.info("[SEEK PHASE] Validation failed: Current SVP doesn't match stored before seek")
+        mp.msg.info("  Expected: " .. (stored_vf or "<none>"))
+        mp.msg.info("  Found:    " .. (current_svp or "<none>"))
         return false
     end
 end
 
 -- Validate before restore: Check if stored VF is still valid (unchanged since clear), ignore current emptiness
 local function validate_before_restore()
-    local current_vf = norm_vf(mp.get_property("vf"))
+    local current_vf = get_vf()
     
     mp.msg.verbose("[RESTORE PHASE] Validating before restore:")
-    mp.msg.verbose("  Current VF: '" .. (current_vf ~= "" and current_vf or "<empty>") .. "'")
-    mp.msg.verbose("  Stored VF:  '" .. (stored_vf ~= "" and stored_vf or "<empty>") .. "'")
+    mp.msg.verbose("  Current VF: '" .. fmt_vf(current_vf) .. "'")
+    mp.msg.verbose("  Stored VF:  '" .. fmt_vf(stored_vf) .. "'")
     mp.msg.verbose("  Expected state: " .. expected_state)
-    mp.msg.verbose("  Note: During restore, current may be empty (script cleared it)")
+    mp.msg.verbose("  Note: After removal, current may not contain SVP filter")
     
     if stored_vf == "" then
         mp.msg.verbose("[RESTORE PHASE] No stored VF, skipping restore")
@@ -148,43 +194,38 @@ local function validate_before_restore()
     
     if expected_state ~= "cleared_for_seek" then
         mp.msg.warn("[RESTORE PHASE] Unexpected state for restore: " .. expected_state)
-        return false
+        -- Don't fail here - just warn and continue
     end
     
-    -- During restore, we expect current to be empty (we cleared it), but check for external changes
-    -- Key: Has stored_vf been invalidated by external action? (e.g., user changed it during delay)
-    -- Since we don't track timestamps yet, basic check: if current has SVP but != stored, it's external change
-    if current_vf ~= "" then
-        if current_vf == stored_vf then
-            mp.msg.verbose("[RESTORE PHASE] Validation passed: Current already matches stored (no need to restore)")
-            return true
-        elseif contains_svp(current_vf) then
-            mp.msg.info("[RESTORE PHASE] External SVP change during restore window, updating stored")
-            mp.msg.info("  Stored: " .. stored_vf)
-            mp.msg.info("  New:    " .. current_vf)
-            -- Update to new external chain
-            stored_vf = current_vf
-            vf_detected = true
-            return true  -- Still valid, but use new chain
-        else
-            mp.msg.info("[RESTORE PHASE] Non-SVP chain during restore, resetting")
-            reset_state("non-SVP during restore")
-            return false
-        end
-    else
-        -- Current is empty as expected, stored should still be valid
-        mp.msg.verbose("[RESTORE PHASE] Validation passed: Current empty as expected, stored VF intact")
+    -- After removal, the current VF chain should NOT contain the SVP filter
+    local current_svp = extract_svp_filter(current_vf)
+    
+    if current_svp == nil then
+        -- Perfect - SVP filter is not in the chain, ready to restore
+        mp.msg.verbose("[RESTORE PHASE] Validation passed: SVP filter not in current chain, ready to restore")
         return true
+    elseif current_svp == stored_vf then
+        -- SVP filter is already back somehow - no need to restore
+        mp.msg.verbose("[RESTORE PHASE] Validation passed: SVP filter already present (no need to restore)")
+        return false -- Return false to skip the redundant add command
+    else
+        -- Different SVP filter present - external change during restore window
+        mp.msg.info("[RESTORE PHASE] External SVP change during restore window, updating stored")
+        mp.msg.info("  Stored: " .. stored_vf)
+        mp.msg.info("  New:    " .. current_svp)
+        stored_vf = current_svp
+        vf_detected = true
+        return false -- Skip restore of OLD filter, we now have the NEW one active
     end
 end
 
 -- Validate on resume from pause: Detect external changes during pause and react (Step 4: Distinguish script vs external actions)
 local function validate_on_resume()
-    local current_vf = norm_vf(mp.get_property("vf"))
+    local current_vf = get_vf()
     
     mp.msg.verbose("[RESUME PHASE] Validating on resume from pause:")
-    mp.msg.verbose("  Current VF: '" .. (current_vf ~= "" and current_vf or "<empty>") .. "'")
-    mp.msg.verbose("  Stored VF:  '" .. (stored_vf ~= "" and stored_vf or "<empty>") .. "'")
+    mp.msg.verbose("  Current VF: '" .. fmt_vf(current_vf) .. "'")
+    mp.msg.verbose("  Stored VF:  '" .. fmt_vf(stored_vf) .. "'")
     mp.msg.verbose("  Expected state: " .. expected_state .. ", script_cleared_vf=" .. tostring(script_cleared_vf))
     
     if stored_vf == "" then
@@ -192,52 +233,54 @@ local function validate_on_resume()
         return true
     end
     
-    if current_vf == stored_vf then
-        mp.msg.verbose("[RESUME PHASE] Validation passed: Current matches stored")
+    local current_svp = extract_svp_filter(current_vf)
+    
+    if current_svp == stored_vf then
+        mp.msg.verbose("[RESUME PHASE] Validation passed: Current SVP matches stored")
         return true
     end
     
-    -- Mismatch: Check if this is a script action (during pause+seek) vs true external change
-    if current_vf == "" then
+    -- Mismatch: Check if this is a script action vs true external change
+    if current_svp == nil then
+        -- No SVP filter in current chain
         if expected_state == "cleared_for_seek" or script_cleared_vf then
-            mp.msg.verbose("[RESUME PHASE] Expected empty due to script clear during pause, preserving stored_vf")
+            mp.msg.verbose("[RESUME PHASE] Expected missing SVP due to script clear during pause, preserving stored_vf")
             return true  -- Script's own action during pause, don't reset - let timer restore
         else
-            mp.msg.info("[RESUME PHASE] External clear detected during pause, resetting state")
-            reset_state("external clear during pause")
+            mp.msg.info("[RESUME PHASE] External SVP removal detected during pause, resetting state")
+            reset_state("external SVP removal during pause")
             cancel_pending_restore("external change during pause")
             return false
         end
-    elseif contains_svp(current_vf) then
+    else
+        -- Different SVP filter present
         mp.msg.info("[RESUME PHASE] External SVP change detected during pause, updating stored VF")
-        stored_vf = current_vf
+        stored_vf = current_svp
         vf_detected = true
         mp.msg.info("  Updated to: " .. stored_vf)
         cancel_pending_restore("external change during pause")  -- Cancel any pending, as state changed
         expected_state = "normal"
         return true
-    else
-        mp.msg.info("[RESUME PHASE] Non-SVP change during pause, resetting state")
-        reset_state("non-SVP during pause")
-        cancel_pending_restore("external change during pause")
-        expected_state = "normal"
-        return false
     end
+    
+    -- Fallback - should not reach here
+    mp.msg.verbose("[RESUME PHASE] Validation completed")
+    return true
 end
 
 -- Handle file loading
 mp.register_event("file-loaded", function()
-    load_config() -- Reload config for each file
     reset_state("file loaded")
     
     -- Check if initial VF contains SVP
-    local current_vf = norm_vf(mp.get_property("vf"))
-    if contains_svp(current_vf) then
-        stored_vf = current_vf
+    local current_vf = get_vf()
+    local svp_filter = extract_svp_filter(current_vf)
+    if svp_filter then
+        stored_vf = svp_filter
         vf_detected = true
-        mp.msg.info("Initial SVP chain detected and stored: " .. stored_vf)
+        mp.msg.info("Initial SVP filter detected and stored: " .. stored_vf)
     else
-        mp.msg.verbose("No SVP chain on file load, script inactive")
+        mp.msg.verbose("No SVP filter on file load, script inactive")
     end
 end)
 
@@ -259,21 +302,21 @@ end)
 
 -- Monitor VF changes
 mp.observe_property("vf", "string", function(_, value)
-    local current_vf = norm_vf(value)
-    mp.msg.verbose("VF changed to: '" .. (current_vf ~= "" and current_vf or "<empty>") .. "'")
+    local current_vf = value and value ~= "NONE" and tostring(value) or ""
+    mp.msg.verbose("VF changed to: '" .. fmt_vf(current_vf) .. "'")
     
     -- If this change happened while we expect script control, validate it
     if script_cleared_vf or (is_restoring and expected_state == "cleared_for_seek") then
         -- During clear phase (script_cleared_vf true), expect empty VF
         if script_cleared_vf then
-            local current_vf = norm_vf(value)
             if current_vf == "" then
                 mp.msg.verbose("[CLEAR PHASE] VF empty as expected after script clear")
             else
                 mp.msg.info("[CLEAR PHASE] Unexpected VF during clear: " .. current_vf)
                 -- External change during clear - update if SVP
-                if contains_svp(current_vf) then
-                    stored_vf = current_vf
+                local svp = extract_svp_filter(current_vf)
+                if svp then
+                    stored_vf = svp
                     vf_detected = true
                     mp.msg.info("Updated stored VF during clear: " .. stored_vf)
                 end
@@ -286,16 +329,17 @@ mp.observe_property("vf", "string", function(_, value)
     end
     
     -- External VF change - update our state accordingly
-    if contains_svp(current_vf) then
-        if current_vf ~= stored_vf then
-            stored_vf = current_vf
+    local svp_filter = extract_svp_filter(current_vf)
+    if svp_filter then
+        if svp_filter ~= stored_vf then
+            stored_vf = svp_filter
             vf_detected = true
-            mp.msg.info("External SVP chain change detected, updated stored VF: " .. stored_vf)
+            mp.msg.info("External SVP filter change detected, updated stored VF: " .. stored_vf)
         end
     else
         -- No SVP in current chain
         if stored_vf ~= "" then
-            mp.msg.info("SVP chain removed externally, clearing stored VF")
+            mp.msg.info("SVP filter removed externally, clearing stored VF")
             reset_state("external SVP removal")
         end
     end
@@ -318,21 +362,27 @@ mp.register_event("seek", function()
         return
     end
     
+    -- Ensure is_restoring is true for the timer (set BEFORE check to catch rapid seeks)
+    local was_restoring = is_restoring
+    is_restoring = true
+
     -- If already restoring, just restart the timer (handle multiple seeks)
-    if is_restoring then
+    if was_restoring then
         mp.msg.verbose("[SEEK PHASE] Multiple seek detected - restarting restore timer")
         cancel_pending_restore("multiple seek - restarting timer")
     end
     
-    -- Check if already cleared - no need to re-clear
-    local current_vf = norm_vf(mp.get_property("vf"))
-    local need_clear = current_vf == stored_vf and current_vf ~= ""
+    -- Check if SVP filter is currently active - only clear if it's there
+    local current_vf = get_vf()
+    local current_svp = extract_svp_filter(current_vf)
+    local need_clear = (current_svp ~= nil) -- If ANY SVP filter is there, we should clear it
     
     if need_clear then
         -- Validate before clearing (skip if paused)
         if expected_state == "normal" and not paused then
             if not validate_before_seek() then
                 mp.msg.info("[SEEK PHASE] Pre-seek validation failed, aborting seek optimization")
+                is_restoring = was_restoring -- Revert state
                 return
             end
         elseif paused then
@@ -342,34 +392,37 @@ mp.register_event("seek", function()
         mp.msg.verbose("[SEEK PHASE] Seek detected - temporarily clearing SVP chain for performance" .. (paused and " (while paused)" or ""))
         expected_state = "cleared_for_seek"
         script_cleared_vf = true
-        mp.commandv("vf", "clr", "")
+        
+        -- Use explicit remove instead of toggle
+        mp.commandv("vf", "remove", "@" .. stored_vf) -- Try label first if it exists
+        mp.commandv("vf", "remove", stored_vf)
+        mp.msg.info("[SEEK PHASE] Removed SVP filter: " .. stored_vf)
     else
         mp.msg.verbose("[SEEK PHASE] Already cleared or no need to clear, just restarting timer")
     end
-    
-    -- Ensure is_restoring is true for the timer
-    is_restoring = true
     
     -- Create/restart timer for this seek
     restore_timer = mp.add_timeout(config.restore_delay, function()
         restore_timer = nil
         script_cleared_vf = false
         
-        mp.msg.verbose("[RESTORE PHASE] Timer fired - debug state: is_restoring=" .. tostring(is_restoring) .. ", stored_vf='" .. (stored_vf ~= "" and stored_vf or "<empty>") .. "', expected_state=" .. expected_state .. ", paused=" .. tostring(paused))
+        mp.msg.verbose("[RESTORE PHASE] Timer fired - debug state: is_restoring=" .. tostring(is_restoring) .. ", stored_vf='" .. fmt_vf(stored_vf) .. "', expected_state=" .. expected_state .. ", paused=" .. tostring(paused))
         
         -- Always attempt restore if we have stored VF (timer only set during seek)
         if stored_vf ~= "" then
             if validate_before_restore() then
                 mp.msg.verbose("[RESTORE PHASE] Restoring SVP chain after seek: " .. stored_vf)
+                -- Use explicit add instead of toggle
                 mp.commandv("vf", "add", stored_vf)
+                mp.msg.info("[RESTORE PHASE] Added SVP filter back on: " .. stored_vf)
                 expected_state = "normal"
             else
-                mp.msg.info("[RESTORE PHASE] Pre-restore validation failed, skipping restore")
+                mp.msg.info("[RESTORE PHASE] Pre-restore validation failed or redundant, skipping restore")
                 expected_state = "normal"
             end
             is_restoring = false
         else
-            mp.msg.verbose("[RESTORE PHASE] Restore skipped - no stored VF (debug: how did stored_vf get cleared?)")
+            mp.msg.verbose("[RESTORE PHASE] Restore skipped - no stored VF")
             expected_state = "normal"
             is_restoring = false
         end

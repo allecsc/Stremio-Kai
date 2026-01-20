@@ -1,0 +1,83 @@
+.calendar-cH2jw .content-wBwrQ {
+    padding: 2rem 0 1.5rem 1.5rem;
+}
+
+
+/*============== Previous/Next Buttons ==============*/
+
+.selector-uRGQ6 .prev-__2gh,
+.selector-uRGQ6 .next-t6hvT {
+    border: 1px solid transparent;
+    border-radius: 99px;
+
+    box-shadow: var(--box-shadow);
+    
+    transition: 0.3s all ease-in-out;
+}
+
+.selector-uRGQ6 .prev-__2gh:hover,
+.selector-uRGQ6 .next-t6hvT:hover {
+    border-color: var(--primary-accent-color) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+}
+
+.selector-uRGQ6 .prev-__2gh:active,
+.selector-uRGQ6 .next-t6hvT:active {
+    border-color: var(--accent) !important;
+    box-shadow: var(--box-shadow) !important;
+    
+    transform: scale(0.95);
+}
+
+.item-PwXPg:not(.active-ymNy0):hover {
+    border-color: var(--accent);
+}
+
+
+/*============== Day Cells ==============*/
+
+.cell-l3eWl,
+.item-PwXPg {
+    box-shadow: var(--box-shadow) !important;
+
+    transition: 0.3s all ease-in-out;
+
+}
+
+.cell-l3eWl:not(.active-KC8sV):hover {
+    border-color: var(--accent);
+}
+
+.cell-l3eWl.active-KC8sV,
+.item-PwXPg.active-ymNy0 {
+    border-color: var(--primary-accent-color) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+}
+
+
+
+/*=============================================
+=            PLAY BUTTON            =
+=============================================*/ 
+
+.cell-l3eWl .items-ZZ9Jt .item-qsUNQ .icon-F3Uu8,
+.item-PwXPg .body-pUnX4 .video-XnjiE .icon-bz23A {
+    backdrop-filter: var(--backdrop-filter) !important;
+    background-color: var(--background) !important;
+
+    filter: var(--shadow);
+
+    box-shadow: 10px 10px 25px 0.1rem var(--accent) inset;
+    transition: all 0.2s ease-in-out;
+}
+
+.cell-l3eWl .items-ZZ9Jt .item-qsUNQ .icon-F3Uu8:hover,
+.item-PwXPg .body-pUnX4 .video-XnjiE .icon-bz23A:hover {
+    color: var(--tertiary-accent-color);
+    transform: scale(1.15);
+}
+
+.cell-l3eWl .items-ZZ9Jt .item-qsUNQ .icon-F3Uu8:active,
+.item-PwXPg .body-pUnX4 .video-XnjiE .icon-bz23A:active  {
+    transform: scale(0.95);
+}

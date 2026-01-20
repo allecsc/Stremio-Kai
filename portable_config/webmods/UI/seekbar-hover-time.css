@@ -1,0 +1,28 @@
+/*
+*   TIMELINE HOVER TOOLTIP STYLES ====================================================================================================================== 
+*/  
+
+#timeline-tooltip {
+    position: absolute;
+    padding: 6px 12px;
+    font-size: 1rem;
+    font-family: 'Nata Sans', sans-serif;
+    font-weight: 600;
+    pointer-events: none;
+    z-index: 9999;
+    display: none;
+    white-space: nowrap;
+
+    background: var(--background);
+    color: var(--primary-foreground-color);
+
+    backdrop-filter: var(--backdrop-filter);
+    border: 1px solid var(--accent) !important;
+    border-radius: 999px;
+
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+
+    filter: var(--shadow);
+
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}

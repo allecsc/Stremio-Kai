@@ -1,0 +1,349 @@
+/**
+ * @name Kai
+ * @description A modern theme designed specifically for Stremio Kai with smooth eye-candy animations.
+ * @version 1.0.0
+ * @updateUrl https://github.com/allecsc/Stremio-Kai/
+ * @author allecsc
+ *
+ */
+
+/* GLOBAL =================================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --backdrop-filter: blur(10px) saturate(180%);  
+    --box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    --background: color-mix(in srgb, var(--secondary-background-color), transparent 50%);
+    --accent: color-mix(in srgb, var(--primary-accent-color), transparent 60%);
+    --shadow: drop-shadow(2px 4px 6px black);
+    --outer-glow-color: color-mix(in srgb, var(--primary-accent-color), white 20%);
+}
+
+/* Hide the automatic update dialog for Stremio Community v5 */
+#update-dialog,
+.update-container-sf8bW {
+	display: none !important;
+	visibility: hidden !important;
+}
+
+/* Override global font and background globally */
+html {
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.button-container-zVLH6,
+.button-container-xT9_L {
+    outline-color: var(--accent);
+}
+
+/* Kai Logo */
+.logo-oPx1q {
+  content: url('https://github.com/user-attachments/assets/5a43dbc5-8c78-49f9-bced-a428eed1b6f8') !important;
+}
+
+/*=============================================
+=            TOP-RIGHT BUTTONS            =
+=============================================*/
+
+.button-container-xT9_L {    
+    border: 1px solid transparent;
+    box-shadow: var(--box-shadow);
+
+    backdrop-filter: var(--backdrop-filter);
+    
+    transition: all 0.2s ease-in-out;
+}
+
+/* cancel buttons blur on hover */
+.horizontal-nav-bar-container-Y_zvK .button-container-xT9_L:hover {
+    background: var(--background) !important;
+
+    border-color: var(--primary-accent-color) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+}
+
+/* :active -> On mouse press */
+.horizontal-nav-bar-container-Y_zvK .button-container-xT9_L:active {
+    backdrop-filter: none !important;
+
+    border-color: var(--accent) !important;
+    box-shadow: var(--box-shadow) !important;
+}
+
+/* .active -> persistent while active */
+.horizontal-nav-bar-container-Y_zvK .button-container-xT9_L.active {
+    background-color: var(--background) !important;
+    backdrop-filter: none !important;
+
+    border-color: var(--accent) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+}
+
+.horizontal-nav-bar-container-Y_zvK .button-container-xT9_L .icon-T8MU6 {
+    filter: var(--shadow);
+}
+
+.horizontal-nav-bar-container-Y_zvK .button-container-xT9_L .icon-T8MU6:active {
+    transform: scale(0.85);
+}
+
+/* Cover over Stremio Cat user avatar */
+.avatar-container-f6ino {
+    background: var(--background) !important;
+    border: 1px solid var(--accent) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow)!important;
+    content: url('https://icons.veryicon.com/png/o/miscellaneous/solid-icon/bee-account-settings-1.png') !important;
+    filter: invert(0.8) opacity(0.4) !important;
+}
+
+/*=====  End of TOP-RIGHT BUTTONS  ======*/
+
+
+  
+  /*=============================================
+  =            DROPDOWN MENUS            =
+  =============================================*/
+   
+/* Background of dropdown menus */
+[class*="dropdown"],
+[class*="context-menu-content"],
+[class*="menu-container-qiz0X"],
+[class*="no-options-container"],
+[class*="dialog-container"],
+.nav-menu-container-Pl25j { 
+    background: var(--background) !important;
+    backdrop-filter: var(--backdrop-filter) !important;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+    filter: var(--shadow);
+}
+
+.label-container-XOyzm .menu-container-B6cqK {
+    background-color: transparent;
+}
+
+.multiselect-menu-qMdaj:hover {
+    backdrop-filter: none !important;
+}
+
+  /*=====  End of DROPDOWN MENUS  ======*/
+
+
+
+
+/*=============================================
+=        SIDEBAR NAVIGATION PANEL            =
+=============================================*/
+
+/* Bring to front to make it clickable */
+.main-nav-bars-container-wNjS5 .vertical-nav-bar-qGRze {
+    z-index: 10;
+}
+
+/* Auto-hide it to the left, show on hover */
+.vertical-nav-bar-container-UPAkA {
+    justify-content: center;
+
+    background: var(--background) !important;
+    backdrop-filter: var(--backdrop-filter);
+
+    border-radius: 0px 20px 20px 0px;
+    border: 1px solid var(--accent) !important;
+    border-left-width: 0 !important;
+
+    box-shadow: var(--box-shadow), var(--outer-glow);
+
+    /* Keep it in the middle of the screen */
+    margin: 22vh 0;
+    min-height: 350px;
+
+    overflow: visible;
+
+    transform: translate3d(-5.4rem, 0, 0);
+    transition: transform 0.3s ease;
+}
+
+.nav-tab-button-container-dYhs0 {
+    transition: all 0.2s ease;
+}
+
+.nav-tab-button-container-dYhs0:hover{
+    transform: translateY(-3px);
+}
+
+.nav-tab-button-container-dYhs0:hover,
+.nav-tab-button-container-dYhs0.selected {
+    box-shadow: var(--box-shadow), var(--outer-glow);
+    background: var(--background);
+    backdrop-filter: var(--backdrop-filter);
+}
+
+.nav-tab-button-container-dYhs0:not(:hover) {
+    transition: none; /* disables transform transition on exit */
+}
+
+.nav-tab-button-container-dYhs0:active {
+    transform: scale(0.97) translateY(3px);
+}
+
+.nav-tab-button-container-dYhs0 .label-BCz2f {
+    opacity: 0.4;
+}
+
+.nav-tab-button-container-dYhs0.selected .label-BCz2f {
+    opacity: 1;
+}
+
+/* Buffer for increased reaction area */
+
+.vertical-nav-bar-container-UPAkA::before {
+    content: "";
+    position: absolute;
+    top: 80px;
+    right: -100px;
+    bottom: 160px;
+    left: 0;
+    background: transparent;
+    pointer-events: auto;
+    z-index: -1;
+}
+
+/* Show on hover animation */
+.vertical-nav-bar-container-UPAkA:hover,
+.vertical-nav-bar-container-UPAkA:focus,
+.vertical-nav-bar-container-UPAkA:focus-within,
+.vertical-nav-bar-container-UPAkA:focus-visible {
+    transform: translate3d(0, 0, 0);
+}
+
+@media (max-width: 640px) {
+    .vertical-nav-bar-container-UPAkA {
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 0;
+        height: fit-content;
+        width: unset;
+        padding: 1rem 1rem;
+        overflow-y: hidden;
+        overflow-x: auto;
+
+        top: 0;
+        left: -10px !important;
+    }
+}
+
+/*=====  End of SIDEBAR NAVIGATION PANEL  ======*/
+
+
+
+
+  /*=============================================
+  =            SEARCH BAR            =
+  =============================================*/
+
+.horizontal-nav-bar-container-Y_zvK .search-bar-h60ja {
+    box-shadow: var(--box-shadow), var(--outer-glow)!important;
+    border: 1px solid var(--accent) !important;
+    background: var(--background);
+}
+
+/* Offset to center it in the middle of the screen and auto-hide it by default */
+.search-bar-container-asfq1 {
+    left: 1.3rem;
+    transform: translate3d(0,-4.0rem, 0);
+    transition: transform 0.3s ease;
+}
+
+/* Buffer for increased reaction area */
+.search-bar-container-asfq1::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    bottom: -50px;
+    left: -20px;
+    background: transparent;
+    pointer-events: auto;
+    z-index: -1;
+}
+
+/* Show on hover animation */
+.search-bar-h60ja.search-bar-container-asfq1:hover,
+.search-bar-h60ja.search-bar-container-asfq1:focus,
+.search-bar-h60ja.search-bar-container-asfq1:focus-within,
+.search-bar-h60ja.search-bar-container-asfq1:focus-visible {
+    transform: translate3d(0, 0, 0);
+}
+
+.search-bar-h60ja.search-bar-container-asfq1:focus-within {
+    box-shadow: var(--box-shadow) !important;
+}
+
+.menu-container-GcXNG {
+    background: var(--background) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow)!important;
+    backdrop-filter: var(--backdrop-filter) !important;
+}
+
+.search-bar-container-asfq1 .menu-container-GcXNG .items-P1xS5 {
+    overflow: visible;
+}
+
+.search-bar-container-asfq1 .menu-container-GcXNG .items-P1xS5 .item-TgYCX {
+    border: 1px solid transparent;
+    transition: all 0.2s ease-in-out;
+}
+
+.search-bar-container-asfq1 .menu-container-GcXNG .items-P1xS5 .item-TgYCX:hover {
+    color: var(--tertiary-accent-color);
+    border: 1px solid var(--accent);
+    box-shadow: var(--box-shadow), var(--outer-glow);
+}
+
+#app > div.router-_65XU.routes-container > div:nth-child(2) > div.route-content > div > nav.horizontal-nav-bar-ji5GB.horizontal-nav-bar-container-Y_zvK > div.search-bar-h60ja.search-bar-container-asfq1.active {
+    transform: unset;
+}
+
+  /*=====  End of SEARCH BAR  ======*/
+
+
+
+  
+  /*=============================================
+  =            TOAST NOTIFICATION            =
+  =============================================*/
+
+/* Toast Item Container (Top-Right Position) */
+.toast-item-container-nG0uk {
+  background: var(--background) !important;
+  border: 1px solid var(--accent) !important;
+  box-shadow: var(--box-shadow), var(--outer-glow)!important;
+  backdrop-filter: var(--backdrop-filter) !important;
+  animation: toastSlideInRight 0.3s ease-out !important;
+}
+
+@keyframes toastSlideInRight {
+from {
+    transform: translateX(100%);
+    opacity: 0;
+}
+to {
+    transform: translateX(0);
+    opacity: 1;
+}
+}
+
+  /*=====  End of TOAST NOTIFICATION  ======*/
+
+
+
+  
+
+  
+  
+
+
+
+
+

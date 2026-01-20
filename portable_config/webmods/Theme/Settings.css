@@ -1,0 +1,543 @@
+.settings-container-b0DCu .settings-content-lLXmk .sections-container-EUKAe .section-container-twzKQ .option-container-EGlcv {
+    max-width: 50rem;
+}
+
+.settings-container-b0DCu .settings-content-lLXmk .sections-container-EUKAe .section-container-twzKQ .option-container-EGlcv .option-name-container-exGMI {
+    max-width: 25rem;
+}
+
+.settings-container-b0DCu .settings-content-lLXmk .sections-container-EUKAe .section-container-twzKQ .option-container-EGlcv .option-input-container-NPgpT {
+    max-width: 25rem;
+}
+
+.settings-container-b0DCu .settings-content-lLXmk .sections-container-EUKAe .section-container-twzKQ .option-container-EGlcv .option-input-container-NPgpT.multiselect-container-w0c9l > .label-AR_l8 {
+    max-width: 100% !important;
+}
+
+.settings-container-b0DCu .settings-content-lLXmk .sections-container-EUKAe .section-container-twzKQ .option-container-EGlcv .option-name-container-exGMI {
+    max-width: 22rem;
+}
+
+.wrapper-FMNA6 {
+    max-width: 49rem;
+}
+
+.settings-container-b0DCu .settings-content-lLXmk .sections-container-EUKAe .section-container-twzKQ .option-container-EGlcv .option-name-container-exGMI .label-FFamJ, .settings-container-b0DCu .settings-content-lLXmk .sections-container-EUKAe .section-container-twzKQ .option-container-EGlcv .option-input-container-NPgpT .label-FFamJ {
+    text-wrap: balance;
+}
+
+/*----------  SIDE MENU  ----------*/
+
+.settings-container-b0DCu .settings-content-lLXmk .side-menu-container-NG17D {
+    align-items: end;
+}
+
+.side-menu-container-NG17D .side-menu-button-vbkJ1 {
+    justify-content: right;
+
+    border: 1px solid transparent;
+    box-shadow: var(--box-shadow);
+
+    transition: 0.3s all ease-in-out;
+}
+
+.side-menu-container-NG17D .side-menu-button-vbkJ1:hover {
+    border: 1px solid var(--primary-accent-color) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+}
+
+.side-menu-container-NG17D .side-menu-button-vbkJ1:active,
+.side-menu-container-NG17D .side-menu-button-vbkJ1.selected-yhdng:active {
+    background-color: var(--background) !important;
+    border-color: var(--accent);
+    box-shadow: var(--box-shadow), var(--outer-glow);
+
+    transform: scale(0.95);
+}
+
+.side-menu-container-NG17D .side-menu-button-vbkJ1.selected-yhdng,
+.side-menu-container-NG17D .side-menu-button-vbkJ1.selected-yhdng:hover {
+    background-color: var(--accent) !important;
+    box-shadow: var(--box-shadow) !important;
+}
+
+.settings-container-b0DCu .settings-content-lLXmk .sections-container-EUKAe .section-container-twzKQ .option-container-EGlcv.user-info-option-container-oRLJc .user-info-content-ez7kZ .avatar-container-YWq9E {
+    background-color: transparent;
+}
+
+
+/*----------  TRAKT LOGOUT BUTTON  ----------*/
+
+.settings-container-b0DCu .settings-content-lLXmk .sections-container-EUKAe .section-container-twzKQ .option-container-EGlcv .option-input-container-NPgpT.button-container-ENMae {
+    box-shadow: var(--box-shadow);
+
+    transition: 0.2s all ease-in-out;
+}
+
+.settings-container-b0DCu .settings-content-lLXmk .sections-container-EUKAe .section-container-twzKQ .option-container-EGlcv .option-input-container-NPgpT.button-container-ENMae:hover {
+    outline: var(--focus-outline-size) solid var(--danger-accent-color);
+    box-shadow: var(--box-shadow), var(--outer-glow);
+}
+
+.settings-container-b0DCu .settings-content-lLXmk .sections-container-EUKAe .section-container-twzKQ .option-container-EGlcv .option-input-container-NPgpT.button-container-ENMae:active {
+    box-shadow: var(--box-shadow);
+    transform: scale(0.95);
+}
+
+/*----------  MULTISELECT  ----------*/
+
+.label-container-dhjQS {
+    border: 1px solid transparent;
+    box-shadow: var(--box-shadow);
+
+    transition: 0.2s all ease-in-out;
+}
+
+.label-container-dhjQS:hover {
+    border-color:var(--primary-accent-color) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+}
+
+.label-container-dhjQS:active {
+    background-color: var(--background) !important;
+    border-color: var(--accent);
+    box-shadow: var(--box-shadow);
+}
+
+.label-container-dhjQS>.label-AR_l8 {
+    white-space: normal;
+}
+
+
+/*----------  TOGGLE  ----------*/
+
+.toggle-toOWM {
+    border: 1px solid transparent;
+    box-shadow: var(--box-shadow);
+
+    transition: 0.2s all ease-in-out;
+}
+
+.toggle-toOWM:hover {
+    border-color: var(--accent);
+    box-shadow: var(--box-shadow), var(--outer-glow);
+}
+
+.toggle-container-lZfHP.checked .toggle-toOWM {
+    background-color: var(--accent);
+    box-shadow: var(--box-shadow);
+}
+
+.button-container-zVLH6:focus {
+    outline-style: none;
+}
+
+
+/*----------  COLOR PICKER  ----------*/
+
+.option-input-container-NPgpT.color-input-container-WclA_ {
+    border: 1px solid var(--secondary-foreground-color);
+    box-shadow: var(--box-shadow);
+}
+
+.option-input-container-NPgpT.color-input-container-WclA_:hover {
+    border: 1px solid var(--primary-accent-color) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+}
+
+.option-input-container-NPgpT.color-input-container-WclA_:active {
+    border-color: var(--accent);
+    box-shadow: var(--box-shadow);
+    
+    transform: scale(0.95);
+}
+
+/* SELECT BUTTON */
+.action-button-eprQG {
+    background-color: var(--accent);
+    box-shadow: var(--box-shadow);
+    transition: 0.2s all ease-in-out;
+}
+
+.action-button-eprQG:hover {
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+}
+
+.action-button-eprQG:active {
+    border-color: var(--accent);
+    box-shadow: var(--box-shadow);
+
+    transform: scale(0.95);
+}
+
+
+
+/*----------  STREAMING BUTTONS  ----------*/
+
+.wrapper-FMNA6,
+.wrapper-FMNA6 .footer-jhua_ {
+    overflow: visible;
+}
+
+.wrapper-FMNA6 .footer-jhua_ .add-url-YoBI2 {
+    background-color: var(--accent);
+    box-shadow: var(--box-shadow);
+}
+
+.wrapper-FMNA6 .footer-jhua_ .reload-rrVYe {
+    box-shadow: var(--box-shadow);
+    flex-shrink: 0; /* Prevent button from shrinking */
+    margin-left: 15px; /* Ensure gap between text and button */
+}
+
+.wrapper-FMNA6 .footer-jhua_ .add-url-YoBI2:hover,
+.wrapper-FMNA6 .footer-jhua_ .reload-rrVYe:hover {
+    border: 2px solid var(--primary-accent-color);
+    box-shadow: var(--box-shadow), var(--outer-glow);
+}
+
+.wrapper-FMNA6 .footer-jhua_ .add-url-YoBI2:active,
+.wrapper-FMNA6 .footer-jhua_ .reload-rrVYe:active {
+    transform: scale(0.95);
+    border-color: var(--accent);
+    box-shadow: var(--box-shadow);
+}
+
+
+
+/*---------- Keyboard Shortcuts ----------*/
+
+kbd, .keyboard-shortcut,
+.shortcut-container kbd {
+    background: var(--background) !important;
+    box-shadow: var(--box-shadow), var(--outer-glow) !important;
+}
+
+
+/*----------  API SELECTOR DROPDOWN  ----------*/
+
+/* Show menu when active */
+.multiselect-container-w0c9l.active .menu-container-B6cqK {
+    display: block !important;
+}
+
+/* Ensure menu is hidden by default if native styles fail */
+.option-container-EGlcv.api-selector-movie .menu-container-B6cqK,
+.option-container-EGlcv.api-selector-series .menu-container-B6cqK,
+.option-container-EGlcv.kai-mpv-setting .menu-container-B6cqK {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
+    min-width: 100%;
+}
+
+/* Selected Item */
+.menu-container-qiz0X .option-container-mO9yW.selected {
+    background-color: var(--accent);
+    font-weight: 700;
+}
+
+/* Warning Text */
+.hero-banner-warning {
+    text-wrap: balance;
+    font-size: 0.9em;
+    opacity: 0.7;
+    color: var(--primary-foreground-color);
+}
+
+/* Custom API Input Row */
+.custom-input-row {
+    width: 49rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    display: flex;
+}
+
+.custom-input-row.hidden {
+    display: none !important;
+}
+
+.custom-input-row .option-name-container-exGMI {
+    flex-shrink: 0;
+    padding: 1rem 1rem 1rem 0;
+    margin-right: 2rem;
+    width: 22rem;
+}
+
+.custom-input-row .label-FFamJ {
+    line-height: 1.5rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--primary-foreground-color);
+}
+
+.custom-input-row .option-input-container-NPgpT {
+    display: flex;
+    padding: 0.7rem 1.5rem;
+    border-radius: 2.5rem;
+    transition: 0.2s all ease-in-out;
+    background-color: var(--overlay-color);
+    border: 2px solid transparent;
+    flex: 1;
+    cursor: text;
+    box-shadow: var(--box-shadow);
+    width: 13rem;
+}
+
+.custom-input-row .input-field {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--primary-foreground-color);
+    outline: none;
+    font-size: 0.9em;
+}
+
+/* Footer Layout overrides */
+.wrapper-FMNA6 .footer-jhua_ {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.reload-rrVYe.reload-button {
+    cursor: pointer;
+}
+
+/* Accessibility Focus Guard */
+.focus-guard {
+    width: 1px;
+    height: 0px;
+    padding: 0px;
+    overflow: hidden;
+    position: fixed;
+    top: 1px;
+    left: 1px;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   API KEY SETTINGS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Section Layout */
+.kai-api-keys-section {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.kai-api-key-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.kai-api-key-row:last-child {
+    border-bottom: none;
+}
+
+.kai-api-key-row .option-name-container-exGMI {
+    flex-shrink: 0;
+    width: 25rem;
+    padding-right: 2rem;
+}
+
+/* Hint text with link */
+.kai-api-key-hint {
+    font-size: 0.85em;
+    opacity: 0.7;
+    margin-top: 0.25rem;
+    color: var(--primary-foreground-color);
+}
+
+.kai-api-key-hint a {
+    color: var(--tertiary-accent-color);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.kai-api-key-hint a:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+.section-container-twzKQ.kai-api-keys-section.animation-fade-in .option-container-EGlcv.kai-api-key-row .option-name-container-exGMI {
+    display: block;     /* Changed from 'flex' to let it go under as a subtitle hint */
+}
+
+/* Input Group */
+.kai-settings-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.kai-settings-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--primary-foreground-color);
+    padding: 0.8rem 1rem;
+    padding-right: 2.5rem; /* Space for status icon */
+    border-radius: 12px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.kai-settings-input:focus {
+    border-color: var(--primary-accent-color);
+    box-shadow: 0 0 0 2px rgba(123, 91, 245, 0.2);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.kai-settings-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Status Badges */
+.kai-settings-status {
+    position: absolute;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    font-size: 1rem;
+}
+
+.kai-status-icon.status-loading {
+    animation: spin 1s linear infinite;
+    color: var(--primary-accent-color);
+}
+
+.kai-status-icon.status-valid {
+    color: #4ade80;
+}
+
+.kai-status-icon.status-invalid {
+    color: #f87171;
+}
+
+/* Spinner Animation */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+/* Muted Gray Links (Secondary Info) */
+.kai-muted-link,
+.kai-muted-link * {
+    color: rgba(255, 255, 255, 0.6) !important;
+    transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    text-decoration: none !important;
+}
+
+.kai-muted-link:hover,
+.kai-muted-link:hover * {
+    color: var(--primary-foreground-color, #fff) !important;
+    text-decoration: none !important;
+}
+
+/* SVG Icon Micro-animations */
+.kai-icon {
+    /* ease-out for premium feel, no bounce */
+    transition: transform 0.2s ease-out, fill 0.2s ease-out;
+    fill: none;
+}
+
+.kai-muted-link:hover .kai-icon {
+    fill: currentColor;
+    /* Base hover scale for all icons */
+    transform: scale(1.04);
+}
+
+.kai-muted-link:hover .kai-icon-heart {
+    /* Single heart beat */
+    animation: kaiHeartBeat 0.4s ease-out 1 forwards;
+}
+
+.kai-muted-link:hover .kai-icon-star {
+    /* No rotation, just subtle scale */
+    transform: scale(1.04);
+}
+
+@keyframes kaiHeartBeat {
+    0% { transform: scale(1.0); }
+    50% { transform: scale(1.1); } /* Subtle pop */
+    100% { transform: scale(1.04); } /* Settle at hover state */
+}
+
+/* Shared UI components for Stremio Settings Webmods */
+
+.kai-mpv-setting {
+    flex-wrap: wrap !important;
+}
+
+.kai-warning-note,
+.kai-info-note {
+    width: 100%;
+    text-wrap: balance;
+}
+
+.kai-warning-note {
+    color: rgba(255, 184, 64, 0.65);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.kai-info-note {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center; /* Center alignment usually looks better unless text is very long block */
+    gap: 0.5rem;
+}
+
+.kai-note-icon {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    stroke: currentColor;
+    fill: none; 
+}
+
+/* 
+   Dropdown Menu Styles 
+   Extracted from settings-ui.js for global availability
+*/
+.kai-settings-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
+    min-width: 100%;
+    background: var(--background, #000); /* Fallback */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.multiselect-container-w0c9l.active .kai-settings-menu {
+    display: block !important;
+}
+
+/* Input Wrapper Consistency */
+.kai-settings-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
