@@ -1,7 +1,8 @@
 <img height="0" alt="AIO-logo-allecsc" src="https://github.com/user-attachments/assets/4ff6d062-8b2e-4cfe-9d14-358834142c13" />
+<img width="0" alt="Stremio-Kai-v4.0" src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" />
 
 <div align="center">
-<img width="200" alt="Stremio-Kai-v4.0" src="https://github.com/user-attachments/assets/bd873188-cc6b-45c4-bf82-289e17752b00" />
+<img width="200" alt="Stremio-Kai-v4.0" src="https://github.com/user-attachments/assets/36bc9425-24bc-4334-ac66-9c5645319afc" />
 
   <h1>Stremio Kai</h1>
 
@@ -128,27 +129,23 @@ Starting with v4.0, **Stremio Kai Zero is no longer distributed as a separate bu
 
 <br>
 
-![sidebar-hide](https://github.com/user-attachments/assets/ed26d49a-93ad-4b62-b422-7265e1835f75)
-
-  > _Hidden Navigation - Shows up on hover_
-
-<br>
-  
-![oled-toggle](https://github.com/user-attachments/assets/98925c06-bb27-4df5-8e5c-701eb7c32385)
-
-  > _Theme toggle_
-
-<br>
-
 <img width="805" height="480" alt="Skip-Intro" src="https://github.com/user-attachments/assets/c3b65119-dc74-475f-8659-2201a843bff4" />
 
   > _Skip Opening Notification_
 
-</div>
+<br>
+  
+<img width="805" height="480" alt="oled-theme-comparison" src="https://github.com/user-attachments/assets/e1aeb84e-05d3-4d11-bcb2-7d0a138c4561" />
+
+  > _Regular vs OLED Theme Comparison_
 
 <br>
 
-<div align="center">
+[![hidden-navi-compressed](https://github.com/user-attachments/assets/a9bad24a-9d19-4dfc-8a1a-641f89e0c031)](https://streamable.com/e/bffqe7?autoplay=1&muted=1&nocontrols=1)
+
+  > _Hidden Navigation - Shows up on hover_
+
+<br>
   
 <img width="805" height="480" alt="Movie Details" src="https://github.com/user-attachments/assets/3563832e-a366-402f-83fc-d040d3fbf5d4" />
 
