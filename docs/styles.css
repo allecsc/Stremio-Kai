@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
 :root {
   --purple-primary: #8B5CF6;
   --purple-light: #A855F7;
@@ -8,7 +10,7 @@
   --text-secondary: #a0a0a0;
   --border-color: rgba(139, 92, 246, 0.2);
   --glow: rgba(139, 92, 246, 0.3);
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+}
 
 body {
   font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -108,18 +110,22 @@ body {
   bottom: 0;
   background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
               radial-gradient(circle at 80% 50%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
-  animation: pulse 8s ease-in-out infinite;
+  animation: pulse 4s ease-in-out infinite alternate;
   z-index: -1;
+  will-change: opacity;
+  transform: translateZ(0); /* Force hardware acceleration */
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
+  0% { opacity: 0.5; }
+  100% { opacity: 0.8; }
 }
 
 .hero-content {
-  max-width: 1000px;
+  width: 100%;
+  max-width: 1400px;
   z-index: 1;
+  padding: 0 1rem; /* Prevent edge-touching on small screens */
 }
 
 .hero-logo {
@@ -311,48 +317,184 @@ body {
   background-clip: text;
 }
 
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 1.5rem;
-}
-
-.gallery-item {
+/* Carousel Styles */
+.carousel-container {
   position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.gallery-item:hover {
-  transform: scale(1.02);
-  border-color: var(--purple-primary);
-  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
-}
-
-.gallery-item img {
   width: 100%;
-  height: 250px;
+  max-width: 1400px; /* Signficantly wider for impact */
+  margin: 0 auto;
+  perspective: 1000px;
+  height: 650px; /* Taller to fit the larger image */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-style: preserve-3d;
+}
+
+.carousel-item {
+  position: absolute;
+  width: 90%; 
+  max-width: 1100px; /* Massive hookup size */
+  aspect-ratio: 16/9.5;
+  border-radius: 12px;
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  z-index: 0;
+  opacity: 0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  overflow: visible; /* Allow caption to show below */
+  will-change: transform, opacity; /* GPU acceleration */
+}
+
+.carousel-item img,
+.carousel-item video {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.3s ease;
+  border-radius: 12px; /* Match parent for clipping */
 }
 
-.gallery-item:hover img {
-  transform: scale(1.05);
+/* Active State (Center) */
+.carousel-item.active {
+  transform: translateX(0) scale(1) translateZ(0);
+  z-index: 20;
+  opacity: 1;
+  border-color: var(--purple-primary);
+  box-shadow: 0 0 50px rgba(139, 92, 246, 0.2);
+  cursor: zoom-in; /* Explicitly show zoomability */
 }
 
-.gallery-overlay {
+/* Next State (Right) */
+.carousel-item.next {
+  transform: translateX(65%) scale(0.6) translateZ(-100px) rotateY(-25deg);
+  z-index: 10;
+  opacity: 0.5;
+  filter: brightness(0.5);
+  cursor: pointer;
+}
+
+.carousel-item.next:hover {
+  opacity: 0.8;
+  filter: brightness(0.8);
+  transform: translateX(60%) scale(0.65) translateZ(-50px) rotateY(-20deg);
+}
+
+/* Prev State (Left) */
+.carousel-item.prev {
+  transform: translateX(-65%) scale(0.6) translateZ(-100px) rotateY(25deg);
+  z-index: 10;
+  opacity: 0.5;
+  filter: brightness(0.5);
+  cursor: pointer;
+}
+
+.carousel-item.prev:hover {
+  opacity: 0.8;
+  filter: brightness(0.8);
+  transform: translateX(-60%) scale(0.65) translateZ(-50px) rotateY(20deg);
+}
+
+/* Hidden States */
+.carousel-item.hidden-left {
+  transform: translateX(-150%) scale(0.4);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.carousel-item.hidden-right {
+  transform: translateX(150%) scale(0.4);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.carousel-overlay {
   position: absolute;
-  bottom: 0;
+  bottom: -2.5rem; /* Position below the image */
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
-  padding: 2rem 1.5rem 1rem;
-  color: white;
+  background: transparent;
+  padding: 0.5rem 1rem;
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
+  font-size: 0.95rem;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+/* Always show caption for active item */
+.carousel-item.active .carousel-overlay {
+  opacity: 1;
+}
+
+/* Carousel Navigation */
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 4rem; /* Larger font */
+  font-weight: 300;
+  cursor: pointer;
+  z-index: 30; /* Higher than active item */
+  padding: 0 1rem;
+  transition: all 0.3s ease;
+  user-select: none;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-nav:hover {
+  color: var(--purple-light);
+  transform: translateY(-50%) scale(1.15);
+  text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+}
+
+.carousel-nav.prev { 
+    left: 10px; /* Give breathing room */
+}
+.carousel-nav.next { 
+    right: 10px; /* Give breathing room */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .carousel-container {
+    height: 300px;
+  }
+  
+  .carousel-item {
+    width: 85%;
+  }
+  
+  .carousel-item.next,
+  .carousel-item.prev {
+    opacity: 0; /* Hide side items on mobile for cleaner look */
+    pointer-events: none;
+  }
+  
+  .carousel-nav {
+    padding: 0 0.5rem;
+  }
 }
 
 /* Comparison Section */
@@ -537,13 +679,28 @@ footer {
   margin: auto;
   display: block;
   max-width: 90%;
-  max-height: 90%;
+  max-height: 85%; /* Slightly reduced to make room for caption */
   position: absolute;
-  top: 50%;
+  top: 48%; /* Shifted up slightly */
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 8px;
   box-shadow: 0 0 50px rgba(139, 92, 246, 0.5);
+}
+
+#lightbox-caption {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
+  max-width: 80%;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  z-index: 10000;
 }
 
 .lightbox-close {
