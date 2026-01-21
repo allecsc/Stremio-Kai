@@ -269,6 +269,49 @@ function initCarousel() {
     }
   });
 
+  // Touch/Swipe Support for Mobile
+  const addSwipeSupport = (element, onSwipeLeft, onSwipeRight) => {
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const minSwipeDistance = 50;
+
+    element.addEventListener(
+      "touchstart",
+      (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      },
+      { passive: true },
+    );
+
+    element.addEventListener(
+      "touchend",
+      (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const swipeDistance = touchEndX - touchStartX;
+
+        if (Math.abs(swipeDistance) > minSwipeDistance) {
+          if (swipeDistance > 0) {
+            onSwipeRight(); // Swipe right
+          } else {
+            onSwipeLeft(); // Swipe left
+          }
+        }
+      },
+      { passive: true },
+    );
+  };
+
+  // Add swipe support to carousel
+  const carouselTrack = document.querySelector(".carousel-track");
+  if (carouselTrack) {
+    addSwipeSupport(carouselTrack, rotateNext, rotatePrev);
+  }
+
+  // Add swipe support to lightbox
+  if (lightbox) {
+    addSwipeSupport(lightbox, lbShowNext, lbShowPrev);
+  }
+
   // Initial Render
   updateCarousel();
 }
