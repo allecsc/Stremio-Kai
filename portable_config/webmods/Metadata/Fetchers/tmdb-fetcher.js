@@ -167,7 +167,7 @@
       const fetchUtils = getFetchUtils();
       const userLang =
         window.MetadataModules?.preferences?.get("language") || "en";
-      const appendToResponse = "credits,images";
+      const appendToResponse = "credits,images,release_dates,translations";
       const url = `${this.apiBase}/movie/${tmdbId}?api_key=${apiKey}&language=${userLang}&append_to_response=${appendToResponse}`;
 
       try {
@@ -201,7 +201,7 @@
       const fetchUtils = getFetchUtils();
       const userLang =
         window.MetadataModules?.preferences?.get("language") || "en";
-      const appendToResponse = "credits,content_ratings,images";
+      const appendToResponse = "credits,content_ratings,images,translations";
       const url = `${this.apiBase}/tv/${tmdbId}?api_key=${apiKey}&language=${userLang}&append_to_response=${appendToResponse}`;
 
       try {
@@ -315,21 +315,96 @@
     }
 
     /**
+     * Extract US content rating from release_dates (movies)
+     * @param {Object} releaseDates - raw release_dates object
+     * @returns {string|null} - Certification string (e.g. "PG-13") or null
+     */
+    extractMovieRating(releaseDates) {
+      if (!releaseDates?.results) return null;
+
+      // Priority: US > UK > Canada > Australia > NZ > Ireland
+      const priority = ["US", "GB", "CA", "AU", "NZ", "IE"];
+
+      // 1. Try priority list
+      for (const country of priority) {
+        const match = releaseDates.results.find(
+          (r) => r.iso_3166_1 === country,
+        );
+        if (match?.release_dates) {
+          // Find first non-empty certification
+          const cert = match.release_dates.find((d) => d.certification);
+          if (cert?.certification) return cert.certification;
+        }
+      }
+
+      // 2. Fallback: Take the first available valid certification from anywhere
+      const anyMatch = releaseDates.results.find((r) =>
+        r.release_dates?.some((d) => d.certification),
+      );
+      if (anyMatch) {
+        return anyMatch.release_dates.find((d) => d.certification)
+          .certification;
+      }
+
+      return null;
+    }
+
+    /**
+     * Extract content rating from content_ratings (TV)
+     * Priority: US > GB > CA > AU > NZ > IE > Fallback
+     * @param {Object} contentRatings - raw content_ratings object
+     * @returns {string|null} - Certification string (e.g. "TV-MA") or null
+     */
+    extractTVRating(contentRatings) {
+      if (!contentRatings?.results) return null;
+
+      // Priority: US > UK > Canada > Australia > NZ > Ireland
+      const priority = ["US", "GB", "CA", "AU", "NZ", "IE"];
+
+      // 1. Try priority list
+      for (const country of priority) {
+        const match = contentRatings.results.find(
+          (r) => r.iso_3166_1 === country,
+        );
+        if (match?.rating) return match.rating;
+      }
+
+      // 2. Fallback: Take first available
+      const anyMatch = contentRatings.results.find((r) => r.rating);
+      return anyMatch ? anyMatch.rating : null;
+    }
+
+    /**
      * Normalize movie data to internal format
      * Per plan, TMDB provides:
      * - plot (from overview), tagline
      * - poster, background
      * - stars (from cast[0:8]), directors (from crew[Director][0:2])
+     * - contentRating (from release_dates)
+     * - englishTitle (from translations, for tooltip fallback)
      */
     normalizeMovieData(data) {
       const credits = data.credits || {};
 
+      // Extract English title from translations (for tooltip and fallback)
+      const englishTitle = this.extractEnglishTitle(data.translations);
+      const originalTitle = data.original_title || null;
+
+      // Determine display title with fallback logic:
+      // If TMDB returned original_title as title (no localization), use English title
+      let title = data.title || null;
+      if (title && originalTitle && title === originalTitle && englishTitle) {
+        title = englishTitle;
+      }
+
       return {
         // Content
-        title: data.title || null,
-        originalTitle: data.original_title || null,
+        title,
+        originalTitle,
+        englishTitle, // Always stored for tooltip use
         plot: data.overview || null,
         tagline: data.tagline || null,
+        contentRating: this.extractMovieRating(data.release_dates),
 
         // Cast & Crew (per plan: cast→stars)
         stars: this.extractCast(credits.cast || [], 8),
@@ -355,6 +430,8 @@
      * - poster, background
      * - stars (from cast[0:8]), directors (from crew[Director][0:2])
      * - network (name + logo) for shows
+     * - contentRating (from content_ratings)
+     * - englishTitle (from translations, for tooltip fallback)
      */
     normalizeTVData(data) {
       const credits = data.credits || {};
@@ -372,12 +449,25 @@
         }
       }
 
+      // Extract English title from translations (for tooltip and fallback)
+      const englishTitle = this.extractEnglishTitle(data.translations);
+      const originalTitle = data.original_name || null;
+
+      // Determine display title with fallback logic:
+      // If TMDB returned original_name as name (no localization), use English title
+      let title = data.name || null;
+      if (title && originalTitle && title === originalTitle && englishTitle) {
+        title = englishTitle;
+      }
+
       return {
         // Content
-        title: data.name || null,
-        originalTitle: data.original_name || null,
+        title,
+        originalTitle,
+        englishTitle, // Always stored for tooltip use
         plot: data.overview || null,
         tagline: data.tagline || null,
+        contentRating: this.extractTVRating(data.content_ratings),
 
         // Cast & Crew (per plan: cast→stars)
         stars: this.extractCast(credits.cast || [], 8),
@@ -438,6 +528,26 @@
           key: v.key,
           site: v.site,
         }));
+    }
+
+    /**
+     * Extract English title from translations data
+     * Used for fallback when localized title is not available
+     * @param {Object} translations - TMDB translations object
+     * @returns {string|null} English title or null if not found
+     */
+    extractEnglishTitle(translations) {
+      if (!translations?.translations) return null;
+
+      const englishTranslation = translations.translations.find(
+        (t) => t.iso_639_1 === "en",
+      );
+
+      return (
+        englishTranslation?.data?.title ||
+        englishTranslation?.data?.name ||
+        null
+      );
     }
 
     /**

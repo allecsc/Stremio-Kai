@@ -13,8 +13,8 @@ M.opts = {
     auto_skip = false,
     skip_categories = "opening;ending;preview;recap;logo",
     -- Unified filter args (used for both notification and exit detection)
-    blackdetect_args = "d=0.3:pix_th=0.01:pic_th=0.98",
-    silencedetect_args = "n=-45dB:d=0.4",
+    blackdetect_args = "d=0.5:pic_th=0.98:pix_th=0.05",
+    silencedetect_args = "n=-45dB:d=0.5",
     show_notification = true,
     notification_duration = 30,
     filters_notification_duration = 5,
@@ -37,19 +37,17 @@ M.CONSTANTS = {
     DEBUG_MODE = false,           -- Set to true to enable verbose filter event logging
     
     -- Speed control
-    MAX_SPEED = 100,              -- Fast-forward speed during skip
+    MAX_SPEED = 90,               -- Fast-forward speed during skip (90x for reliable event detection)
     NORMAL_SPEED = 1,             -- Normal playback speed
     
     -- Timing
     NOTIFICATION_COOLDOWN = 5,    -- Seconds to block notifications after showing one
-    INTRO_THRESHOLD = 60,         -- Seconds from start to consider as "intro zone"
     SEEK_STABILIZATION_DELAY = 0.5, -- Seconds to wait after seek before notifications
     CHAPTER_DEBOUNCE_DELAY = 0.5, -- Seconds to debounce chapter entry notifications
     COMMON_INTRO_LENGTH = 110,    -- Chapters ≤110s are likely pure intros (no cold open)
     MIN_INTRO_LENGTH = 30,        -- Chapters must be ≥30s to avoid title cards
     PREVIEW_MAX_LENGTH = 30,      -- Preview chapters typically 25-30s
     CONFIRMATION_TIMEOUT = 5,     -- Seconds to wait for second Tab to confirm skip
-    FILE_START_THRESHOLD = 5,     -- Seconds from file start for intro heuristic
     
     -- Dynamic window percentages (series only)
     INTRO_WINDOW_PERCENT = 0.20,  -- 20% of duration for intro window

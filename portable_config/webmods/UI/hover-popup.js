@@ -91,7 +91,11 @@ class PopupTemplates {
                 <div class="metadata-popup-header">
                     <div class="metadata-title-block">
                         <div class="${titleClass}" title="${
-                          metadata.originalTitle || ""
+                          // Smart tooltip: show English if localized displayed, else original
+                          metadata.englishTitle &&
+                          metadata.title !== metadata.englishTitle
+                            ? metadata.englishTitle
+                            : metadata.originalTitle || ""
                         }">
                             ${
                               titleParts.length > 1
@@ -282,8 +286,14 @@ class PopupTemplates {
     allTags.push(...standardGenres);
 
     // Certification badge HTML (first in tags row)
+    const certificationDef =
+      window.MetadataModules?.ratingsUtils?.getContentRatingDefinition(
+        metadata.contentRating,
+      );
     const certificationBadge = metadata.contentRating
-      ? `<span class="metadata-popup-certification">${metadata.contentRating}</span>`
+      ? `<span class="metadata-popup-certification" title="${
+          certificationDef || ""
+        }">${metadata.contentRating}</span>`
       : "";
 
     return `

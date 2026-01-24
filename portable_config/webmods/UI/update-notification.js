@@ -7,11 +7,11 @@
 
   // Configuration
   const CONFIG = {
-    CURRENT_VERSION: "4.0.0",
+    CURRENT_VERSION: "4.1.0",
     REPO_URL:
       "https://api.github.com/repos/allecsc/Stremio-Kai/releases/latest",
-    GITHUB_URL: "https://github.com/allecsc/Stremio-Kai",
-    RELEASES_URL: "https://github.com/allecsc/Stremio-Kai/releases/latest",
+    GITHUB_URL: "https://allecsc.github.io/Stremio-Kai/",
+    RELEASES_URL: "https://allecsc.github.io/Stremio-Kai/changelog.html",
     TARGET_ROUTE: "#/settings",
     OBSERVER_TIMEOUT_MS: 10000,
     ROUTE_CHANGE_DELAY_MS: 100,

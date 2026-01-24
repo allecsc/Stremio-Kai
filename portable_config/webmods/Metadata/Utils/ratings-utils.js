@@ -71,12 +71,12 @@
       const progress = (5.0 - numRating) / 2.0;
       const greyValue = 184 - progress * 38;
       return `rgb(${Math.round(greyValue)}, ${Math.round(
-        greyValue
+        greyValue,
       )}, ${Math.round(greyValue)})`;
     }
     const greyValue = Math.max(108, 146 - (3.0 - numRating) * 19);
     return `rgb(${Math.round(greyValue)}, ${Math.round(
-      greyValue
+      greyValue,
     )}, ${Math.round(greyValue)})`;
   }
 
@@ -103,7 +103,7 @@
       b = hue2rgb(p, q, h - 1 / 3);
     }
     return `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(
-      b * 255
+      b * 255,
     )})`;
   }
 
@@ -166,8 +166,8 @@
         votes >= 1000000
           ? `${(votes / 1000000).toFixed(1)}M`
           : votes >= 1000
-          ? `${(votes / 1000).toFixed(1)}K`
-          : votes.toLocaleString();
+            ? `${(votes / 1000).toFixed(1)}K`
+            : votes.toLocaleString();
       return `${sourceName} • ${formatted} Votes`;
     };
 
@@ -183,14 +183,14 @@
       const imdbTooltip = formatVotesTooltip("IMDb", imdbVotes);
       html += `
         <button class="${prefix}-item" onclick="event.stopPropagation(); window.open('https://www.imdb.com/title/${
-        metadata.imdb
-      }/', '_blank')" title="${imdbTooltip}">
+          metadata.imdb
+        }/', '_blank')" title="${imdbTooltip}">
           <img src="${
             LOGOS.imdb
           }" class="${prefix}-logo" alt="IMDb" decoding="async">
           <span class="${prefix}-imdb" style="color: ${imdbColor};">${Number(
-        imdbRating
-      ).toFixed(1)}</span>
+            imdbRating,
+          ).toFixed(1)}</span>
         </button>`;
     }
 
@@ -261,8 +261,8 @@
             isFresh ? LOGOS.rtFresh : LOGOS.rtRotten
           }" class="${prefix}-logo" alt="RT" decoding="async">
           <span class="${prefix}-rt ${
-        isFresh ? "rt-fresh" : "rt-rotten"
-      }">${rtRating}%</span>
+            isFresh ? "rt-fresh" : "rt-rotten"
+          }">${rtRating}%</span>
         </button>`;
     }
 
@@ -276,7 +276,7 @@
       const isLiked = rtaRating >= 60;
       const rtaTooltip = formatVotesTooltip(
         "Rotten Tomatoes Audience",
-        rtaVotes
+        rtaVotes,
       );
       html += `
         <button class="${prefix}-item" onclick="event.stopPropagation(); window.open('https://www.rottentomatoes.com/', '_blank')" title="${rtaTooltip}">
@@ -284,8 +284,8 @@
             isLiked ? LOGOS.rtAudienceFresh : LOGOS.rtAudienceRotten
           }" class="${prefix}-logo" alt="RT Audience" decoding="async">
           <span class="${prefix}-rt ${
-        isLiked ? "rt-fresh" : "rt-rotten"
-      }">${rtaRating}%</span>
+            isLiked ? "rt-fresh" : "rt-rotten"
+          }">${rtaRating}%</span>
         </button>`;
     }
 
@@ -329,7 +329,7 @@
       const metacriticVotes = getVotes("metacritic");
       const metacriticTooltip = formatVotesTooltip(
         "Metacritic",
-        metacriticVotes
+        metacriticVotes,
       );
       html += `
         <button class="${prefix}-item" onclick="event.stopPropagation(); window.open('${metaUrl}', '_blank')" title="${metacriticTooltip}">
@@ -347,15 +347,15 @@
       hasRatings = true;
       const svgWithPrefix = LETTERBOXD_SVG.replace(
         /class="rating-logo/g,
-        `class="${prefix}-logo`
+        `class="${prefix}-logo`,
       );
       const lbTooltip = formatVotesTooltip("Letterboxd", lbVotes);
       html += `
         <button class="${prefix}-item" onclick="event.stopPropagation(); window.open('https://letterboxd.com/', '_blank')" title="${lbTooltip}">
           ${svgWithPrefix}
           <span class="${prefix}-letterboxd">${Number(lbRating).toFixed(
-        1
-      )}</span>
+            1,
+          )}</span>
         </button>`;
     }
 
@@ -368,7 +368,7 @@
       hasRatings = true;
       const svgWithPrefix = TRAKT_SVG.replace(
         /class="rating-logo/g,
-        `class="${prefix}-logo`
+        `class="${prefix}-logo`,
       );
       const traktTooltip = formatVotesTooltip("Trakt", traktVotes);
       html += `
@@ -387,7 +387,7 @@
       hasRatings = true;
       const svgWithPrefix = ROGEREBERT_SVG.replace(
         /class="rating-logo/g,
-        `class="${prefix}-logo`
+        `class="${prefix}-logo`,
       );
       const reTooltip = formatVotesTooltip("Roger Ebert", reVotes);
       html += `
@@ -399,6 +399,618 @@
 
     html += "</div>";
     return hasRatings ? html : "";
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONTENT RATING DEFINITIONS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Raw data from user
+  const RAW_RATINGS = {
+    US: [
+      {
+        certification: "TR-Y",
+        meaning: "This program is designed to be appropriate for all children.",
+      },
+      {
+        certification: "TV-Y",
+        meaning: "This program is designed to be appropriate for all children.",
+      },
+      {
+        certification: "TV-Y7",
+        meaning: "This program is designed for children age 7 and above.",
+      },
+      {
+        certification: "G",
+        meaning:
+          "All ages admitted. There is no content that would be objectionable to most parents.",
+      },
+      {
+        certification: "TV-G",
+        meaning: "Most parents would find this program suitable for all ages.",
+      },
+      {
+        certification: "PG",
+        meaning: "Some material may not be suitable for children under 10.",
+      },
+      {
+        certification: "TV-PG",
+        meaning:
+          "This program contains material that parents may find unsuitable for younger children.",
+      },
+      {
+        certification: "PG-13",
+        meaning: "Some material may be inappropriate for children under 13.",
+      },
+      {
+        certification: "TV-14",
+        meaning:
+          "This program contains some material that many parents would find unsuitable for children under 14 years of age.",
+      },
+      {
+        certification: "R",
+        meaning:
+          "Under 17 requires accompanying parent or adult guardian 21 or older.",
+      },
+      {
+        certification: "NC-17",
+        meaning:
+          "These films contain excessive graphic violence, intense or explicit sex, depraved, abhorrent behavior, explicit drug abuse.",
+      },
+      {
+        certification: "TV-MA",
+        meaning:
+          "This program is specifically designed to be viewed by adults and therefore may be unsuitable for children under 17.",
+      },
+      { certification: "NR", meaning: "No rating information." },
+    ],
+    GB: [
+      {
+        certification: "U",
+        meaning:
+          "Universal. A U film should be suitable for audiences aged four years and over.",
+      },
+      {
+        certification: "PG",
+        meaning:
+          "Parental Guidance. Suitable for general viewing, but some scenes may be unsuitable for young children.",
+      },
+      {
+        certification: "12A",
+        meaning:
+          "Generally not suitable for children aged under 12. Requires adult accompaniment.",
+      },
+      {
+        certification: "12",
+        meaning: "Not generally suitable for children aged under 12.",
+      },
+      {
+        certification: "15",
+        meaning: "No-one under 15 is allowed to see a 15 film at the cinema.",
+      },
+      {
+        certification: "18",
+        meaning: "Films rated 18 are for adults. No-one under 18 is allowed.",
+      },
+      {
+        certification: "R18",
+        meaning:
+          "Special classification for explicit works, restricted to licensed adult cinemas.",
+      },
+    ],
+    CA: [
+      { certification: "G", meaning: "Suitable for general audiences." },
+      {
+        certification: "PG",
+        meaning: "Parental guidance. Moderate violence and profanity allowed.",
+      },
+      {
+        certification: "14+",
+        meaning: "Programming intended for viewers ages 14 and older.",
+      },
+      {
+        certification: "18+",
+        meaning: "Programming intended for viewers ages 18 and older.",
+      },
+      {
+        certification: "C",
+        meaning: "Programming suitable for children ages of 2–7 years.",
+      },
+      { certification: "C8", meaning: "Suitable for children ages 8+." },
+      {
+        certification: "Exempt",
+        meaning: "Shows which are exempt from ratings.",
+      },
+      { certification: "R", meaning: "Restricted to 18 years and over." },
+      {
+        certification: "A",
+        meaning: "Admittance restricted to people 18 years of age or older.",
+      },
+      { certification: "E", meaning: "Exempt." },
+    ],
+    AU: [
+      { certification: "E", meaning: "Exempt from classification." },
+      {
+        certification: "G",
+        meaning: "General exhibition; all ages are permitted.",
+      },
+      {
+        certification: "PG",
+        meaning: "Parental guidance is recommended for young viewers.",
+      },
+      { certification: "M", meaning: "Recommended for mature audiences." },
+      {
+        certification: "MA 15+",
+        meaning: "Not suitable for children and teens under 15.",
+      },
+      {
+        certification: "AV 15+",
+        meaning:
+          "Not suitable for children and teens under 15. Strong violence.",
+      },
+      {
+        certification: "R 18+",
+        meaning: "Not for children under 18; restricted to adults.",
+      },
+      {
+        certification: "X 18+",
+        meaning: "Restricted to 18 years and over. Pornographic content.",
+      },
+      { certification: "RC", meaning: "Refused Classification. Banned." },
+      { certification: "P", meaning: "Preschool children." },
+      { certification: "C", meaning: "Children." },
+    ],
+    DE: [
+      { certification: "0", meaning: "No age restriction." },
+      {
+        certification: "6",
+        meaning: "No children younger than 6 years admitted.",
+      },
+      { certification: "12", meaning: "Children 12 or older admitted." },
+      { certification: "16", meaning: "Children 16 or older admitted." },
+      { certification: "18", meaning: "No youth admitted, only adults." },
+    ],
+    FR: [
+      {
+        certification: "10",
+        meaning: "Not recommended for children under 10.",
+      },
+      {
+        certification: "12",
+        meaning: "Not recommended for children under 12.",
+      },
+      {
+        certification: "16",
+        meaning: "Not recommended for children under 16.",
+      },
+      { certification: "18", meaning: "Not recommended for persons under 18." },
+      { certification: "TP", meaning: "Valid for all audiences." },
+      { certification: "NR", meaning: "No rating information." },
+    ],
+    KR: [
+      { certification: "All", meaning: "Film suitable for all ages." },
+      {
+        certification: "7",
+        meaning:
+          "May contain material inappropriate for children younger than 7.",
+      },
+      {
+        certification: "12",
+        meaning: "Film intended for audiences 12 and over.",
+      },
+      {
+        certification: "15",
+        meaning: "Film intended for audiences 15 and over.",
+      },
+      {
+        certification: "19",
+        meaning: "No one under 19 is allowed to watch this film.",
+      },
+      { certification: "Exempt", meaning: "Exempt from rating." },
+      {
+        certification: "Restricted Screening",
+        meaning: "Restricted screening.",
+      },
+    ],
+    JP: [
+      { certification: "G", meaning: "General, suitable for all ages." },
+      {
+        certification: "PG12",
+        meaning: "Parental guidance requested for young people under 12 years.",
+      },
+      { certification: "R15+", meaning: "No one under 15 admitted." },
+      { certification: "R18+", meaning: "No one under 18 admitted." },
+    ],
+    HK: [
+      { certification: "I", meaning: "Suitable for all ages." },
+      { certification: "IIA", meaning: "Not suitable for children." },
+      {
+        certification: "IIB",
+        meaning: "Not suitable for young persons and children.",
+      },
+      { certification: "III", meaning: "Persons aged 18 and above only." },
+    ],
+    NZ: [
+      { certification: "G", meaning: "Suitable for general audiences." },
+      { certification: "PG", meaning: "Parental guidance recommended." },
+      {
+        certification: "M",
+        meaning: "Suitable for mature audiences 16 years and over.",
+      },
+      {
+        certification: "16",
+        meaning: "People under 16 years should not view.",
+      },
+      {
+        certification: "18",
+        meaning: "People under 18 years should not view.",
+      },
+      {
+        certification: "R13",
+        meaning: "Restricted to persons 13 years and over.",
+      },
+      {
+        certification: "R15",
+        meaning: "Restricted to persons 15 years and over.",
+      },
+      {
+        certification: "R16",
+        meaning: "Restricted to persons 16 years and over.",
+      },
+      {
+        certification: "R18",
+        meaning: "Restricted to persons 18 years and over.",
+      },
+      { certification: "R", meaning: "Restricted." },
+      { certification: "RP13", meaning: "Restricted 13 unless accompanied." },
+      { certification: "RP16", meaning: "Restricted 16 unless accompanied." },
+      { certification: "RP18", meaning: "Restricted 18 unless accompanied." },
+    ],
+    IE: [
+      {
+        certification: "G",
+        meaning: "Suitable for children of school going age.",
+      },
+      {
+        certification: "PG",
+        meaning:
+          "Suitable for children over 8. Parental guidance recommended under 12.",
+      },
+      {
+        certification: "12A",
+        meaning: "Suitable for 12+. Younger children admitted with adult.",
+      },
+      {
+        certification: "15A",
+        meaning: "Suitable for 15+. Younger viewers admitted with adult.",
+      },
+      { certification: "12", meaning: "Suitable for 12+." },
+      { certification: "15", meaning: "Suitable for 15+." },
+      { certification: "16", meaning: "Suitable for 16+." },
+      { certification: "18", meaning: "Suitable only for adults." },
+    ],
+    BR: [
+      { certification: "L", meaning: "General Audiences." },
+      { certification: "10", meaning: "Not recommended for minors under 10." },
+      { certification: "12", meaning: "Not recommended for minors under 12." },
+      { certification: "14", meaning: "Not recommended for minors under 14." },
+      { certification: "16", meaning: "Not recommended for minors under 16." },
+      { certification: "18", meaning: "Not recommended for minors under 18." },
+    ],
+    NL: [
+      { certification: "AL", meaning: "All ages." },
+      {
+        certification: "6",
+        meaning: "Potentially harmful to children under 6.",
+      },
+      {
+        certification: "9",
+        meaning: "Potentially harmful to children under 9.",
+      },
+      {
+        certification: "12",
+        meaning: "Potentially harmful to children under 12.",
+      },
+      {
+        certification: "14",
+        meaning: "Potentially harmful to children under 14.",
+      },
+      {
+        certification: "16",
+        meaning: "Potentially harmful to children under 16.",
+      },
+      {
+        certification: "18",
+        meaning: "Potentially harmful to children under 18.",
+      },
+    ],
+    IN: [
+      { certification: "U", meaning: "Unrestricted Public Exhibition." },
+      {
+        certification: "UA",
+        meaning: "Parental guidance for children below 12.",
+      },
+      { certification: "U/A 7+", meaning: "Viewable for 7 and above." },
+      { certification: "U/A 13+", meaning: "Viewable for 13 and above." },
+      { certification: "U/A 16+", meaning: "Viewable for 16 and above." },
+      { certification: "A", meaning: "Restricted to adults." },
+      {
+        certification: "S",
+        meaning: "Restricted to special class of persons.",
+      },
+    ],
+    ES: [
+      { certification: "A", meaning: "General admission." },
+      { certification: "Ai", meaning: "General admission." },
+      { certification: "7", meaning: "Not recommended for under 7." },
+      { certification: "7i", meaning: "Not recommended for under 7." },
+      { certification: "12", meaning: "Not recommended for under 12." },
+      { certification: "16", meaning: "Not recommended for under 16." },
+      { certification: "18", meaning: "Not recommended for under 18." },
+      { certification: "X", meaning: "Prohibited for under 18." },
+      { certification: "TP", meaning: "For general viewing." },
+    ],
+    IT: [
+      { certification: "T", meaning: "All ages admitted." },
+      { certification: "BA", meaning: "Parental guidance suggested." },
+      { certification: "6+", meaning: "Not suitable for children under 6." },
+      { certification: "14+", meaning: "Released to ages 14 and older." },
+      { certification: "18+", meaning: "Released to ages 18 and older." },
+      {
+        certification: "VM12",
+        meaning: "Not recommended for children under 12.",
+      },
+      {
+        certification: "VM14",
+        meaning: "Not recommended for children under 14.",
+      },
+      {
+        certification: "VM18",
+        meaning: "Not recommended for children under 18.",
+      },
+    ],
+    FI: [
+      { certification: "S", meaning: "Allowed at all times." },
+      { certification: "K7", meaning: "Not recommended for children under 7." },
+      {
+        certification: "K12",
+        meaning: "Not recommended for children under 12.",
+      },
+      {
+        certification: "K16",
+        meaning: "Not recommended for children under 16.",
+      },
+      {
+        certification: "K18",
+        meaning: "Not recommended for children under 18.",
+      },
+      { certification: "KK", meaning: "Banned." },
+    ],
+    NO: [
+      { certification: "A", meaning: "Allowed at all times." },
+      { certification: "6", meaning: "6 years." },
+      { certification: "9", meaning: "9 years." },
+      { certification: "12", meaning: "12 years." },
+      { certification: "15", meaning: "15 years." },
+      { certification: "18", meaning: "18 years." },
+    ],
+    SE: [
+      { certification: "Btl", meaning: "All ages." },
+      { certification: "7", meaning: "Children under 7." },
+      { certification: "11", meaning: "Children over 11." },
+      { certification: "15", meaning: "Children over 15." },
+    ],
+    DK: [
+      { certification: "A", meaning: "Suitable for general audience." },
+      { certification: "7", meaning: "Not recommended for children under 7." },
+      { certification: "11", meaning: "For ages 11 and up." },
+      { certification: "15", meaning: "For ages 15 and up." },
+      { certification: "F", meaning: "Exempt." },
+    ],
+    BG: [
+      { certification: "12", meaning: "Content suitable for viewers over 12." },
+      { certification: "14", meaning: "Content suitable for viewers over 14." },
+      { certification: "16", meaning: "Content suitable for viewers over 16." },
+      { certification: "18", meaning: "Content suitable for viewers over 18." },
+      { certification: "A", meaning: "Recommended for children." },
+      { certification: "B", meaning: "Without age restrictions." },
+      { certification: "C", meaning: "Not recommended for children under 12." },
+      { certification: "D", meaning: "Prohibited for persons under 16." },
+      { certification: "X", meaning: "Prohibited for persons under 18." },
+    ],
+    HU: [
+      { certification: "KN", meaning: "Without age restriction." },
+      { certification: "6", meaning: "Not recommended below 6." },
+      { certification: "12", meaning: "Not recommended below 12." },
+      { certification: "16", meaning: "Not recommended below 16." },
+      { certification: "18", meaning: "Not recommended below 18." },
+      { certification: "X", meaning: "Restricted below 18." },
+    ],
+    LT: [
+      { certification: "V", meaning: "Movies for all ages." },
+      { certification: "N-7", meaning: "Viewers from 7 years old." },
+      { certification: "N-13", meaning: "Viewers from 13 years old." },
+      { certification: "N-14", meaning: "Viewers from 14 years old." },
+      { certification: "N-16", meaning: "Viewers from 16 years old." },
+      { certification: "N-18", meaning: "Viewers from 18 years old." },
+      { certification: "S", meaning: "Adults only." },
+    ],
+    PT: [
+      { certification: "T", meaning: "Suitable for all." },
+      { certification: "Públicos", meaning: "For all public." },
+      { certification: "M/3", meaning: "Viewers aged 3 and older." },
+      { certification: "M/6", meaning: "Viewers aged 6 and older." },
+      { certification: "M/12", meaning: "Viewers aged 12 and older." },
+      { certification: "10AP", meaning: "Parental guidance advised." },
+      { certification: "12AP", meaning: "Parental guidance advised." },
+      { certification: "M/14", meaning: "Viewers aged 14 and older." },
+      { certification: "M/16", meaning: "Viewers aged 16 and older." },
+      { certification: "M/18", meaning: "Viewers aged 18 and older." },
+      { certification: "P", meaning: "Pornography." },
+    ],
+    RU: [
+      { certification: "0+", meaning: "All ages admitted." },
+      { certification: "6+", meaning: "Unsuitable for children under 6." },
+      { certification: "12+", meaning: "Unsuitable for children under 12." },
+      { certification: "16+", meaning: "Unsuitable for children under 16." },
+      { certification: "18+", meaning: "Prohibited for children under 18." },
+    ],
+    MX: [
+      { certification: "AA", meaning: "Understandable for children under 7." },
+      { certification: "A", meaning: "For all age groups." },
+      { certification: "B", meaning: "For adolescents 12 and older." },
+      {
+        certification: "B-15",
+        meaning: "Not recommended for children under 15.",
+      },
+      { certification: "C", meaning: "For adults 18 and older." },
+      { certification: "D", meaning: "Adult movies." },
+    ],
+    PH: [
+      { certification: "G", meaning: "Suitable for all ages." },
+      { certification: "PG", meaning: "Parental guidance suggested." },
+      {
+        certification: "SPG",
+        meaning: "Stronger parental guidance suggested.",
+      },
+      { certification: "R-13", meaning: "Viewers 13 and above." },
+      { certification: "R-16", meaning: "Viewers 16 and above." },
+      { certification: "R-18", meaning: "Viewers 18 and above." },
+      { certification: "X", meaning: "Not suitable for public exhibition." },
+    ],
+    TH: [
+      { certification: "P", meaning: "Educational." },
+      { certification: "G", meaning: "General audience." },
+      { certification: "13", meaning: "Suitable for 13+." },
+      { certification: "15", meaning: "Suitable for 15+." },
+      { certification: "18", meaning: "Suitable for 18+." },
+      { certification: "20", meaning: "Unsuitable for under 20." },
+      { certification: "Banned", meaning: "Banned." },
+    ],
+    MY: [
+      { certification: "U", meaning: "General Audiences." },
+      { certification: "P13", meaning: "Parental Guidance 13." },
+      { certification: "18", meaning: "For viewers 18 and above." },
+      { certification: "18SG", meaning: "Violence/Horror 18+." },
+      { certification: "18SX", meaning: "Sexual Content 18+." },
+      { certification: "18PA", meaning: "Political/Religious 18+." },
+      { certification: "18PL", meaning: "Various 18+." },
+    ],
+    ID: [
+      { certification: "SU", meaning: "All ages." },
+      { certification: "P", meaning: "Pre-school." },
+      { certification: "A", meaning: "Children." },
+      { certification: "R", meaning: "Teens." },
+      { certification: "D", meaning: "Adults." },
+      { certification: "13+", meaning: "Suitable for 13+." },
+      { certification: "17+", meaning: "Suitable for 17+." },
+      { certification: "21+", meaning: "Suitable for 21+." },
+    ],
+    TR: [
+      { certification: "Genel İzleyici Kitlesi", meaning: "General audience." },
+      { certification: "6A", meaning: "Under 6 with family." },
+      { certification: "6+", meaning: "6 and over." },
+      { certification: "7+", meaning: "7 and over." },
+      { certification: "10A", meaning: "Under 10 with family." },
+      { certification: "10+", meaning: "10 and over." },
+      { certification: "13A", meaning: "Under 13 with family." },
+      { certification: "13+", meaning: "13 and over." },
+      { certification: "16+", meaning: "16 and over." },
+      { certification: "18+", meaning: "18 and over." },
+    ],
+    AR: [
+      { certification: "ATP", meaning: "Suitable for all audiences." },
+      { certification: "SAM 13", meaning: "Suitable for 13+." },
+      { certification: "SAM 16", meaning: "Suitable for 16+." },
+      { certification: "SAM 18", meaning: "Suitable for 18+." },
+      { certification: "+13", meaning: "13+." },
+      { certification: "+16", meaning: "16+." },
+      { certification: "+18", meaning: "18+." },
+      { certification: "C", meaning: "Restricted." },
+    ],
+    SG: [
+      { certification: "G", meaning: "Suitable for all ages." },
+      { certification: "PG", meaning: "Parental guidance." },
+      {
+        certification: "PG13",
+        meaning: "Parental guidance advised for children below 13.",
+      },
+      {
+        certification: "NC16",
+        meaning: "Suitable for persons aged 16 and above.",
+      },
+      {
+        certification: "M18",
+        meaning: "Suitable for persons aged 18 and above.",
+      },
+      {
+        certification: "R21",
+        meaning: "Suitable for adults aged 21 and above.",
+      },
+    ],
+    ZA: [
+      { certification: "All", meaning: "Suitable for all." },
+      { certification: "A", meaning: "Suitable for all." },
+      { certification: "PG", meaning: "Parental Guidance." },
+      { certification: "7-9PG", meaning: "Not suitable for under 7." },
+      { certification: "10-12PG", meaning: "Not suitable for under 10." },
+      { certification: "13", meaning: "Not suitable for under 13." },
+      { certification: "16", meaning: "Not suitable for under 16." },
+      { certification: "18", meaning: "Not suitable for under 18." },
+      { certification: "X18", meaning: "Adults only." },
+      { certification: "XX", meaning: "Banned." },
+    ],
+  };
+
+  /**
+   * Flatten the ratings into a single map.
+   * Priority: US > GB > CA > AU > others
+   * This handles collisions (e.g. "PG") by preferring the US definition.
+   */
+  const CONTENT_RATING_DEFINITIONS = {};
+
+  // Helper to merge
+  const merge = (countryCode) => {
+    if (!RAW_RATINGS[countryCode]) return;
+    RAW_RATINGS[countryCode].forEach((item) => {
+      // Only set if not already set (respects priority order)
+      if (!CONTENT_RATING_DEFINITIONS[item.certification]) {
+        CONTENT_RATING_DEFINITIONS[item.certification] = item.meaning;
+      }
+    });
+  };
+
+  // Priority Order - Aggressive flattening
+  const ALL_COUNTRIES = Object.keys(RAW_RATINGS);
+  // Remove priority ones from list to avoid double processing (though helper handles checks)
+  const PRIORITY = [
+    "US",
+    "GB",
+    "CA",
+    "AU",
+    "NZ",
+    "IE",
+    "DE",
+    "FR",
+    "KR",
+    "JP",
+    "HK",
+  ];
+  const OTHERS = ALL_COUNTRIES.filter((c) => !PRIORITY.includes(c));
+
+  [...PRIORITY, ...OTHERS].forEach(merge);
+
+  // Merge any extras from other user-provided lists if needed dynamically?
+  // For now, this covers the major requested ones + the logic works for any we add to RAW_RATINGS.
+
+  /**
+   * Get description for a content rating (certification)
+   * @param {string} rating - e.g. "PG-13" or "TV-MA"
+   * @returns {string} Description or empty string if not found
+   */
+  function getContentRatingDefinition(rating) {
+    if (!rating) return "";
+    return CONTENT_RATING_DEFINITIONS[rating] || "";
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -414,6 +1026,7 @@
     getMDBListClass,
     getMetacriticClass,
     createRatingsHTML,
+    getContentRatingDefinition,
   };
 
   // Expose globally

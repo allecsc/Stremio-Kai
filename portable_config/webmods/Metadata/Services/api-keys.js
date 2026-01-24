@@ -202,13 +202,13 @@
     _rateLimitCache.set(key, until);
     localStorage.setItem(
       STORAGE_KEYS.RATE_LIMIT_PREFIX + key,
-      until.toString()
+      until.toString(),
     );
 
     console.warn(
       `[API Keys] ${provider} marked rate-limited for ${Math.round(
-        cooldownMs / 60000
-      )} minutes.`
+        cooldownMs / 60000,
+      )} minutes.`,
     );
   }
 
@@ -258,7 +258,7 @@
       const controller = new AbortController();
       const timeoutId = setTimeout(
         () => controller.abort(),
-        VALIDATION_TIMEOUT_MS
+        VALIDATION_TIMEOUT_MS,
       );
 
       let response;
@@ -268,11 +268,11 @@
         case "TMDB":
           response = await fetch(
             `${VALIDATION_ENDPOINTS.TMDB}?api_key=${encodeURIComponent(
-              trimmedKey
+              trimmedKey,
             )}`,
             {
               signal: controller.signal,
-            }
+            },
           );
           clearTimeout(timeoutId);
 
@@ -286,21 +286,24 @@
           break;
 
         case "MDBLIST":
-          // MDBList doesn't support browser CORS and proxies are unreliable
-          // Validate format only - actual validation happens on first use
+          // Use corsproxy.io for better reliability with MDBList
+          // Verify against the /lists/user endpoint as requested
+          const proxyBase = "https://corsproxy.io/?";
+          const targetUrl = `https://api.mdblist.com/lists/user/?apikey=${trimmedKey}`;
+
+          response = await fetch(proxyBase + encodeURIComponent(targetUrl), {
+            signal: controller.signal,
+          });
+
           clearTimeout(timeoutId);
 
-          // MDBList keys are typically 24+ alphanumeric characters
-          if (trimmedKey.length >= 20 && /^[a-zA-Z0-9]+$/.test(trimmedKey)) {
+          if (response.ok) {
             result = { valid: true };
-            console.log(
-              "[API Keys] MDBList key format valid, will verify on first use."
-            );
+            console.log("[API Keys] MDBList key validated successfully.");
+          } else if (response.status === 401 || response.status === 403) {
+            result = { valid: false, error: "Invalid API key" };
           } else {
-            result = {
-              valid: false,
-              error: "Invalid key format (expected 20+ alphanumeric)",
-            };
+            result = { valid: false, error: `HTTP ${response.status}` };
           }
           break;
 

@@ -16,6 +16,11 @@ local M = {}
 
 -- Forward declaration for notification module (will be set by main.lua)
 M.notification = nil
+    
+-- CONSTANTS
+-- Audio filters managed (disabled) during skip to prevent CPU overload
+-- NOTE: Labels in MPV property do NOT have the '@' prefix used in commandv
+local MANAGED_FILTERS = {"NIGHT", "CINEMA", "ANIME"}
 
 --============================================================================--
 --                           HELPER FUNCTIONS                                  --
@@ -50,7 +55,8 @@ local function init_filter(property, label, name, params)
         if params and params.graph then
             filter_string = filter_string .. "=[" .. params.graph .. "]"
         end
-        mp.commandv(property, "add", filter_string)
+        -- Prepend filters to ensure they run on the source stream (before processing)
+        mp.commandv(property, "pre", filter_string)
     end
 end
 
@@ -259,6 +265,7 @@ end
 --============================================================================--
 
 -- Exit detection handler (during fast-forward skip)
+-- Uses 10s dwell window to cluster nearby exit events and pick the latest one
 function M.handle_exit_detection(value, source)
     if not state.detection_state.skipping_active or not value or value == '{}' then return end
     
@@ -288,10 +295,9 @@ function M.handle_exit_detection(value, source)
                     return
                 end
 
-                mp.msg.info(string.format("Skip exit found (black_end): %.1fs", skip_time))
-                state.filter_tracking.detected_skip_end = skip_time
-                M.stop_silence_skip()
-                utils.set_time(skip_time)
+                -- DWELL WINDOW: Instead of stopping immediately, mark as candidate
+                mp.msg.info(string.format("Exit candidate found (black_end): %.1fs", skip_time))
+                M.set_exit_candidate(skip_time)
                 return
             end
         end
@@ -319,15 +325,82 @@ function M.handle_exit_detection(value, source)
                         return
                     end
 
-                    mp.msg.info(string.format("Skip exit found (silence): %.1fs", skip_time))
-                    state.filter_tracking.detected_skip_end = silence_start
-                    M.stop_silence_skip()
-                    utils.set_time(silence_start)
+                    -- DWELL WINDOW: Instead of stopping immediately, mark as candidate
+                    mp.msg.info(string.format("Exit candidate found (silence): %.1fs", skip_time))
+                    M.set_exit_candidate(skip_time)
                     return
                 end
             end
         end
     end
+end
+
+-- Set or update exit candidate with dwell window
+-- Uses FIXED window: Timer starts at FIRST event and does not extend.
+-- We always pick the LATEST event found within that 5s window.
+local DWELL_WINDOW = 5  -- seconds of video time to wait from FIRST candidate
+
+function M.set_exit_candidate(candidate_time)
+    -- Initialize on first candidate
+    if not state.filter_tracking.exit_candidate_time then
+        state.filter_tracking.exit_candidate_time = utils.get_time()
+        -- Set initial candidate
+        state.filter_tracking.exit_candidate = candidate_time
+        mp.msg.info(string.format("Exit candidate found: %.1fs (starting %ds fixed dwell)", candidate_time, DWELL_WINDOW))
+        
+        -- Start dwell timer
+        state.filter_tracking.exit_dwell_timer = mp.add_periodic_timer(0.1, function()
+            local current_pos = utils.get_time()
+            local first_candidate_pos = state.filter_tracking.exit_candidate_time
+            
+            -- Check elapsed video time against FIXED start time
+            if first_candidate_pos and (current_pos - first_candidate_pos) >= DWELL_WINDOW then
+                -- Dwell expired, finalize at the BEST (latest) candidate found so far
+                local final_exit = state.filter_tracking.exit_candidate
+                
+                mp.msg.info(string.format("Exit finalized after %.1fs fixed dwell: %.1fs", DWELL_WINDOW, final_exit))
+                
+                -- Clean up timer
+                state.filter_tracking.exit_dwell_timer:kill()
+                state.filter_tracking.exit_dwell_timer = nil
+                
+                -- Execute the skip
+                state.filter_tracking.detected_skip_end = final_exit
+                M.stop_silence_skip()
+                utils.set_time(final_exit)
+            end
+        end)
+        return
+    end
+
+    -- For subsequent candidates, check if we are still within the Dwell Window
+    -- This MUST be done synchronously because 90x speed causes massive overshoot between timer ticks
+    local first_candidate_pos = state.filter_tracking.exit_candidate_time
+    if first_candidate_pos and (candidate_time - first_candidate_pos) > DWELL_WINDOW then
+        -- Overshoot detected!
+        -- The player speed (90x) pushed us way past the window before the timer could fire.
+        -- We must REJECT this new candidate (it belongs to the next scene/segment)
+        -- and force-finalize the previous valid candidate immediately.
+        local final_exit = state.filter_tracking.exit_candidate
+        
+        mp.msg.info(string.format("Overshoot detected! New candidate %.1fs is outside dwell window (%.1fs). Forcing skip to %.1fs", 
+            candidate_time, DWELL_WINDOW, final_exit))
+            
+        if state.filter_tracking.exit_dwell_timer then
+            state.filter_tracking.exit_dwell_timer:kill()
+            state.filter_tracking.exit_dwell_timer = nil
+        end
+        
+        state.filter_tracking.detected_skip_end = final_exit
+        M.stop_silence_skip()
+        utils.set_time(final_exit)
+        return
+    end
+
+    -- If inside window, assume this is a refinement (e.g. silence ending slightly later)
+    local previous = state.filter_tracking.exit_candidate
+    state.filter_tracking.exit_candidate = candidate_time
+    mp.msg.info(string.format("Exit candidate updated: %.1fs -> %.1fs", previous, candidate_time))
 end
 
 --============================================================================--
@@ -362,6 +435,15 @@ function M.start_silence_skip()
     
     utils.set_pause(false)
     utils.set_mute(true)
+    
+    -- Optimize MPV properties for max speed skip
+    -- 1. Enable frame drops during seeking/skipping (critical for high speed)
+    mp.set_property("hr-seek-framedrop", "yes")
+    -- 2. Minimize video queue to prevent buffer bloat/stalling (runtime workaround for vd-queue-enable)
+    -- Store original value to restore later (default in Anime profile is 35)
+    state.filter_tracking.original_vd_queue = mp.get_property("vd-queue-max-samples")
+    mp.set_property("vd-queue-max-samples", "1")
+    
     utils.set_speed(config.CONSTANTS.MAX_SPEED)
     
     if M.notification then
@@ -389,6 +471,28 @@ function M.start_silence_skip()
         end
     end)
     
+    -- Disable heavy audio filters to prevent pipeline stall at 90x speed
+    -- We target the specific labels used by profile-manager
+    state.filter_tracking.disabled_filters = {} 
+    
+    local active_filters = mp.get_property_native("af") or {}
+    
+    if type(active_filters) == "table" then
+        for _, af_entry in ipairs(active_filters) do
+            -- Only disable if currently enabled
+            if af_entry.enabled then
+                 for _, target_label in ipairs(MANAGED_FILTERS) do
+                    if af_entry.label == target_label then
+                        -- Use internal helper to toggle "enabled" flag safely
+                        M.set_filter_state("af", target_label, false)
+                        table.insert(state.filter_tracking.disabled_filters, target_label)
+                        if config.CONSTANTS.DEBUG_MODE then mp.msg.info("Disabled AF during skip: " .. target_label) end
+                    end
+                 end
+            end
+        end
+    end
+
     mp.msg.info("Silence skip started")
 end
 
@@ -402,6 +506,14 @@ function M.stop_silence_skip()
         state.skip_state.skip_timeout_timer = nil
     end
     
+    -- Cancel exit dwell timer
+    if state.filter_tracking.exit_dwell_timer then
+        state.filter_tracking.exit_dwell_timer:kill()
+        state.filter_tracking.exit_dwell_timer = nil
+    end
+    state.filter_tracking.exit_candidate = nil
+    state.filter_tracking.exit_candidate_time = nil
+    
     -- Check if this was a substantial intro skip
     local end_time = state.filter_tracking.detected_skip_end or utils.get_time()
     local skip_duration = end_time - state.skip_state.skip_start_time
@@ -413,7 +525,7 @@ function M.stop_silence_skip()
     
     -- Check if this was a substantial intro skip (skip started in intro zone)
     local intro_window = windows.get_intro_window()
-    if skip_duration > config.CONSTANTS.INTRO_THRESHOLD and intro_window > 0 and state.skip_state.skip_start_time <= intro_window then
+    if skip_duration > config.CONSTANTS.MIN_INTRO_LENGTH and intro_window > 0 and state.skip_state.skip_start_time <= intro_window then
         state.skip_state.intro_skipped = true
         mp.msg.info(string.format("Substantial intro skip (%.1fs), blocking future notifications", skip_duration))
         
@@ -430,6 +542,26 @@ function M.stop_silence_skip()
     
     utils.set_mute(false)
     utils.set_speed(config.CONSTANTS.NORMAL_SPEED)
+    
+    -- Restore disabled audio filters
+    if state.filter_tracking.disabled_filters then
+        for _, label in ipairs(state.filter_tracking.disabled_filters) do
+            -- Restore enabled state using internal helper
+            M.set_filter_state("af", label, true)
+            if config.CONSTANTS.DEBUG_MODE then mp.msg.info("Restored AF after skip: " .. label) end
+        end
+        state.filter_tracking.disabled_filters = {} -- Clear the stack
+    end
+    
+    -- Restore MPV properties
+    mp.set_property("hr-seek-framedrop", "no") -- Default for Anime profile is "no"
+    if state.filter_tracking.original_vd_queue then
+        mp.set_property("vd-queue-max-samples", state.filter_tracking.original_vd_queue)
+        state.filter_tracking.original_vd_queue = nil
+    else
+        -- Fallback default if read failed
+        mp.set_property("vd-queue-max-samples", "35") 
+    end
     
     -- For HIGH-CONFIDENCE chaptered files only, disable filters AND remove observers after FF skip
     -- MEDIUM confidence (untitled) chapters keep filters active for detection

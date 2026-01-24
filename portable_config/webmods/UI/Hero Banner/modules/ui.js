@@ -190,8 +190,14 @@ window.HeroPlugin.UI = {
     const contentType = title.type || "movie";
 
     // Certification badge HTML (first in tags row)
+    const certificationDef =
+      window.MetadataModules?.ratingsUtils?.getContentRatingDefinition(
+        title.contentRating,
+      );
     const certificationBadge = title.contentRating
-      ? `<span class="hero-certification">${title.contentRating}</span>`
+      ? `<span class="hero-certification" title="${certificationDef || ""}">${
+          title.contentRating
+        }</span>`
       : "";
 
     return `

@@ -260,6 +260,11 @@ kbd, .keyboard-shortcut,
     display: none !important;
 }
 
+/* General utility class for hidden elements (used by API-key gated features) */
+.hidden {
+    display: none !important;
+}
+
 .custom-input-row .option-name-container-exGMI {
     flex-shrink: 0;
     padding: 1rem 1rem 1rem 0;
@@ -369,6 +374,17 @@ kbd, .keyboard-shortcut,
 
 .section-container-twzKQ.kai-api-keys-section.animation-fade-in .option-container-EGlcv.kai-api-key-row .option-name-container-exGMI {
     display: block;     /* Changed from 'flex' to let it go under as a subtitle hint */
+}
+
+/* Language row in Preferences should never have :last-child margins (it's always the first item) */
+#kai-language-container .option-container-EGlcv {
+    margin-bottom: 2rem !important; /* Match standard margin, not last-child margin */
+}
+
+/* Ensure dropdown menus can overflow their container */
+#kai-language-container,
+#kai-prefs-container {
+    overflow: visible !important;
 }
 
 /* Input Group */

@@ -99,7 +99,7 @@ class MetadataFetcher {
     type,
     currentMetaSource = "dom",
     databaseData = null,
-    priority = false
+    priority = false,
   ) {
     // If no database data provided, we can't enrich (fetcher doesn't have DB access)
     if (!databaseData) {
@@ -124,7 +124,7 @@ class MetadataFetcher {
         const imdbData = await this.fetchImdbData(
           imdbId,
           priority,
-          episodeCount
+          episodeCount,
         );
         if (imdbData) {
           type = imdbData.type;
@@ -142,7 +142,7 @@ class MetadataFetcher {
         const cinemetaData = await this.fetchCinemetaData(
           imdbId,
           type,
-          priority
+          priority,
         );
         if (cinemetaData) {
           hasCinemetaData = true;
@@ -152,12 +152,12 @@ class MetadataFetcher {
             const mergedCredits = this.mergeCreditsWithFallback(
               cinemetaData.stars || [],
               enrichedData.stars || [],
-              MetadataFetcher.MAX_STARS
+              MetadataFetcher.MAX_STARS,
             );
             const mergedDirectors = this.mergeCreditsWithFallback(
               cinemetaData.directors || [],
               enrichedData.directors || [],
-              MetadataFetcher.MAX_DIRECTORS
+              MetadataFetcher.MAX_DIRECTORS,
             );
 
             // SMART MERGE: Cinemeta base, IMDbAPI overrides (already in enrichedData)
@@ -190,19 +190,19 @@ class MetadataFetcher {
         const imdbData = await this.fetchImdbData(
           imdbId,
           priority,
-          episodeCount
+          episodeCount,
         );
         if (imdbData) {
           // Merge credits: prioritize Cinemeta, fallback to IMDbAPI
           const mergedCredits = this.mergeCreditsWithFallback(
             enrichedData.stars || [],
             imdbData.stars || [],
-            MetadataFetcher.MAX_STARS
+            MetadataFetcher.MAX_STARS,
           );
           const mergedDirectors = this.mergeCreditsWithFallback(
             enrichedData.directors || [],
             imdbData.directors || [],
-            MetadataFetcher.MAX_DIRECTORS
+            MetadataFetcher.MAX_DIRECTORS,
           );
 
           // SMART MERGE: IMDb data over existing
@@ -234,7 +234,7 @@ class MetadataFetcher {
           const privateData = await metadataService.getEnrichedMetadata(
             imdbId,
             type,
-            priority
+            priority,
           );
 
           if (privateData) {
@@ -250,7 +250,7 @@ class MetadataFetcher {
         } catch (e) {
           console.warn(
             `[METADATA][Enrichment] ⚠️ Private enrichment failed for ${imdbId}:`,
-            e
+            e,
           );
         }
       }
@@ -277,13 +277,13 @@ class MetadataFetcher {
       const response = await this.rateLimiter.makeImdbRequest(
         url,
         {},
-        priority
+        priority,
       );
 
       // Check if response ID matches requested ID
       if (response?.id !== imdbId) {
         console.warn(
-          `[METADATA][Enrichment] ⚠️ IMDb API returned wrong ID! Requested: ${imdbId}, Got: ${response?.id}`
+          `[METADATA][Enrichment] ⚠️ IMDb API returned wrong ID! Requested: ${imdbId}, Got: ${response?.id}`,
         );
         return null; // Don't use mismatched data
       }
@@ -293,7 +293,7 @@ class MetadataFetcher {
     } catch (error) {
       console.warn(
         `[METADATA][Enrichment] ❌ IMDbAPI call failed for ${imdbId}:`,
-        error
+        error,
       );
       return null;
     }
@@ -315,12 +315,12 @@ class MetadataFetcher {
       const response = await this.rateLimiter.makeCinemetaRequest(
         url,
         {},
-        priority
+        priority,
       );
 
       if (!response?.meta) {
         console.warn(
-          `[METADATA][Enrichment] ⚠️ Cinemeta response missing meta field for ${imdbId}`
+          `[METADATA][Enrichment] ⚠️ Cinemeta response missing meta field for ${imdbId}`,
         );
         return null;
       }
@@ -340,7 +340,7 @@ class MetadataFetcher {
     } catch (error) {
       console.warn(
         `[METADATA][Enrichment] ❌ Cinemeta ${type} call failed for ${imdbId}:`,
-        error
+        error,
       );
       return null;
     }
@@ -361,12 +361,12 @@ class MetadataFetcher {
       const response = await this.rateLimiter.makeJikanRequest(
         url,
         {},
-        priority
+        priority,
       );
 
       if (!response?.data) {
         console.warn(
-          `[METADATA][Enrichment] ⚠️ Jikan response missing data field for MAL ID ${malId}`
+          `[METADATA][Enrichment] ⚠️ Jikan response missing data field for MAL ID ${malId}`,
         );
         return null;
       }
@@ -375,7 +375,7 @@ class MetadataFetcher {
     } catch (error) {
       console.warn(
         `[METADATA][Enrichment] ❌ Jikan call failed for MAL ID ${malId}:`,
-        error
+        error,
       );
       return null;
     }
@@ -392,14 +392,14 @@ class MetadataFetcher {
     let runtime = null;
     if (data.duration) {
       const minutes = window.MetadataModules.runtimeUtils.RuntimeUtils.parse(
-        data.duration
+        data.duration,
       );
       const type = data.type === "TV" ? "series" : "movie"; // Simple mapping
       const episodeCount = data.episodes || 1;
       runtime = window.MetadataModules.runtimeUtils.RuntimeUtils.format(
         minutes,
         type,
-        episodeCount
+        episodeCount,
       );
     }
 
@@ -410,6 +410,7 @@ class MetadataFetcher {
         ...(data.score && {
           mal: {
             score: data.score,
+            votes: data.scored_by || null,
           },
         }),
       },
@@ -460,12 +461,12 @@ class MetadataFetcher {
   normalizeIMDbData(data, episodeCount = 1) {
     const allInterests = data.interests?.map((interest) => interest.name) || [];
     const demographics = allInterests.filter((interest) =>
-      ["Josei", "Seinen", "Shōnen", "Shōjo"].includes(interest)
+      ["Josei", "Seinen", "Shōnen", "Shōjo"].includes(interest),
     );
 
     // Remove demographics from interests (they have their own field)
     const interests = allInterests.filter(
-      (interest) => !["Josei", "Seinen", "Shōnen", "Shōjo"].includes(interest)
+      (interest) => !["Josei", "Seinen", "Shōnen", "Shōjo"].includes(interest),
     );
 
     const computedType = this.normalizeType(data.type);
@@ -479,7 +480,7 @@ class MetadataFetcher {
         ? this.formatRuntime(
             Math.floor(data.runtimeSeconds / 60),
             computedType,
-            episodeCount
+            episodeCount,
           )
         : null,
       genres: data.genres || [],
@@ -490,12 +491,13 @@ class MetadataFetcher {
         ...(data.rating?.aggregateRating && {
           imdb: {
             score: parseFloat(data.rating.aggregateRating),
-            votes: data.rating?.voteCount || null,
+            votes: data.rating.voteCount || null,
           },
         }),
         ...(data.metacritic?.score && {
           metacritic: {
             score: data.metacritic.score,
+            votes: null,
           },
         }),
       },
@@ -536,7 +538,7 @@ class MetadataFetcher {
       ? window.MetadataModules.runtimeUtils.RuntimeUtils.format(
           parsedRuntime,
           data.type,
-          seriesMetadata.episodes
+          seriesMetadata.episodes,
         )
       : null;
 
@@ -544,7 +546,7 @@ class MetadataFetcher {
     const credits = await this.extractCreditsData(data);
 
     const cleanedYear = window.MetadataModules.titleUtils.TitleUtils.cleanYear(
-      data.releaseInfo
+      data.releaseInfo,
     );
     const computedType = this.normalizeType(data.type);
 
@@ -561,6 +563,7 @@ class MetadataFetcher {
         ...(data.imdbRating && {
           imdb: {
             score: parseFloat(data.imdbRating),
+            votes: null, // Cinemeta doesn't provide votes
           },
         }),
       },
@@ -643,7 +646,7 @@ class MetadataFetcher {
    */
   parseRuntime(runtimeString) {
     return window.MetadataModules.runtimeUtils.RuntimeUtils.parse(
-      runtimeString
+      runtimeString,
     );
   }
 
@@ -659,7 +662,7 @@ class MetadataFetcher {
     return window.MetadataModules.runtimeUtils.RuntimeUtils.format(
       totalMinutes,
       type,
-      episodeCount
+      episodeCount,
     );
   }
 
@@ -719,7 +722,7 @@ class MetadataFetcher {
     credits.stars = await this.extractCreditsWithPhotoPriority(
       data.credits_cast,
       (person) => person.name,
-      MetadataFetcher.MAX_STARS
+      MetadataFetcher.MAX_STARS,
     );
 
     // Extract directors from credits_crew (prioritize with photos)
@@ -728,7 +731,7 @@ class MetadataFetcher {
     credits.directors = await this.extractCreditsWithPhotoPriority(
       directors,
       (person) => person.name,
-      MetadataFetcher.MAX_DIRECTORS
+      MetadataFetcher.MAX_DIRECTORS,
     );
 
     return credits;
@@ -747,7 +750,7 @@ class MetadataFetcher {
     peopleArray,
     nameGetter,
     maxCount,
-    imdbFallbackCredits = []
+    imdbFallbackCredits = [],
   ) {
     if (!peopleArray || !Array.isArray(peopleArray) || maxCount <= 0) {
       return [];
@@ -770,7 +773,7 @@ class MetadataFetcher {
       // Find IMDb fallback for this person (fuzzy match)
       const normalizedName = this.normalizeName(name);
       const imdbCredit = imdbFallbackCredits.find(
-        (c) => this.normalizeName(c.name) === normalizedName
+        (c) => this.normalizeName(c.name) === normalizedName,
       );
       const imdbFallback = imdbCredit?.image || null;
 
@@ -778,13 +781,13 @@ class MetadataFetcher {
         // TMDB image exists - validate it
         const promise = this.validateImageUrl(
           person.profile_path,
-          imdbFallback
+          imdbFallback,
         ).then((validatedUrl) => ({ name, character, image: validatedUrl }));
         validationPromises.push(promise);
       } else if (imdbFallback) {
         // No TMDB but has IMDb - validate IMDb
         const promise = this.validateImageUrl(null, imdbFallback).then(
-          (validatedUrl) => ({ name, character, image: validatedUrl })
+          (validatedUrl) => ({ name, character, image: validatedUrl }),
         );
         validationPromises.push(promise);
       } else {
@@ -934,7 +937,7 @@ class MetadataFetcher {
     initialMetaSource,
     databaseData,
     maxRetries = 2,
-    priority = false
+    priority = false,
   ) {
     // Simply call enrichment once - queue handles API retries automatically
     return await this.enrichTitleProgressively(
@@ -942,7 +945,7 @@ class MetadataFetcher {
       type,
       initialMetaSource,
       databaseData,
-      priority
+      priority,
     );
   }
 }

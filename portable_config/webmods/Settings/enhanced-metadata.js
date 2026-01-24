@@ -9,7 +9,7 @@
  * - Comprehensive Rating Toggles
  *
  * @module settings-ui
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 (function () {
@@ -541,19 +541,30 @@
     },
 
     updatePreferencesState() {
-      const prefsContainer = document.getElementById("kai-prefs-container");
-      if (!prefsContainer) return;
+      const languageContainer = document.getElementById(
+        "kai-language-container",
+      );
+      const ratingsContainer = document.getElementById("kai-ratings-container");
 
       const hasTmdb = window.MetadataModules.apiKeys?.hasKey("tmdb");
+      const hasMdblist = window.MetadataModules.apiKeys?.hasKey("mdblist");
 
-      if (hasTmdb) {
-        prefsContainer.style.opacity = "1";
-        prefsContainer.style.pointerEvents = "auto";
-        prefsContainer.style.filter = "none";
-      } else {
-        prefsContainer.style.opacity = "0.5";
-        prefsContainer.style.pointerEvents = "none";
-        prefsContainer.style.filter = "grayscale(1)";
+      // Language dropdown: hidden if no TMDB key
+      if (languageContainer) {
+        if (hasTmdb) {
+          languageContainer.classList.remove("hidden");
+        } else {
+          languageContainer.classList.add("hidden");
+        }
+      }
+
+      // Rating toggles: hidden if no MDBlist key
+      if (ratingsContainer) {
+        if (hasMdblist) {
+          ratingsContainer.classList.remove("hidden");
+        } else {
+          ratingsContainer.classList.add("hidden");
+        }
       }
     },
 
@@ -602,7 +613,7 @@
       const mdbRow = this.buildApiInputRow({
         id: "mdblist",
         label: "MDBList API Key",
-        hint: "Free key at",
+        hint: "Key at",
         hintLink: "https://mdblist.com/preferences",
         hintLinkText: "mdblist.com",
       });
@@ -616,13 +627,19 @@
         this.buildCategoryHeader("Preferences", this.ICONS.COG),
       );
 
-      // Language
-      prefsContainer.appendChild(this.buildLanguageRow());
+      // Language (requires TMDB key)
+      const languageContainer = document.createElement("div");
+      languageContainer.id = "kai-language-container";
+      languageContainer.appendChild(this.buildLanguageRow());
+      prefsContainer.appendChild(languageContainer);
 
-      // Rating Toggles
+      // Rating Toggles (requires MDBlist key)
+      const ratingsContainer = document.createElement("div");
+      ratingsContainer.id = "kai-ratings-container";
       CONFIG.RATING_PROVIDERS.forEach((p) => {
-        prefsContainer.appendChild(this.buildToggleRow(p.id, p.label));
+        ratingsContainer.appendChild(this.buildToggleRow(p.id, p.label));
       });
+      prefsContainer.appendChild(ratingsContainer);
 
       section.appendChild(prefsContainer);
 

@@ -148,12 +148,12 @@
       inputNameContainer.appendChild(inputLabel);
       inputRow.appendChild(inputNameContainer);
 
-      // Input Field Container
+      // Input Field Container - use kai-settings-input-wrapper for consistency
       const textInputContainer = document.createElement("div");
-      textInputContainer.className = "option-input-container-NPgpT";
+      textInputContainer.className = "kai-settings-input-wrapper";
 
       const input = document.createElement("input");
-      input.className = "input-field";
+      input.className = "kai-settings-input"; // Consistent with api-keys.js
       input.type = "text";
       input.placeholder = "https://example.com/catalog.json";
       input.value = localStorage.getItem(customStorageKey) || "";

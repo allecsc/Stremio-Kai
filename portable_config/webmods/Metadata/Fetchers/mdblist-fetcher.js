@@ -94,7 +94,7 @@
       // Docs: https://mdblist.docs.apiary.io
       const mediaType = type === "series" ? "show" : "movie";
       const url = proxyUrl(
-        `${this.apiBase}/imdb/${mediaType}/${imdbId}?apikey=${apiKey}`
+        `${this.apiBase}/imdb/${mediaType}/${imdbId}?apikey=${apiKey}`,
       );
 
       try {
@@ -109,13 +109,13 @@
           if (result.status === 429) {
             getApiKeys()?.markRateLimited("MDBLIST");
             console.warn(
-              "[MDBList Fetcher] Rate limited, marking for cooldown."
+              "[MDBList Fetcher] Rate limited, marking for cooldown.",
             );
           } else if (result.status === 404) {
             console.debug(`[MDBList Fetcher] No data found for ${imdbId}`);
           } else {
             console.warn(
-              `[MDBList Fetcher] Request failed: ${result.status} ${result.error}`
+              `[MDBList Fetcher] Request failed: ${result.status} ${result.error}`,
             );
           }
           return null;
@@ -124,7 +124,7 @@
         // Check if we got valid data
         if (!result.data || !result.data.title) {
           console.debug(
-            `[MDBList Fetcher] No media data returned for ${imdbId}`
+            `[MDBList Fetcher] No media data returned for ${imdbId}`,
           );
           return null;
         }
@@ -133,7 +133,7 @@
         console.debug(
           `[MDBList Fetcher] Fetched ${imdbId}: ${
             Object.keys(normalized.ratings).length
-          } rating sources`
+          } rating sources`,
         );
         return normalized;
       } catch (error) {
@@ -332,7 +332,8 @@
       if (!apiKey) return { valid: false, error: "No API key" };
 
       const fetchUtils = getFetchUtils();
-      const url = proxyUrl(`${this.apiBase}/user/limits?apikey=${apiKey}`);
+      // Use /lists/user/ endpoint as requested for validation
+      const url = proxyUrl(`${this.apiBase}/lists/user/?apikey=${apiKey}`);
 
       try {
         const result = await fetchUtils.makeRequest(url, {
@@ -345,7 +346,8 @@
         return {
           valid: result.ok,
           error: result.ok ? null : result.error,
-          limits: result.ok ? result.data : null,
+          // /lists/user returns a list, not limits, but validity is what matters here
+          limits: null,
         };
       } catch (error) {
         return { valid: false, error: error.message };
@@ -374,7 +376,7 @@
 
       // MDBList batch endpoint: POST /imdb/{type}?apikey=xxx
       const url = proxyUrl(
-        `${this.apiBase}/imdb/${mediaType}?apikey=${apiKey}`
+        `${this.apiBase}/imdb/${mediaType}?apikey=${apiKey}`,
       );
 
       try {
@@ -410,7 +412,7 @@
         }
 
         console.log(
-          `[MDBList Fetcher] Batch: ${resultMap.size}/${imdbIds.length} ${mediaType}s`
+          `[MDBList Fetcher] Batch: ${resultMap.size}/${imdbIds.length} ${mediaType}s`,
         );
         return resultMap;
       } catch (error) {

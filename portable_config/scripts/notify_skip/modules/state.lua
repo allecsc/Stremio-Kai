@@ -55,6 +55,11 @@ M.filter_tracking = {
     detected_skip_end = nil,
     last_processed_silence_start = nil,
     last_processed_black_start = nil,
+    -- Exit clustering (dwell window)
+    exit_candidate = nil,           -- Current best exit candidate time
+    exit_candidate_time = nil,      -- Video time when candidate was set
+    exit_dwell_timer = nil,         -- Timer for dwell window
+    disabled_filters = {},          -- Stack of filters disabled during skip
 }
 
 -- Content metadata (received from mpv-bridge.js)
@@ -127,6 +132,13 @@ function M.reset_all()
     M.filter_tracking.detected_skip_end = nil
     M.filter_tracking.last_processed_silence_start = nil
     M.filter_tracking.last_processed_black_start = nil
+    -- Reset exit dwell state
+    if M.filter_tracking.exit_dwell_timer then
+        M.filter_tracking.exit_dwell_timer:kill()
+    end
+    M.filter_tracking.exit_candidate = nil
+    M.filter_tracking.exit_candidate_time = nil
+    M.filter_tracking.exit_dwell_timer = nil
     
     -- NOTE: We don't reset content_state here because content-metadata can arrive 
     -- BEFORE file-loaded, and we don't want to wipe that data.
@@ -139,6 +151,13 @@ function M.reset_filter_tracking()
     M.filter_tracking.detected_skip_end = nil
     M.filter_tracking.last_processed_silence_start = nil
     M.filter_tracking.last_processed_black_start = nil
+    -- Reset exit dwell state
+    if M.filter_tracking.exit_dwell_timer then
+        M.filter_tracking.exit_dwell_timer:kill()
+    end
+    M.filter_tracking.exit_candidate = nil
+    M.filter_tracking.exit_candidate_time = nil
+    M.filter_tracking.exit_dwell_timer = nil
 end
 
 return M

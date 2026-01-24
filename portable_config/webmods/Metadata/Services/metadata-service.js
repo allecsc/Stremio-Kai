@@ -178,6 +178,10 @@
       const originalTitle = tmdb?.originalTitle || mdblist?.originalTitle;
       if (originalTitle) result.originalTitle = originalTitle;
 
+      // English title for smart tooltips (from TMDB translations)
+      const englishTitle = tmdb?.englishTitle;
+      if (englishTitle) result.englishTitle = englishTitle;
+
       const plot = tmdb?.plot || mdblist?.plot;
       if (plot) result.plot = plot;
 
@@ -187,7 +191,7 @@
       // ─────────────────────────────────────────────────────────────────
       // METADATA (MDBList)
       // ─────────────────────────────────────────────────────────────────
-      const contentRating = mdblist?.contentRating;
+      const contentRating = tmdb?.contentRating || mdblist?.contentRating;
       if (contentRating) result.contentRating = contentRating;
 
       // ─────────────────────────────────────────────────────────────────

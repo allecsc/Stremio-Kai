@@ -171,6 +171,7 @@ mp.register_script_message("anime-metadata", function(json_str)
     if stremio_metadata then
         log("Received Stremio metadata:" ..
             " anime=" .. tostring(stremio_metadata.is_anime) .. 
+            ", type=" .. tostring(stremio_metadata.content_type) ..
             ", hdr=" .. tostring(stremio_metadata.hdr_passthrough) ..
             ", shaders=" .. tostring(stremio_metadata.shader_preset) ..
             ", svp=" .. tostring(stremio_metadata.svp_enabled))
@@ -256,6 +257,10 @@ function Watchdog:check()
     if mp.get_property_bool("pause") then return end
     if mp.get_property_bool("seeking") then return end
     if mp.get_time() < self.grace_period_end then return end
+    
+    -- Skip if fast-forwarding (speed > 2.0)
+    -- This prevents the watchdog from fighting notify_skip during 90x skips
+    if mp.get_property_number("speed", 1) > 2 then return end
 
     local av_delay = mp.get_property_number("avsync") or 0
     
@@ -289,8 +294,26 @@ end
 -- DYNAMIC LAYER HELPER FUNCTIONS
 -- ═══════════════════════════════════════════════════════════════════════════
 
+-- Apply SDR baseline settings (safe defaults for SDR content or as a reset)
+-- Called at the START of every profile application to ensure clean slate
+local function apply_sdr_baseline()
+    log("Applying SDR baseline (clean slate)")
+    
+    -- 1. Reset Rendering Chains (prevents bleed-over without resetting global prefs like volume)
+    mp.set_property("glsl-shaders", "")   -- Clear all shaders
+    mp.set_property("vf", "")             -- Clear video filters
+    mp.set_property("af", "")             -- Clear audio filters
+    
+    -- 2. Reset Colorspace to Neutral/Auto
+    mp.set_property("target-colorspace-hint", "no")   -- Don't trigger HDR mode
+    mp.set_property("target-peak", "203")             -- SDR peak (100 nits nominal)
+    mp.set_property("hdr-compute-peak", "no")         -- Not needed for SDR
+    mp.set_property("hdr-contrast-recovery", "0")     -- Not needed for SDR
+    mp.set_property("tone-mapping", "auto")           -- Reset tone mapping
+end
+
 -- Apply HDR passthrough settings (for HDR displays)
-local function apply_hdr_passthrough()
+local function apply_hdr_passthrough(target_peak)
     log("Applying HDR passthrough layer")
     mp.set_property("target-colorspace-hint", "yes")
     mp.set_property("icc-profile-auto", "no")
@@ -299,7 +322,9 @@ local function apply_hdr_passthrough()
     mp.set_property("hdr-peak-decay-rate", "20")
     mp.set_property("hdr-contrast-recovery", "0.3")
     mp.set_property("target-contrast", "inf")
-    mp.set_property("target-peak", "auto")
+    -- Use user-specified target-peak if provided, else auto
+    mp.set_property("target-peak", target_peak or "auto")
+    log("Target-peak set to: " .. (target_peak or "auto"))
     -- Reset color adjustments for true passthrough
     mp.set_property("brightness", "0")
     mp.set_property("contrast", "0")
@@ -308,13 +333,19 @@ local function apply_hdr_passthrough()
 end
 
 -- Apply HDR-to-SDR tonemapping settings (for SDR displays)
+-- ACTIVE PROCESSING: mpv analyzes HDR signal and maps it to SDR range
 local function apply_tonemapping()
     log("Applying HDR-to-SDR tonemapping layer")
-    mp.set_property("tone-mapping", "bt.2446a")
-    mp.set_property("tone-mapping-param", "0.5")
+    mp.set_property("tone-mapping", "bt.2446a")       -- Balanced, good highlight roll-off
+    mp.set_property("tone-mapping-param", "0.5")      -- Adjust highlight compression
     mp.set_property("gamut-mapping-mode", "perceptual")
     mp.set_property("tone-mapping-mode", "hybrid")
-    mp.set_property("hdr-compute-peak", "yes")
+    
+    -- Dynamic peak detection for scene-by-scene adjustments
+    mp.set_property("hdr-compute-peak", "yes")        -- Analyze HDR signal
+    mp.set_property("hdr-peak-percentile", "99.8")    -- Ignore extreme highlight outliers
+    mp.set_property("hdr-peak-decay-rate", "20")      -- Smooth scene-to-scene transitions
+    mp.set_property("hdr-contrast-recovery", "0.3")   -- Recover crushed shadows
 end
 
 -- Remove denoise shaders from chain (for legacy/HDR anime)
@@ -343,15 +374,15 @@ end
 -- Apply anime VF chain (composable: base filter + optional SVP)
 local function apply_anime_vf(is_legacy, svp_enabled)
     local base_filter = is_legacy and VF_FILTERS.bwdif or VF_FILTERS.hqdn3d
-    local vf_chain = base_filter
-    
-    if svp_enabled then
-        vf_chain = vf_chain .. "," .. VF_FILTERS.svp
-    end
     
     local base_name = is_legacy and "BWDIF" or "hqdn3d"
-    log("Applying VF chain: " .. base_name .. (svp_enabled and " + SVP" or ""))
-    mp.set_property("vf", vf_chain)
+    log("Appending VF Base: " .. base_name)
+    mp.commandv("vf", "append", base_filter)
+    
+    if svp_enabled then
+        log("Appending VF: SVP")
+        mp.commandv("vf", "append", VF_FILTERS.svp)
+    end
 end
 
 -- Extract filename from path/URL
@@ -591,6 +622,18 @@ end)
     local svp_enabled = stremio_metadata and stremio_metadata.svp_enabled
     if svp_enabled == nil then svp_enabled = true end
     
+    -- Target Peak from Stremio settings (default: "auto")
+    local target_peak = stremio_metadata and stremio_metadata.target_peak or "auto"
+    
+    -- Vulkan Mode from Stremio settings (default: false)
+    local vulkan_mode = stremio_metadata and stremio_metadata.vulkan_mode or false
+    if vulkan_mode then
+        log("Vulkan mode enabled by user preference")
+        mp.set_property("gpu-api", "vulkan")
+        mp.set_property("vulkan-async-compute", "yes")
+        mp.set_property("vulkan-async-transfer", "yes")
+    end
+    
     -- Determine base profile
     local base_profile = is_anime and "anime-sdr" or "sdr"
     
@@ -620,6 +663,9 @@ end)
     log("Resolution: " .. tostring(height) .. "p")
     log("Legacy Anime: " .. tostring(is_legacy_anime))
     
+    -- STEP 0: Reset colorspace to clean SDR baseline (prevents HDR state bleeding)
+    apply_sdr_baseline()
+    
     -- STEP 1: Apply base profile
     log("Applying base profile: " .. base_profile)
     mp.commandv("apply-profile", base_profile)
@@ -628,7 +674,7 @@ end)
     local is_passthrough_active = false
     if is_hdr then
         if hdr_passthrough then
-            apply_hdr_passthrough()
+            apply_hdr_passthrough(target_peak)
             is_passthrough_active = true
         else
             apply_tonemapping()
@@ -660,10 +706,26 @@ end)
     audio_state.mode = "std" -- Always reset to standard (appropriate default) on file load
     apply_audio_current()
     
-    -- STEP 6: Set OSD message dynamically
+    -- STEP 5.5: Enable hwdec=auto-copy for SERIES (required for VF-based intro detection)
+    -- Note: This is required for filters (SVP/Blackdetect) to see frames.
+    local content_type = stremio_metadata and stremio_metadata.content_type or "unknown"
+    if content_type == "series" then
+        mp.set_property("hwdec", "auto-copy")
+        log("Series detected: Enabled hwdec=auto-copy for VF-data access")
+    end
+    
+    -- STEP 6: Set OSD message dynamically (respect user preference)
+    local show_osd_profile = stremio_metadata and stremio_metadata.osd_profile_messages
+    if show_osd_profile == nil then show_osd_profile = true end -- Default true
+    
     local osd_msg = "• " .. table.concat(osd_parts, " • ") .. " •"
-    mp.set_property("osd-playing-msg", osd_msg)
-    log("OSD message: " .. osd_msg)
+    if show_osd_profile then
+        mp.set_property("osd-playing-msg", osd_msg)
+        log("OSD message: " .. osd_msg)
+    else
+        mp.set_property("osd-playing-msg", "")
+        log("OSD profile messages disabled by user")
+    end
     
     -- A/V RESYNC: Anime profiles have heavy shaders/VF that cause desync on D3D11
     if is_anime then
@@ -671,12 +733,21 @@ end)
         
         -- FORCE PIPELINE SETTLE: Start paused to let shaders compile/init logic run
         -- This prevents the "silent desync" race condition by holding playback until ready.
-        mp.set_property("pause", "yes")
-        log("[Startup] Pausing for 2.0s to allow GPU pipeline to settle...")
+        -- mp.set_property("pause", "yes")
+        -- log("[Startup] Pausing for 2.0s to allow GPU pipeline to settle...")
         
-        mp.add_timeout(2.0, function()
-            log("[Startup] Unpausing playback. Clock should be stable.")
-            mp.set_property("pause", "no")
+        -- DEFERRED RESYNC: Instead of pausing, schedule a micro-seek to force A/V realignment after SVP loads
+        mp.add_timeout(2.5, function()
+            -- Checks: Don't seek if user paused or is skipping
+            if not mp.get_property_bool("pause") and mp.get_property_number("speed", 1) <= 1.5 then
+                 -- Send signal to reactive_vf_bypass.lua to ignore this specific seek
+                 -- This prevents it from stripping SVP filters during our maintenance seek
+                 mp.commandv("script-message", "bypass-ignore-seek")
+                 
+                 -- Seek 0 to realign audio/video clock
+                mp.commandv("seek", "0", "relative+exact") 
+                log("SVP Initialization: Performed micro-seek for A/V sync")
+            end
         end)
     end
     

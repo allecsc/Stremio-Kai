@@ -41,6 +41,10 @@
     // Notify Skip Logic
     AUTO_SKIP: "kai-notify-auto-skip",
     SHOW_NOTIFICATIONS: "kai-notify-show-notifications",
+    // New Features
+    HDR_TARGET_PEAK: "kai-hdr-target-peak",
+    OSD_PROFILE_MESSAGES: "kai-osd-profile-messages",
+    VULKAN_API: "kai-vulkan-api",
   };
 
   // ... (existing helper functions) ...
@@ -494,6 +498,85 @@
   }
 
   /**
+   * Create text input option matching Stremio's styling
+   * Uses consistent kai-settings-input classes (shared with api-keys.js)
+   * @param {string} label - Label for the input
+   * @param {string} description - Description text
+   * @param {string} currentValue - Current value
+   * @param {function} onChange - Callback when value changes
+   * @param {string} placeholder - Placeholder text
+   * @param {boolean} disabled - Whether input is disabled
+   */
+  function createTextInput(
+    label,
+    description,
+    currentValue,
+    onChange,
+    placeholder = "",
+    disabled = false,
+  ) {
+    const container = document.createElement("div");
+    container.className = "option-container-EGlcv kai-mpv-setting";
+    if (disabled) container.classList.add("kai-disabled");
+
+    const nameContainer = document.createElement("div");
+    nameContainer.className = "option-name-container-exGMI";
+
+    const labelEl = document.createElement("div");
+    labelEl.className = "label-FFamJ";
+    labelEl.textContent = label;
+
+    if (description) {
+      const descEl = document.createElement("div");
+      descEl.className = "label-FFamJ";
+      descEl.style.cssText =
+        "color: rgba(191, 191, 191, 0.5); display: block; white-space: normal; word-wrap: break-word; line-height: 1.4; margin-top: 0.25rem;";
+      descEl.textContent = description;
+      labelEl.appendChild(descEl);
+    }
+
+    nameContainer.appendChild(labelEl);
+
+    // Use option-input-container-NPgpT for proper inline layout with label
+    const inputContainer = document.createElement("div");
+    inputContainer.className = "option-input-container-NPgpT";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = currentValue;
+    input.placeholder = placeholder;
+    input.disabled = disabled;
+    input.className = "kai-settings-input"; // Consistent class from api-keys.js
+    if (disabled) {
+      input.style.opacity = "0.5";
+      input.style.cursor = "not-allowed";
+    }
+
+    input.addEventListener("blur", () => {
+      onChange(input.value);
+    });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        input.blur();
+      }
+    });
+
+    inputContainer.appendChild(input);
+    container.appendChild(nameContainer);
+    container.appendChild(inputContainer);
+
+    // Expose method to update disabled state
+    container.setDisabled = (isDisabled) => {
+      input.disabled = isDisabled;
+      container.classList.toggle("kai-disabled", isDisabled);
+      input.style.opacity = isDisabled ? "0.5" : "1";
+      input.style.cursor = isDisabled ? "not-allowed" : "text";
+    };
+
+    return container;
+  }
+
+  /**
    * Create dropdown option matching Stremio's EXACT structure
    */
   function createDropdownOption(
@@ -761,6 +844,33 @@
     hdrToggle.appendChild(hdrNote);
     injectionFragment.appendChild(hdrToggle);
 
+    // 1b-2. HDR Target Peak (only active when HDR Passthrough is ON)
+    const isHdrEnabled = getHdrPassthrough();
+    const hdrTargetPeakInput = createTextInput(
+      "HDR Target Peak (nits)",
+      "Set your display's peak brightness. Leave 'auto' for automatic detection.",
+      safeGet(STORAGE_KEYS.HDR_TARGET_PEAK, "auto"),
+      (val) => {
+        safeSet(STORAGE_KEYS.HDR_TARGET_PEAK, val);
+        sendConfigUpdate();
+      },
+      "auto",
+      !isHdrEnabled, // Disabled if HDR Passthrough is OFF
+    );
+    injectionFragment.appendChild(hdrTargetPeakInput);
+
+    // Link HDR toggle to enable/disable target-peak input
+    const originalHdrOnChange = hdrToggle.querySelector(
+      ".toggle-container-lZfHP",
+    );
+    if (originalHdrOnChange) {
+      const originalClickHandler = originalHdrOnChange.onclick;
+      originalHdrOnChange.addEventListener("click", () => {
+        const newHdrState = originalHdrOnChange.classList.contains("checked");
+        hdrTargetPeakInput.setDisabled(!newHdrState);
+      });
+    }
+
     // 1c. ICC Profile Support
     const iccToggle = createToggleOption(
       "Use ICC Profile",
@@ -820,7 +930,7 @@
     // Helper to wrap content in a Stremio-style section container (Card)
     function wrapInSection(header, ...elements) {
       const wrapper = document.createElement("div");
-      wrapper.className = "section-container-twzKQ kai-mpv-setting";
+      wrapper.className = "section-container-twzKQ";
       // Prevent double spacing issues when nested
       wrapper.style.marginBottom = "0";
 
@@ -834,6 +944,7 @@
       visualHeader,
       colorDropdown,
       hdrToggle, // hdrNote is already inside
+      hdrTargetPeakInput, // HDR Target Peak textbox
       iccToggle, // iccNote is already inside
     );
 
@@ -970,6 +1081,36 @@
         (val) => {
           safeSet(STORAGE_KEYS.SHOW_NOTIFICATIONS, val);
           sendConfigUpdate();
+        },
+      ),
+    );
+    skipFrag.appendChild(
+      createToggleOption(
+        "Show Profile OSD Messages",
+        "Display profile information (e.g., Anime • HDR) on video load.",
+        safeGet(STORAGE_KEYS.OSD_PROFILE_MESSAGES, true),
+        (val) => {
+          safeSet(STORAGE_KEYS.OSD_PROFILE_MESSAGES, val);
+          sendConfigUpdate();
+        },
+      ),
+    );
+    skipFrag.appendChild(
+      createToggleOption(
+        "Use Vulkan Rendering",
+        "Use Vulkan GPU API with async compute/transfer. Requires restart.",
+        safeGet(STORAGE_KEYS.VULKAN_API, false),
+        (val) => {
+          safeSet(STORAGE_KEYS.VULKAN_API, val);
+          sendConfigUpdate();
+          // Show restart prompt
+          if (
+            confirm(
+              "Vulkan mode change requires an app restart to take effect. Restart now?",
+            )
+          ) {
+            location.reload();
+          }
         },
       ),
     );

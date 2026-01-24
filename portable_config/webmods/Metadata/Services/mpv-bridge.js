@@ -46,7 +46,7 @@
    * Send anime metadata to profile-manager.lua
    * Reads cached isAnime from DB entry (computed during enrichment)
    */
-  function sendAnimeMetadata(imdbId, entry) {
+  function sendAnimeMetadata(imdbId, entry, contentType) {
     // Read cached detection result from DB entry
     const isAnime = entry?.isAnime || false;
     const reason = entry?.animeReason || null;
@@ -74,15 +74,26 @@
       window.MpvSettings?.getIccProfile?.() ??
       localStorage.getItem("kai-icc-profile") === "true"; // Default false
 
+    // New settings (v2.2)
+    const targetPeak = localStorage.getItem("kai-hdr-target-peak") || "auto";
+    const osdProfileMessages =
+      localStorage.getItem("kai-osd-profile-messages") !== "false"; // Default true
+    const vulkanMode = localStorage.getItem("kai-vulkan-api") === "true"; // Default false
+
     const metadata = JSON.stringify({
       is_anime: isAnime,
       detection_reason: reason,
       imdb_id: imdbId,
+      content_type: contentType || "unknown", // "movie" or "series"
       hdr_passthrough: hdrPassthrough,
       shader_preset: shaderPreset,
       svp_enabled: svpEnabled,
       color_profile: colorProfile,
       icc_profile: iccProfile,
+      // New fields
+      target_peak: targetPeak,
+      osd_profile_messages: osdProfileMessages,
+      vulkan_mode: vulkanMode,
     });
 
     sendToMpv("script-message-to", [
@@ -91,7 +102,7 @@
       metadata,
     ]);
     console.log(
-      `[MPV Bridge] Sent: ${imdbId} → anime:${isAnime}, HDR:${hdrPassthrough}, shaders:${shaderPreset}, SVP:${svpEnabled}, Color:${colorProfile}, ICC:${iccProfile}`,
+      `[MPV Bridge] Sent: ${imdbId} → anime:${isAnime}, type:${contentType}, HDR:${hdrPassthrough}, peak:${targetPeak}, shaders:${shaderPreset}, SVP:${svpEnabled}, Color:${colorProfile}, ICC:${iccProfile}, OSD:${osdProfileMessages}, Vulkan:${vulkanMode}`,
     );
   }
 
@@ -196,26 +207,26 @@
     sendNotifySkipConfig();
 
     // Wait for metadataHelper for anime detection
-    waitForMetadata(state.id);
+    waitForMetadata(state.id, state.type);
   }
 
-  function waitForMetadata(imdbId, retryCount = 0) {
+  function waitForMetadata(imdbId, contentType, retryCount = 0) {
     if (window.metadataHelper?.getTitle) {
       window.metadataHelper
         .getTitle(imdbId)
-        .then((entry) => sendAnimeMetadata(imdbId, entry))
-        .catch(() => sendAnimeMetadata(imdbId, null));
+        .then((entry) => sendAnimeMetadata(imdbId, entry, contentType))
+        .catch(() => sendAnimeMetadata(imdbId, null, contentType));
       return;
     }
 
     if (retryCount > 20) {
       // 4 seconds timeout
       console.warn("[MPV Bridge] Metadata helper timeout, sending default");
-      sendAnimeMetadata(imdbId, null);
+      sendAnimeMetadata(imdbId, null, contentType);
       return;
     }
 
-    setTimeout(() => waitForMetadata(imdbId, retryCount + 1), 200);
+    setTimeout(() => waitForMetadata(imdbId, contentType, retryCount + 1), 200);
   }
 
   let initRetryCount = 0;

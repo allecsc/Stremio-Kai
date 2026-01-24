@@ -144,6 +144,12 @@ local function finalize_setup()
 end
 
 local function on_file_loaded()
+    -- Log separator for easier debugging
+    local filename = mp.get_property("filename") or "unknown"
+    mp.msg.info("══════════════════════════════════════════════════════════════")
+    mp.msg.info("FILE START: " .. filename)
+    mp.msg.info("══════════════════════════════════════════════════════════════")
+    
     notification.hide_skip_overlay()
     filter_engine.stop_filters()
     if state.skip_state.silence_active or state.skip_state.blackframe_skip_active then
@@ -172,6 +178,12 @@ local function on_file_loaded()
 end
 
 local function on_shutdown()
+    -- Log separator for end of file
+    local filename = mp.get_property("filename") or "unknown"
+    mp.msg.info("══════════════════════════════════════════════════════════════")
+    mp.msg.info("FILE END: " .. filename)
+    mp.msg.info("══════════════════════════════════════════════════════════════")
+    
     notification.hide_skip_overlay()
     filter_engine.stop_filters()
     if state.skip_state.silence_active or state.skip_state.blackframe_skip_active then 
@@ -264,26 +276,12 @@ mp.register_script_message("content-metadata", function(json)
     mp.msg.info(string.format("Content metadata received: type=%s, id=%s", 
         data.content_type or "unknown", data.imdb_id or "unknown"))
     
+    -- If finalize_setup already ran but mode is still "none" (waiting for content type),
+    -- trigger it now
     if state.skip_state.mode == "none" and content.is_series() and content.is_setup_pending() then
         content.set_setup_pending(false)
         mp.msg.info("Content type now available, running deferred setup")
         finalize_setup()
-    end
-end)
-
--- Handler for configuration from mpv-bridge.js
-mp.register_script_message("notify-skip-config", function(json)
-    local data = utils.parse_json(json)
-    if not data then return end
-    
-    if data.auto_skip ~= nil then
-        config.opts.auto_skip = data.auto_skip
-        mp.msg.info("Config update: auto_skip = " .. tostring(data.auto_skip))
-    end
-    
-    if data.show_notification ~= nil then
-        config.opts.show_notification = data.show_notification
-        mp.msg.info("Config update: show_notification = " .. tostring(data.show_notification))
     end
 end)
 

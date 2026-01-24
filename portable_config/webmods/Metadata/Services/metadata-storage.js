@@ -40,7 +40,7 @@ class MetadataStorage {
     // contentRating, altTitles, collection, metaSourcePrivate, lastEnrichedPrivate
     this.db.version(3).stores({
       titles:
-        "++id, &imdb, *anilist, *kitsu, *mal, tmdb, tvdb, [type+title], type, title, originalTitle, year, status, genres, interests, demographics, ratingsImdb, ratingsMal, rankMal, ratingsMetacritic, runtime, awards, seasons, episodes, originCountry, metaSource, lastUpdated, metaSourcePrivate, lastEnrichedPrivate, contentRating",
+        "++id, &imdb, *anilist, *kitsu, *mal, tmdb, tvdb, [type+title], type, title, originalTitle, year, status, genres, interests, demographics, runtime, awards, seasons, episodes, originCountry, metaSource, lastUpdated, metaSourcePrivate, lastEnrichedPrivate, contentRating",
     });
 
     // Version 4: Added isAnime field for anime detection caching
@@ -52,12 +52,12 @@ class MetadataStorage {
     // Version 5: Added network field for TV shows
     this.db.version(5).stores({
       titles:
-        "++id, &imdb, *anilist, *kitsu, *mal, tmdb, tvdb, [type+title], type, title, originalTitle, year, status, genres, interests, demographics, ratingsImdb, ratingsMal, rankMal, ratingsMetacritic, runtime, awards, seasons, episodes, originCountry, metaSource, lastUpdated, metaSourcePrivate, lastEnrichedPrivate, contentRating, isAnime, animeReason, network",
+        "++id, &imdb, *anilist, *kitsu, *mal, tmdb, tvdb, [type+title], type, title, originalTitle, year, status, genres, interests, demographics, runtime, awards, seasons, episodes, originCountry, metaSource, lastUpdated, metaSourcePrivate, lastEnrichedPrivate, contentRating, isAnime, animeReason, network",
     });
 
     await this.db.open();
     console.log(
-      "[METADATA][Metadata Storage] IndexedDB initialized successfully (v5)"
+      "[METADATA][Metadata Storage] IndexedDB initialized successfully (v5)",
     );
   }
 
@@ -152,7 +152,7 @@ class MetadataStorage {
     const excludeSet = new Set(
       (Array.isArray(excludeList) ? excludeList : [])
         .filter((i) => typeof i === "string")
-        .map((i) => i.toLowerCase())
+        .map((i) => i.toLowerCase()),
     );
 
     const seen = new Set();
@@ -173,7 +173,7 @@ class MetadataStorage {
         // Check demographics
         if (
           demographics.some(
-            (d) => typeof d === "string" && d.toLowerCase() === lower
+            (d) => typeof d === "string" && d.toLowerCase() === lower,
           )
         )
           continue;
@@ -205,7 +205,7 @@ class MetadataStorage {
     return arr.some(
       (item) =>
         typeof item === "string" &&
-        knownDemographics.includes(item.toLowerCase())
+        knownDemographics.includes(item.toLowerCase()),
     );
   }
 
@@ -294,7 +294,7 @@ class MetadataStorage {
       if (key === "genres") {
         merged.genres = this._normalizeAndMergeGenres(
           existing.genres,
-          newValue
+          newValue,
         );
         continue;
       }
@@ -303,7 +303,7 @@ class MetadataStorage {
       if (key === "interests") {
         merged.interests = this._mergeUniqueArrays(
           existing.interests,
-          newValue
+          newValue,
         );
         continue;
       }
@@ -396,12 +396,11 @@ class MetadataStorage {
             richData.interests,
             Object.assign([], this._normalizeAndMergeGenres(richData.genres), {
               _isExcludeList: true,
-            })
+            }),
           ),
           demographics: richData.demographics,
-          // Merge new ratings with existing, preserving MAL/IMDb from public APIs
+          // Merge new ratings with existing
           ratings: this._mergeRatings(existing?.ratings, richData.ratings),
-          rankMal: richData.rankMal, // Jikan
           malUrl: richData.malUrl, // Jikan
           plot: richData.plot,
           awards: richData.awards,
@@ -428,7 +427,7 @@ class MetadataStorage {
 
         // Compute and cache isAnime status using shared detection utility
         const { isAnime, reason } = window.AnimeDetection?.detect(
-          storageData
+          storageData,
         ) || { isAnime: false, reason: null };
         storageData.isAnime = isAnime;
         storageData.animeReason = reason;
@@ -446,7 +445,7 @@ class MetadataStorage {
                   type: storageData.type,
                   source: "storage",
                 },
-              })
+              }),
             );
           }
 
@@ -462,7 +461,7 @@ class MetadataStorage {
     } catch (error) {
       console.error(
         `[METADATA][Storage] Failed to save title "${richData.title}":`,
-        error
+        error,
       );
       return null;
     }
@@ -516,7 +515,7 @@ class MetadataStorage {
           conflictField === "type+title"
             ? richData.type + "/" + richData.title
             : richData[conflictField]
-        })`
+        })`,
       );
 
       // Merge richData with existing entry, handling array merging for anime IDs
@@ -530,11 +529,11 @@ class MetadataStorage {
         mal: this.IdUtils.mergeIdArrays(conflictingEntry.mal, richData.mal),
         anilist: this.IdUtils.mergeIdArrays(
           conflictingEntry.anilist,
-          richData.anilist
+          richData.anilist,
         ),
         kitsu: this.IdUtils.mergeIdArrays(
           conflictingEntry.kitsu,
-          richData.kitsu
+          richData.kitsu,
         ),
         // Merge ratings (preserve existing, add new)
         ratings: this._mergeRatings(conflictingEntry.ratings, richData.ratings),
@@ -554,7 +553,7 @@ class MetadataStorage {
 
     // This should rarely happen - constraint error but can't find conflicting entry
     console.error(
-      `[METADATA][Storage] Unable to resolve constraint violation for "${richData.title}" - no conflicting entry found`
+      `[METADATA][Storage] Unable to resolve constraint violation for "${richData.title}" - no conflicting entry found`,
     );
     throw new Error(`Unresolved constraint violation for "${richData.title}"`);
   }
@@ -573,7 +572,7 @@ class MetadataStorage {
     } catch (error) {
       console.error(
         `[METADATA][Storage] Failed to get title ${imdbId}:`,
-        error
+        error,
       );
       return null;
     }
@@ -596,19 +595,19 @@ class MetadataStorage {
           title.imdb,
           title.type,
           title.metaSource,
-          title
+          title,
         );
 
         if (enrichedData) {
           await this.saveTitle(enrichedData);
           console.log(
-            `[METADATA][Storage] ✅ Lazy refresh completed: ${title.title}`
+            `[METADATA][Storage] ✅ Lazy refresh completed: ${title.title}`,
           );
         }
       } catch (error) {
         console.warn(
           `[METADATA][Storage] ⚠️ Lazy refresh failed for ${title.imdb}:`,
-          error
+          error,
         );
       }
     }, 100); // Small delay to avoid blocking
@@ -621,7 +620,7 @@ class MetadataStorage {
     } catch (error) {
       console.error(
         `[METADATA][Storage] Failed to check if title exists ${imdbId}:`,
-        error
+        error,
       );
       return false;
     }
@@ -647,7 +646,7 @@ class MetadataStorage {
           mergedInterests = this._mergeUniqueArrays(
             existing.interests || [],
             newInterests,
-            Object.assign([], existing.genres || [], { _isExcludeList: true })
+            Object.assign([], existing.genres || [], { _isExcludeList: true }),
           );
         }
 
@@ -676,7 +675,7 @@ class MetadataStorage {
                 type: existing.type,
                 source: "enrichment",
               },
-            })
+            }),
           );
         }
 
@@ -685,7 +684,7 @@ class MetadataStorage {
     } catch (error) {
       console.error(
         `[METADATA][Storage] Failed to enrich title IDs for ${imdbId}:`,
-        error
+        error,
       );
       return null;
     }
@@ -694,7 +693,7 @@ class MetadataStorage {
   async updateEntryWithConversionResults(
     savedEntry,
     conversionResult,
-    extractedIds
+    extractedIds,
   ) {
     try {
       const updatedEntry = {
@@ -703,15 +702,15 @@ class MetadataStorage {
         // Merge new IDs into existing arrays
         mal: this.IdUtils.mergeIdArrays(
           savedEntry.mal,
-          extractedIds.mal || conversionResult.mal
+          extractedIds.mal || conversionResult.mal,
         ),
         anilist: this.IdUtils.mergeIdArrays(
           savedEntry.anilist,
-          extractedIds.anilist || conversionResult.anilist
+          extractedIds.anilist || conversionResult.anilist,
         ),
         kitsu: this.IdUtils.mergeIdArrays(
           savedEntry.kitsu,
-          extractedIds.kitsu || conversionResult.kitsu
+          extractedIds.kitsu || conversionResult.kitsu,
         ),
         tmdb:
           extractedIds.tmdb || conversionResult.tmdb || savedEntry.tmdb || null,
@@ -725,7 +724,7 @@ class MetadataStorage {
       if (error.name === "ConstraintError") {
         // Entry already exists with this ID - we must merge into it!
         console.log(
-          `[METADATA] ConstraintError in updateEntryWithConversionResults - merging into existing entry`
+          `[METADATA] ConstraintError in updateEntryWithConversionResults - merging into existing entry`,
         );
 
         try {
@@ -742,7 +741,7 @@ class MetadataStorage {
             // 3. Delete the temporary entry (savedEntry) to prevent duplicates
             if (savedEntry.id && savedEntry.id !== existingEntry.id) {
               console.log(
-                `[METADATA] Deleting temporary entry ${savedEntry.id} in favor of existing ${existingEntry.id}`
+                `[METADATA] Deleting temporary entry ${savedEntry.id} in favor of existing ${existingEntry.id}`,
               );
               await this.db.titles.delete(savedEntry.id);
             }
@@ -754,7 +753,7 @@ class MetadataStorage {
         } catch (mergeError) {
           console.error(
             `[METADATA] Failed to merge after ConstraintError:`,
-            mergeError
+            mergeError,
           );
         }
 
@@ -762,7 +761,7 @@ class MetadataStorage {
       }
       console.error(
         `[METADATA][Background] Failed to update entry with conversion results:`,
-        error
+        error,
       );
       return savedEntry;
     }
@@ -783,7 +782,7 @@ class MetadataStorage {
         title.imdb,
         title.type,
         title.metaSource,
-        title
+        title,
       );
 
       if (enrichedData) {
@@ -793,7 +792,7 @@ class MetadataStorage {
     } catch (error) {
       console.warn(
         `[METADATA][Storage] Immediate background update failed for ${imdbId}:`,
-        error
+        error,
       );
     }
   }
@@ -806,7 +805,7 @@ class MetadataStorage {
     if (this.db) return; // Optimization: Avoid await if already ready
     if (!this.db) {
       console.warn(
-        "[METADATA][Storage] Database not ready, waiting for initialization"
+        "[METADATA][Storage] Database not ready, waiting for initialization",
       );
       await this.init();
     }
@@ -935,7 +934,7 @@ class MetadataStorage {
     const savedEntry = await this.saveTitle(newEntry);
     if (!savedEntry) {
       console.warn(
-        `[METADATA][Background] Failed to save new entry for "${newEntry.title}"`
+        `[METADATA][Background] Failed to save new entry for "${newEntry.title}"`,
       );
       return null;
     }
@@ -949,7 +948,7 @@ class MetadataStorage {
     const existingByIds = await this.idLookup.findExistingTitle(
       extractedIds,
       extractedTitle,
-      extractedType
+      extractedType,
     );
 
     if (existingByIds) {
@@ -960,9 +959,8 @@ class MetadataStorage {
   }
 
   async enrichWithCrossReferenceIds(currentEntry) {
-    const enrichedEntry = await this.idLookup.idConverter.enrichWithAllIds(
-      currentEntry
-    );
+    const enrichedEntry =
+      await this.idLookup.idConverter.enrichWithAllIds(currentEntry);
     if (enrichedEntry && enrichedEntry !== currentEntry) {
       // Ensure anime IDs are stored as arrays for consistency
       enrichedEntry.mal = this.IdUtils.ensureArray(enrichedEntry.mal);
@@ -975,7 +973,7 @@ class MetadataStorage {
       } catch (error) {
         if (error.name === "ConstraintError") {
           console.log(
-            `[METADATA] ConstraintError in enrichWithCrossReferenceIds - merging into existing entry`
+            `[METADATA] ConstraintError in enrichWithCrossReferenceIds - merging into existing entry`,
           );
 
           // If the IMDb ID we found already exists, we must merge into THAT entry
@@ -984,12 +982,12 @@ class MetadataStorage {
             const existingEntry = await this.getTitle(enrichedEntry.imdb);
             if (existingEntry) {
               console.log(
-                `[METADATA] Merging temp entry ${enrichedEntry.id} into existing ${existingEntry.id}`
+                `[METADATA] Merging temp entry ${enrichedEntry.id} into existing ${existingEntry.id}`,
               );
 
               const mergedEntry = this._mergeEntryData(
                 existingEntry,
-                enrichedEntry
+                enrichedEntry,
               );
 
               if (enrichedEntry.id && enrichedEntry.id !== existingEntry.id) {
@@ -1004,7 +1002,7 @@ class MetadataStorage {
         // If not a constraint error or we couldn't resolve it, rethrow or return original
         console.warn(
           `[METADATA] Failed to save enriched entry in enrichWithCrossReferenceIds:`,
-          error
+          error,
         );
         return currentEntry;
       }
@@ -1024,10 +1022,10 @@ class MetadataStorage {
     const animeSource = extractedIds.mal
       ? "mal"
       : extractedIds.anilist
-      ? "anilist"
-      : extractedIds.kitsu
-      ? "kitsu"
-      : null;
+        ? "anilist"
+        : extractedIds.kitsu
+          ? "kitsu"
+          : null;
 
     if (animeSource) {
       const idVal = extractedIds[animeSource];
@@ -1035,7 +1033,7 @@ class MetadataStorage {
       try {
         conversionResult = await this.idLookup.idConverter.convertToImdb(
           animeId,
-          animeSource
+          animeSource,
         );
       } catch (err) {
         console.warn(`[METADATA] Conversion failed in resolveImdbId:`, err);
@@ -1048,14 +1046,14 @@ class MetadataStorage {
 
       if (existingByImdb) {
         console.log(
-          `[METADATA] Found existing entry via converted IMDb ID: ${conversionResult.imdb}`
+          `[METADATA] Found existing entry via converted IMDb ID: ${conversionResult.imdb}`,
         );
 
         // CRITICAL FIX: If we are switching to a different entry (merging temp into existing),
         // we MUST delete the temporary entry to prevent duplicates.
         if (currentEntry.id && currentEntry.id !== existingByImdb.id) {
           console.log(
-            `[METADATA] Deleting temporary entry ${currentEntry.id} in favor of existing ${existingByImdb.id}`
+            `[METADATA] Deleting temporary entry ${currentEntry.id} in favor of existing ${existingByImdb.id}`,
           );
           await this.db.titles.delete(currentEntry.id);
         }
@@ -1078,7 +1076,7 @@ class MetadataStorage {
       extractedIds,
       extractedTitle,
       extractedType,
-      priority
+      priority,
     );
 
     const finalEntry = resolvedEntry || currentEntry;
@@ -1097,7 +1095,7 @@ class MetadataStorage {
       } catch (error) {
         console.warn(
           `[METADATA] Post-enrichment retry failed for ${imdbId}:`,
-          error
+          error,
         );
       }
     }, 3000);
@@ -1130,13 +1128,13 @@ class MetadataStorage {
       finalEntry.metaSource || "dom",
       finalEntry,
       2,
-      priority
+      priority,
     );
 
     if (enrichedData) {
       enrichedData = await this.saveTitle(enrichedData);
       console.log(
-        `[METADATA] Successfully enriched: ${enrichedData.title} (${enrichedData.metaSource})`
+        `[METADATA] Successfully enriched: ${enrichedData.title} (${enrichedData.metaSource})`,
       );
 
       // Schedule post-enrichment retry for IMDb-only entries
@@ -1187,7 +1185,7 @@ class MetadataStorage {
       for (const key in processedData.extractedIds) {
         if (processedData.extractedIds[key]) {
           processedData.extractedIds[key] = String(
-            processedData.extractedIds[key]
+            processedData.extractedIds[key],
           );
         }
       }
@@ -1202,7 +1200,7 @@ class MetadataStorage {
       const finalEntry = await this.resolveImdbId(
         currentEntry,
         processedData,
-        priority
+        priority,
       );
       if (!finalEntry) return currentEntry;
 
@@ -1210,7 +1208,7 @@ class MetadataStorage {
     } catch (error) {
       console.error(
         `[METADATA][Storage] processAndSaveData failed for "${processedData?.extractedTitle}":`,
-        error
+        error,
       );
       return null;
     }
