@@ -1,0 +1,2023 @@
+[
+  {
+    "transportUrl": "https://v3-cinemeta.strem.io/manifest.json",
+    "transportName": "",
+    "manifest": {
+      "id": "com.linvo.cinemeta",
+      "version": "3.0.14",
+      "name": "Cinemeta",
+      "contactEmail": null,
+      "description": "The official addon for movie and series catalogs",
+      "logo": null,
+      "background": null,
+      "types": [
+        "movie",
+        "series"
+      ],
+      "resources": [
+        "catalog",
+        "meta",
+        "addon_catalog"
+      ],
+      "idPrefixes": [
+        "tt"
+      ],
+      "catalogs": [
+        {
+          "id": "top",
+          "type": "movie",
+          "name": "Popular",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "Action",
+                "Adventure",
+                "Animation",
+                "Biography",
+                "Comedy",
+                "Crime",
+                "Documentary",
+                "Drama",
+                "Family",
+                "Fantasy",
+                "History",
+                "Horror",
+                "Mystery",
+                "Romance",
+                "Sci-Fi",
+                "Sport",
+                "Thriller",
+                "War",
+                "Western"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "search",
+              "isRequired": true,
+              "options": [],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "top",
+          "type": "series",
+          "name": "Popular",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "Action",
+                "Adventure",
+                "Animation",
+                "Biography",
+                "Comedy",
+                "Crime",
+                "Documentary",
+                "Drama",
+                "Family",
+                "Fantasy",
+                "History",
+                "Horror",
+                "Mystery",
+                "Romance",
+                "Sci-Fi",
+                "Sport",
+                "Thriller",
+                "War",
+                "Western",
+                "Reality-TV",
+                "Talk-Show",
+                "Game-Show"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "search",
+              "isRequired": true,
+              "options": [],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "last-videos",
+          "type": "series",
+          "name": "Last videos",
+          "extra": [
+            {
+              "name": "lastVideosIds",
+              "isRequired": true,
+              "options": [],
+              "optionsLimit": 100
+            }
+          ]
+        },
+        {
+          "id": "calendar-videos",
+          "type": "series",
+          "name": "Calendar videos",
+          "extra": [
+            {
+              "name": "calendarVideosIds",
+              "isRequired": true,
+              "options": [],
+              "optionsLimit": 100
+            }
+          ]
+        }
+      ],
+      "addonCatalogs": [
+        {
+          "id": "official",
+          "type": "all",
+          "name": "Official",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "official",
+          "type": "movie",
+          "name": "Official",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "official",
+          "type": "series",
+          "name": "Official",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "official",
+          "type": "channel",
+          "name": "Official",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "community",
+          "type": "all",
+          "name": "Community",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "community",
+          "type": "movie",
+          "name": "Community",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "community",
+          "type": "series",
+          "name": "Community",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "community",
+          "type": "channel",
+          "name": "Community",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "community",
+          "type": "tv",
+          "name": "Community",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "community",
+          "type": "Podcasts",
+          "name": "Community",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "community",
+          "type": "other",
+          "name": "Community",
+          "extraRequired": [],
+          "extraSupported": []
+        }
+      ],
+      "behaviorHints": {
+        "adult": false,
+        "p2p": false,
+        "configurable": false,
+        "configurationRequired": false
+      }
+    },
+    "flags": {
+      "official": true,
+      "protected": true
+    }
+  },
+  {
+    "transportUrl": "https://aiostreamsfortheweak.nhyira.dev/stremio/78aadab2-adfd-4541-a3eb-a3a7eb4fbf11/eyJpIjoiR3pOdDZmb1NvRFY4UzNWdG41cGNvQT09IiwiZSI6IkR2eW1hOTlKUzM4WVBVZ0NNWTJ5c3c9PSIsInQiOiJhIn0/manifest.json",
+    "transportName": "",
+    "manifest": {
+      "id": "aiostreams.viren070.com.78aadab2-adf",
+      "version": "2.20.1",
+      "name": "AIOStreams | HTTP Only",
+      "contactEmail": null,
+      "description": "AIOStreams consolidates multiple Stremio addons and debrid services into a single, easily configurable addon. It allows highly customisable filtering, sorting, and formatting of results and supports proxying all your streams through MediaFlow Proxy or StremThru for improved compatibility and IP restriction bypassing.",
+      "logo": "https://github.com/user-attachments/assets/4ff6d062-8b2e-4cfe-9d14-358834142c13",
+      "background": null,
+      "types": [
+        "movie",
+        "series",
+        "anime",
+        "other",
+        "tv",
+        "events"
+      ],
+      "resources": [
+        {
+          "name": "stream",
+          "types": [
+            "movie",
+            "series",
+            "anime",
+            "other",
+            "tv",
+            "events"
+          ],
+          "idPrefixes": [
+            "tt",
+            "tmdb",
+            "tmdb:",
+            "kitsu",
+            "kitsu:",
+            "mal:",
+            "mf",
+            "dl"
+          ]
+        },
+        {
+          "name": "catalog",
+          "types": [],
+          "idPrefixes": null
+        },
+        {
+          "name": "meta",
+          "types": [
+            "movie",
+            "series",
+            "tv",
+            "events"
+          ],
+          "idPrefixes": [
+            "mf",
+            "dl",
+            "aiostreamserror"
+          ]
+        }
+      ],
+      "idPrefixes": null,
+      "catalogs": [],
+      "addonCatalogs": [],
+      "behaviorHints": {
+        "adult": false,
+        "p2p": false,
+        "configurable": true,
+        "configurationRequired": false
+      }
+    },
+    "flags": {
+      "official": false,
+      "protected": false
+    }
+  },
+  {
+    "transportUrl": "https://aiostreamsfortheweak.nhyira.dev/stremio/f89739b4-253f-46d6-b73b-1364daa5844d/eyJpIjoiUkpXdTFKZ3hMMytEaGhNQTgrWVVuQT09IiwiZSI6IkV4bnRxRmM1ZWdCQStub1B5b1c2VHc9PSIsInQiOiJhIn0/manifest.json",
+    "transportName": "",
+    "manifest": {
+      "id": "aiostreams.viren070.com.f89739b4-253",
+      "version": "2.20.1",
+      "name": "AIOStreams | P2P Only",
+      "contactEmail": null,
+      "description": "AIOStreams consolidates multiple Stremio addons and debrid services into a single, easily configurable addon. It allows highly customisable filtering, sorting, and formatting of results and supports proxying all your streams through MediaFlow Proxy or StremThru for improved compatibility and IP restriction bypassing.",
+      "logo": "https://github.com/Tam-Taro/SEL-Filtering-and-Sorting/blob/main/logo.png?raw=true",
+      "background": null,
+      "types": [
+        "movie",
+        "series",
+        "anime",
+        "tv",
+        "events"
+      ],
+      "resources": [
+        {
+          "name": "stream",
+          "types": [
+            "movie",
+            "series",
+            "anime",
+            "tv",
+            "events"
+          ],
+          "idPrefixes": [
+            "tt",
+            "kitsu",
+            "mf",
+            "dl",
+            "kitsu:",
+            "mal:"
+          ]
+        }
+      ],
+      "idPrefixes": null,
+      "catalogs": [],
+      "addonCatalogs": [],
+      "behaviorHints": {
+        "adult": false,
+        "p2p": false,
+        "configurable": true,
+        "configurationRequired": false
+      }
+    },
+    "flags": {
+      "official": false,
+      "protected": false
+    }
+  },
+  {
+    "transportUrl": "https://top-streaming.stream/532b37a8-38ab-4f25-9493-6e45b6d5648e/manifest.json",
+    "transportName": "",
+    "manifest": {
+      "id": "uuid.532b37a8.topstreaming.flixpatrol",
+      "version": "4.4.7",
+      "name": "TOP Streaming 🇷🇴",
+      "contactEmail": null,
+      "description": "Top 10 Catalog Lists from the main Streaming Platforms - Platforms: 6 - Content language: ro-RO",
+      "logo": "https://top-streaming.stream/logo.png",
+      "background": "https://via.placeholder.com/1920x1080/1a1a1a/FF6B35?text=TOP+STREAMING",
+      "types": [
+        "movie",
+        "series"
+      ],
+      "resources": [
+        "catalog",
+        "meta"
+      ],
+      "idPrefixes": [
+        "tt",
+        "tmdb:"
+      ],
+      "catalogs": [
+        {
+          "id": "netflix-movie-romania",
+          "type": "movie",
+          "name": "Netflix - Top 10",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "netflix-series-romania",
+          "type": "series",
+          "name": "Netflix - Top 10",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "amazon-prime-movie-romania",
+          "type": "movie",
+          "name": "Amazon Prime Video - Top 10",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "amazon-prime-series-romania",
+          "type": "series",
+          "name": "Amazon Prime Video - Top 10",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "disney-unified-romania",
+          "type": "series",
+          "name": "Disney+ - Top 10 - Movies",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "skyshowtime-movie-romania",
+          "type": "movie",
+          "name": "SkyShowtime - Top 10",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "skyshowtime-series-romania",
+          "type": "series",
+          "name": "SkyShowtime - Top 10",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "hbo-max-movie-romania",
+          "type": "movie",
+          "name": "HBO Max - Top 10",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "hbo-max-series-romania",
+          "type": "series",
+          "name": "HBO Max - Top 10",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "rakuten-tv-unified-romania",
+          "type": "series",
+          "name": "Rakuten TV - Top 10 - Movies",
+          "extraRequired": [],
+          "extraSupported": []
+        }
+      ],
+      "addonCatalogs": [],
+      "behaviorHints": {
+        "adult": false,
+        "p2p": false,
+        "configurable": true,
+        "configurationRequired": false
+      }
+    },
+    "flags": {
+      "official": false,
+      "protected": false
+    }
+  },
+  {
+    "transportUrl": "https://trakt.dexter21767.com/60e5bb0a-cfe0-4588-a5ba-c8da87fb8100/manifest.json",
+    "transportName": "",
+    "manifest": {
+      "id": "community.trakt-tv",
+      "version": "1.0.0",
+      "name": "Trakt Tv",
+      "contactEmail": null,
+      "description": "Addon for getting Trakt's public and user lists, recommendations and watch list.\n RPDB added\n config hash: 7332d4854832a12b",
+      "logo": "https://trakt.dexter21767.com/public/logoPS.png",
+      "background": "https://trakt.dexter21767.com/public/background.png",
+      "types": [],
+      "resources": [
+        {
+          "name": "meta",
+          "types": [
+            "series",
+            "movie"
+          ],
+          "idPrefixes": [
+            "trakt:"
+          ]
+        }
+      ],
+      "idPrefixes": [
+        "trakt"
+      ],
+      "catalogs": [
+        {
+          "id": "trakt_trending_movies",
+          "type": "trakt",
+          "name": "Trending movies",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "action",
+                "adventure",
+                "animation",
+                "anime",
+                "comedy",
+                "crime",
+                "disaster",
+                "documentary",
+                "Donghua",
+                "drama",
+                "eastern",
+                "family",
+                "fan-film",
+                "fantasy",
+                "film-noir",
+                "history",
+                "holiday",
+                "horror",
+                "indie",
+                "music",
+                "musical",
+                "mystery",
+                "none",
+                "road",
+                "romance",
+                "science-fiction",
+                "short",
+                "sports",
+                "sporting-event",
+                "suspense",
+                "thriller",
+                "tv-movie",
+                "war",
+                "western"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_trending_series",
+          "type": "trakt",
+          "name": "Trending series",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "action",
+                "adventure",
+                "animation",
+                "anime",
+                "comedy",
+                "crime",
+                "disaster",
+                "documentary",
+                "Donghua",
+                "drama",
+                "eastern",
+                "family",
+                "fan-film",
+                "fantasy",
+                "film-noir",
+                "history",
+                "holiday",
+                "horror",
+                "indie",
+                "music",
+                "musical",
+                "mystery",
+                "none",
+                "road",
+                "romance",
+                "science-fiction",
+                "short",
+                "sports",
+                "sporting-event",
+                "suspense",
+                "thriller",
+                "tv-movie",
+                "war",
+                "western"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_search_movies",
+          "type": "trakt",
+          "name": "search movies",
+          "extra": [
+            {
+              "name": "search",
+              "isRequired": true,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_search_series",
+          "type": "trakt",
+          "name": "search series",
+          "extra": [
+            {
+              "name": "search",
+              "isRequired": true,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:garycrawfordgc:20388873:random:desc",
+          "type": "trakt",
+          "name": "Top Movies of the week",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:garycrawfordgc:5308818:released:desc",
+          "type": "trakt",
+          "name": "Latest releases",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:garycrawfordgc:20370350:released:desc",
+          "type": "trakt",
+          "name": "Latest TV Shows",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:benfranklin:800238:random:desc",
+          "type": "trakt",
+          "name": "Best Mindfucks",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:garycrawfordgc:20770323:released:desc",
+          "type": "trakt",
+          "name": "Action",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:garycrawfordgc:20770336:released:desc",
+          "type": "trakt",
+          "name": "Comedy",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:rizreflects:22032399:released:desc",
+          "type": "trakt",
+          "name": "Adventures",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:garycrawfordgc:20770341:released:desc",
+          "type": "trakt",
+          "name": "Crime",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:rizreflects:22033404:released:desc",
+          "type": "trakt",
+          "name": "Mysteries",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:garycrawfordgc:20770413:released:desc",
+          "type": "trakt",
+          "name": "Thriller",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:garycrawfordgc:20872066:released:desc",
+          "type": "trakt",
+          "name": "Sci-Fi",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:rizreflects:22033383:released:desc",
+          "type": "trakt",
+          "name": "Fantasy Movies",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:garycrawfordgc:20770267:released:desc",
+          "type": "trakt",
+          "name": "Drama",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:rizreflects:20686250:released:desc",
+          "type": "trakt",
+          "name": "Animation",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:rizreflects:20700252:released:desc",
+          "type": "trakt",
+          "name": "Romance",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:garycrawfordgc:20770365:released:desc",
+          "type": "trakt",
+          "name": "Horror",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:justin:2142753:rank:asc",
+          "type": "trakt",
+          "name": "IMDB: Top Rated Movies",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:justin:2143363:rank:asc",
+          "type": "trakt",
+          "name": "IMDB: Top Rated TV Shows",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "trakt_list:_aenema:808094:random:desc",
+          "type": "trakt",
+          "name": "Great Movies You May Have Never Heard Of",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "added asc",
+                "added desc",
+                "title asc",
+                "title desc",
+                "released asc",
+                "released desc",
+                "runtime asc",
+                "runtime desc",
+                "votes asc",
+                "votes desc",
+                "rating asc",
+                "rating desc",
+                "rank asc",
+                "rank desc",
+                "popularity asc",
+                "popularity desc",
+                "random asc",
+                "random desc"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        }
+      ],
+      "addonCatalogs": [],
+      "behaviorHints": {
+        "adult": false,
+        "p2p": false,
+        "configurable": true,
+        "configurationRequired": false
+      }
+    },
+    "flags": {
+      "official": false,
+      "protected": false
+    }
+  },
+  {
+    "transportUrl": "https://1fe84bc728af-stremio-anime-catalogs.baby-beamup.club/%7B%22ratings%22%3A%22on%22%2C%22rpdbkey%22%3A%22t0-free-rpdb%22%2C%22anilist_trending-now%22%3A%22on%22%2C%22anilist_popular-this-season%22%3A%22on%22%2C%22anilist_upcoming-next-season%22%3A%22on%22%7D/manifest.json",
+    "transportName": "",
+    "manifest": {
+      "id": "org.stremio.animecatalogs",
+      "version": "1.0.3",
+      "name": "Anime Catalogs",
+      "contactEmail": null,
+      "description": "Stremio catalogs for anime from: MyAnimeList, AniDB, AniList, Kitsu, aniSearch, LiveChart.me, Notify.Moe. Also supports filtering by dubbed and optional setting to use Rating Posters from RPDB.",
+      "logo": "https://1fe84bc728af-stremio-anime-catalogs.baby-beamup.club/addon-logo.png",
+      "background": "https://1fe84bc728af-stremio-anime-catalogs.baby-beamup.club/addon-background.jpg",
+      "types": [
+        "anime",
+        "movie",
+        "series"
+      ],
+      "resources": [
+        "catalog",
+        "meta"
+      ],
+      "idPrefixes": [
+        "kitsu:"
+      ],
+      "catalogs": [
+        {
+          "id": "anilist_trending-now",
+          "type": "anime",
+          "name": "Trending Now AniList",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "Action",
+                "Adventure",
+                "Comedy",
+                "Drama",
+                "Sci-Fi",
+                "Space",
+                "Mystery",
+                "Magic",
+                "Supernatural",
+                "Police",
+                "Fantasy",
+                "Sports",
+                "Romance",
+                "Cars",
+                "Slice of Life",
+                "Racing",
+                "Horror",
+                "Psychological",
+                "Thriller",
+                "Martial Arts",
+                "Super Power",
+                "School",
+                "Ecchi",
+                "Vampire",
+                "Historical",
+                "Military",
+                "Dementia",
+                "Mecha",
+                "Demons",
+                "Samurai",
+                "Harem",
+                "Music",
+                "Parody",
+                "Shoujo Ai",
+                "Game",
+                "Shounen Ai",
+                "Kids",
+                "Hentai",
+                "Yuri",
+                "Yaoi",
+                "Anime Influenced",
+                "Gender Bender",
+                "Doujinshi",
+                "Mahou Shoujo",
+                "Mahou Shounen",
+                "Gore",
+                "Law",
+                "Cooking",
+                "Mature",
+                "Medical",
+                "Political",
+                "Tokusatsu",
+                "Youth",
+                "Workplace",
+                "Crime",
+                "Zombies",
+                "Documentary",
+                "Family",
+                "Food",
+                "Friendship",
+                "Tragedy"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "anilist_popular-this-season",
+          "type": "anime",
+          "name": "Popular This Season AniList",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "Action",
+                "Adventure",
+                "Comedy",
+                "Drama",
+                "Sci-Fi",
+                "Space",
+                "Mystery",
+                "Magic",
+                "Supernatural",
+                "Police",
+                "Fantasy",
+                "Sports",
+                "Romance",
+                "Cars",
+                "Slice of Life",
+                "Racing",
+                "Horror",
+                "Psychological",
+                "Thriller",
+                "Martial Arts",
+                "Super Power",
+                "School",
+                "Ecchi",
+                "Vampire",
+                "Historical",
+                "Military",
+                "Dementia",
+                "Mecha",
+                "Demons",
+                "Samurai",
+                "Harem",
+                "Music",
+                "Parody",
+                "Shoujo Ai",
+                "Game",
+                "Shounen Ai",
+                "Kids",
+                "Hentai",
+                "Yuri",
+                "Yaoi",
+                "Anime Influenced",
+                "Gender Bender",
+                "Doujinshi",
+                "Mahou Shoujo",
+                "Mahou Shounen",
+                "Gore",
+                "Law",
+                "Cooking",
+                "Mature",
+                "Medical",
+                "Political",
+                "Tokusatsu",
+                "Youth",
+                "Workplace",
+                "Crime",
+                "Zombies",
+                "Documentary",
+                "Family",
+                "Food",
+                "Friendship",
+                "Tragedy"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        },
+        {
+          "id": "anilist_upcoming-next-season",
+          "type": "anime",
+          "name": "Upcoming Next Season AniList",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "Action",
+                "Adventure",
+                "Comedy",
+                "Drama",
+                "Sci-Fi",
+                "Space",
+                "Mystery",
+                "Magic",
+                "Supernatural",
+                "Police",
+                "Fantasy",
+                "Sports",
+                "Romance",
+                "Cars",
+                "Slice of Life",
+                "Racing",
+                "Horror",
+                "Psychological",
+                "Thriller",
+                "Martial Arts",
+                "Super Power",
+                "School",
+                "Ecchi",
+                "Vampire",
+                "Historical",
+                "Military",
+                "Dementia",
+                "Mecha",
+                "Demons",
+                "Samurai",
+                "Harem",
+                "Music",
+                "Parody",
+                "Shoujo Ai",
+                "Game",
+                "Shounen Ai",
+                "Kids",
+                "Hentai",
+                "Yuri",
+                "Yaoi",
+                "Anime Influenced",
+                "Gender Bender",
+                "Doujinshi",
+                "Mahou Shoujo",
+                "Mahou Shounen",
+                "Gore",
+                "Law",
+                "Cooking",
+                "Mature",
+                "Medical",
+                "Political",
+                "Tokusatsu",
+                "Youth",
+                "Workplace",
+                "Crime",
+                "Zombies",
+                "Documentary",
+                "Family",
+                "Food",
+                "Friendship",
+                "Tragedy"
+              ],
+              "optionsLimit": 1
+            },
+            {
+              "name": "skip",
+              "isRequired": false,
+              "options": [],
+              "optionsLimit": 1
+            }
+          ]
+        }
+      ],
+      "addonCatalogs": [],
+      "behaviorHints": {
+        "adult": false,
+        "p2p": false,
+        "configurable": false,
+        "configurationRequired": false
+      }
+    },
+    "flags": {
+      "official": false,
+      "protected": false
+    }
+  },
+  {
+    "transportUrl": "https://7a82163c306e-stremio-netflix-catalog-addon.baby-beamup.club/ZG5wLGFtcCxhdHAscG1wLHBjcCxobHUsY3RzLGNydSxkcGUsbmZ4LGhibSxtZ2wsbWJpLHN0eixzc3Q6dDAtZnJlZS1ycGRiOnVzOjE3MzQ4ODY5NzM4NzA%3D/manifest.json",
+    "transportName": "",
+    "manifest": {
+      "id": "pw.ers.netflix-catalog",
+      "version": "1.1.1",
+      "name": "Streaming Catalogs",
+      "contactEmail": null,
+      "description": "Your favourite streaming services!",
+      "logo": "https://play-lh.googleusercontent.com/TBRwjS_qfJCSj1m7zZB93FnpJM5fSpMA_wUlFDLxWAb45T9RmwBvQd5cWR5viJJOhkI",
+      "background": null,
+      "types": [
+        "movie",
+        "series"
+      ],
+      "resources": [
+        "catalog"
+      ],
+      "idPrefixes": [
+        "tt"
+      ],
+      "catalogs": [
+        {
+          "id": "nfx",
+          "type": "movie",
+          "name": "Netflix",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "nfx",
+          "type": "series",
+          "name": "Netflix",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "hbm",
+          "type": "movie",
+          "name": "HBO Max",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "hbm",
+          "type": "series",
+          "name": "HBO Max",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "dnp",
+          "type": "movie",
+          "name": "Disney+",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "dnp",
+          "type": "series",
+          "name": "Disney+",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "hlu",
+          "type": "movie",
+          "name": "Hulu",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "hlu",
+          "type": "series",
+          "name": "Hulu",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "amp",
+          "type": "movie",
+          "name": "Prime Video",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "amp",
+          "type": "series",
+          "name": "Prime Video",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "pmp",
+          "type": "movie",
+          "name": "Paramount+",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "pmp",
+          "type": "series",
+          "name": "Paramount+",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "atp",
+          "type": "movie",
+          "name": "Apple TV+",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "atp",
+          "type": "series",
+          "name": "Apple TV+",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "pcp",
+          "type": "movie",
+          "name": "Peacock",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "pcp",
+          "type": "series",
+          "name": "Peacock",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "cru",
+          "type": "movie",
+          "name": "Crunchyroll",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "cru",
+          "type": "series",
+          "name": "Crunchyroll",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "sst",
+          "type": "movie",
+          "name": "SkyShowtime",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "sst",
+          "type": "series",
+          "name": "SkyShowtime",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "mgl",
+          "type": "movie",
+          "name": "MagellanTV",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "mgl",
+          "type": "series",
+          "name": "MagellanTV",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "cts",
+          "type": "movie",
+          "name": "Curiosity Stream",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "cts",
+          "type": "series",
+          "name": "Curiosity Stream",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "stz",
+          "type": "movie",
+          "name": "Starz",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "stz",
+          "type": "series",
+          "name": "Starz",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "dpe",
+          "type": "series",
+          "name": "Discovery+",
+          "extraRequired": [],
+          "extraSupported": []
+        },
+        {
+          "id": "mbi",
+          "type": "movie",
+          "name": "Mubi",
+          "extraRequired": [],
+          "extraSupported": []
+        }
+      ],
+      "addonCatalogs": [],
+      "behaviorHints": {
+        "adult": false,
+        "p2p": false,
+        "configurable": true,
+        "configurationRequired": false
+      }
+    },
+    "flags": {
+      "official": false,
+      "protected": false
+    }
+  },
+  {
+    "transportUrl": "https://848b3516657c-usatv.baby-beamup.club/manifest.json",
+    "transportName": "",
+    "manifest": {
+      "id": "community.usatv",
+      "version": "1.5.0",
+      "name": "USA TV",
+      "contactEmail": null,
+      "description": "USA TV provides access to channels across various categories including local channels, news, sports, entertainment, premium, lifestyle, kids' shows, documentaries, Latino programming, and much more.",
+      "logo": "https://848b3516657c-usatv.baby-beamup.club/public/logo.png",
+      "background": "https://848b3516657c-usatv.baby-beamup.club/public/background.jpg",
+      "types": [
+        "tv"
+      ],
+      "resources": [
+        "catalog",
+        "stream",
+        "meta"
+      ],
+      "idPrefixes": [
+        "ustv"
+      ],
+      "catalogs": [
+        {
+          "id": "all",
+          "type": "tv",
+          "name": "USA TV",
+          "extra": [
+            {
+              "name": "genre",
+              "isRequired": false,
+              "options": [
+                "Local",
+                "News",
+                "Sports",
+                "Entertainment",
+                "Premium",
+                "Lifestyle",
+                "Kids",
+                "Documentaries",
+                "Music",
+                "Latino"
+              ],
+              "optionsLimit": 1
+            }
+          ]
+        }
+      ],
+      "addonCatalogs": [],
+      "behaviorHints": {
+        "adult": false,
+        "p2p": false,
+        "configurable": false,
+        "configurationRequired": false
+      }
+    },
+    "flags": {
+      "official": false,
+      "protected": false
+    }
+  },
+  {
+    "transportUrl": "https://opensubtitlesv3-pro.dexter21767.com/eyJsYW5ncyI6WyJyb21hbmlhbiIsImVuZ2xpc2giXSwic291cmNlIjoiYWxsIiwiYWlUcmFuc2xhdGVkIjp0cnVlLCJhdXRvQWRqdXN0bWVudCI6dHJ1ZX0=/manifest.json",
+    "transportName": "",
+    "manifest": {
+      "id": "community.opensubtitlesv3.pro",
+      "version": "0.1.0",
+      "name": "opensubtitles PRO",
+      "contactEmail": "dexter21767@gmail.com",
+      "description": "ad-free and spam-free subtitles addon",
+      "logo": "https://i.imgur.com/cGc1DXB.png",
+      "background": "https://github.com/Stremio/stremio-art/raw/main/originals/reiphantomhive1.png",
+      "types": [
+        "movie",
+        "series"
+      ],
+      "resources": [
+        "subtitles"
+      ],
+      "idPrefixes": [
+        "tt",
+        "kitsu"
+      ],
+      "catalogs": [],
+      "addonCatalogs": [],
+      "behaviorHints": {
+        "adult": false,
+        "p2p": false,
+        "configurable": true,
+        "configurationRequired": false
+      }
+    },
+    "flags": {
+      "official": false,
+      "protected": false
+    }
+  },
+  {
+    "transportUrl": "https://submaker.elfhosted.com/addon/f0f9357d7b9b6961d6c8249bd893429d/manifest.json",
+    "transportName": "",
+    "manifest": {
+      "id": "com.stremio.submaker",
+      "version": "1.4.36",
+      "name": "SubMaker | ElfHosted",
+      "contactEmail": "support@submaker.example.com",
+      "description": "Take control of your subtitles! Fetch and translate subtitles from OpenSubtitles, SubScene and SubDL with a free Gemini AI key or other AI providers, without ever leaving Stremio.\n\nSource languages: N/A\nTarget languages: N/A",
+      "logo": "https://submaker.elfhosted.com/logo.png",
+      "background": "https://submaker.elfhosted.com/background.svg",
+      "types": [
+        "movie",
+        "series",
+        "anime"
+      ],
+      "resources": [
+        "subtitles"
+      ],
+      "idPrefixes": [
+        "tt",
+        "tmdb",
+        "anidb",
+        "kitsu",
+        "mal",
+        "anilist"
+      ],
+      "catalogs": [],
+      "addonCatalogs": [],
+      "behaviorHints": {
+        "adult": false,
+        "p2p": false,
+        "configurable": true,
+        "configurationRequired": false
+      }
+    },
+    "flags": {
+      "official": false,
+      "protected": false
+    }
+  }
+]
