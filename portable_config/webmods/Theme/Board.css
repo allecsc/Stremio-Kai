@@ -23,7 +23,7 @@ body.hero-active .board-container-DTN_b .board-content-container-ToQTz .board-co
     /* top: calc(-1 * var(--horizontal-nav-bar-size)) !important; */
 
     flex: 0 0 42vh !important; /* Target height */
-    min-height: 300px !important; /* GUARANTEE visibility */
+    min-height: 460px !important; 
     bottom: auto !important;
     width: 100%;
     z-index: 5; /* Ensure above hero if overlap ever happened (shouldn't with flex) */
@@ -32,6 +32,27 @@ body.hero-active .board-container-DTN_b .board-content-container-ToQTz .board-co
 
     scroll-snap-type: y mandatory;
     overflow-y: auto;
+}
+
+/* Tall Screens / 16:10 (e.g. 1920x1200) */
+@media (max-aspect-ratio: 16/10) {
+    body.hero-active .board-container-DTN_b .board-content-container-ToQTz .board-content-nPWv1 {
+        min-height: 460px !important;
+    }
+}
+
+/* UltraWide (21:9) - e.g., 3440x1440 */
+@media (min-aspect-ratio: 21/9) {
+    body.hero-active .board-container-DTN_b .board-content-container-ToQTz .board-content-nPWv1 {
+        min-height: 540px !important;
+    }
+}
+
+/* Super UltraWide (32:9) - e.g., 5120x1440 */
+@media (min-aspect-ratio: 32/9) {
+    body.hero-active .board-container-DTN_b .board-content-container-ToQTz .board-content-nPWv1 {
+        min-height: 670px !important;
+    }
 }
 
 .board-row-CoJrZ {

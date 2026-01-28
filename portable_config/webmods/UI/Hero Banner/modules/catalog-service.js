@@ -52,12 +52,14 @@ class CatalogEnrichmentService {
       // Access existing singleton or create new if needed (though Metadata system should have one)
       this._rateLimiter =
         window.MetadataModules?.rateLimiter?.instance ||
-        new (window.MetadataModules?.rateLimiter?.GlobalRateLimiter ||
+        new (
+          window.MetadataModules?.rateLimiter?.GlobalRateLimiter ||
           class {
             makeJikanRequest(url) {
               return fetch(url).then((r) => r.json());
             }
-          })();
+          }
+        )();
     }
     return this._rateLimiter;
   }
@@ -108,7 +110,7 @@ class CatalogEnrichmentService {
           clearInterval(interval);
           window.removeEventListener("metadata-modules-ready", onReady);
           console.warn(
-            "[CatalogService] Timeout waiting for Metadata - proceeding anyway"
+            "[CatalogService] Timeout waiting for Metadata - proceeding anyway",
           );
           resolve(false);
         }
@@ -131,7 +133,7 @@ class CatalogEnrichmentService {
     const storage = this.storage;
     if (!storage) {
       console.error(
-        "[CatalogService] Metadata Storage not available. Check window.metadataServices."
+        "[CatalogService] Metadata Storage not available. Check window.metadataServices.",
       );
       return [];
     }
@@ -141,7 +143,7 @@ class CatalogEnrichmentService {
       catalogItems || (await this.fetchCatalog("movie", "imdbRating"));
 
     console.log(
-      `[CatalogService] Processing ${items.length} items (Parallel)...`
+      `[CatalogService] Processing ${items.length} items (Parallel)...`,
     );
 
     let processedCount = 0;
@@ -159,7 +161,7 @@ class CatalogEnrichmentService {
           // This saves the basic item to DB.
           let result = await this.storage.processAndSaveData(
             processedData,
-            true
+            true,
           );
 
           // 4. Collect Result & Update Cache
@@ -205,7 +207,7 @@ class CatalogEnrichmentService {
                 const enrichedResult =
                   await metadataService.triggerLazyPrivateEnrichment(
                     result,
-                    true
+                    true,
                   );
                 if (enrichedResult) {
                   finalResult = enrichedResult;
@@ -225,7 +227,7 @@ class CatalogEnrichmentService {
                 processedCount, // current count
                 finalResult.extractedTitle ||
                   finalResult.title ||
-                  finalResult.name // title name
+                  finalResult.name, // title name
               );
             }
 
@@ -234,11 +236,11 @@ class CatalogEnrichmentService {
         } catch (error) {
           console.error(
             `[CatalogService] Failed item ${item.extractedTitle || item.name}:`,
-            error
+            error,
           );
         }
         return null;
-      })
+      }),
     );
 
     const enrichedResults = results.filter(Boolean); // Filter nulls
@@ -279,7 +281,7 @@ class CatalogEnrichmentService {
     } else {
       // Neither
       console.warn(
-        "[CatalogService] Both Movie and Series catalogs are disabled/empty."
+        "[CatalogService] Both Movie and Series catalogs are disabled/empty.",
       );
       return [];
     }
@@ -327,7 +329,7 @@ class CatalogEnrichmentService {
       ]);
 
       console.log(
-        `[CatalogService] Filled pools: Movies ${validMovies.length}/${movieLimit}, Series ${validSeries.length}/${seriesLimit}`
+        `[CatalogService] Filled pools: Movies ${validMovies.length}/${movieLimit}, Series ${validSeries.length}/${seriesLimit}`,
       );
 
       if (progressCallback) progressCallback("Enriching metadata...", 40);
@@ -385,14 +387,14 @@ class CatalogEnrichmentService {
       const cached = this.cache.loadAnimeCache();
       if (cached && cached.titles && cached.titles.length > 0) {
         console.log(
-          `[CatalogService] Loaded ${cached.titles.length} anime from cache.`
+          `[CatalogService] Loaded ${cached.titles.length} anime from cache.`,
         );
         return cached.titles;
       }
     }
 
     console.log(
-      `[CatalogService] Building progressive anime catalog (Target: ${targetSize})...`
+      `[CatalogService] Building progressive anime catalog (Target: ${targetSize})...`,
     );
     const limit = targetSize || this.config.ANIME_CATALOG_LIMIT || 20;
     const maxDays = this.config.PROGRESSIVE_DAYS_LIMIT || 5;
@@ -421,14 +423,14 @@ class CatalogEnrichmentService {
           const alreadyHas = accumulatedEnriched.some(
             (e) =>
               (e.mal && String(e.mal) === String(item.mal_id)) ||
-              e.originalTitle === item.title
+              e.originalTitle === item.title,
           );
           return !alreadyHas;
         });
 
         if (validItems.length > 0) {
           console.log(
-            `[CatalogService] Processing ${validItems.length} valid anime from ${dayLabel}`
+            `[CatalogService] Processing ${validItems.length} valid anime from ${dayLabel}`,
           );
 
           // Wrapper callback to track cumulative count
@@ -442,7 +444,7 @@ class CatalogEnrichmentService {
           // Process this batch with cumulative callback
           const batchResults = await this.processCatalog(
             validItems,
-            cumulativeCallback
+            cumulativeCallback,
           );
 
           // Parallel Post-Validation
@@ -456,7 +458,7 @@ class CatalogEnrichmentService {
 
                 // Enhance with TMDB images (optional, graceful degradation)
                 return await this.enhanceWithTMDBImages(item);
-              })
+              }),
             );
 
             const validatedBatch = validationResults.filter(Boolean);
@@ -504,13 +506,13 @@ class CatalogEnrichmentService {
           const isValid = await this.validateEnrichedItem(item);
           if (!isValid) return null;
           return await this.enhanceWithTMDBImages(item);
-        })
+        }),
       )
     ).filter(Boolean);
 
     // Dedup against existing
     const uniqueNew = validatedNew.filter(
-      (newItem) => !existingTitles.some((exist) => exist.imdb === newItem.imdb)
+      (newItem) => !existingTitles.some((exist) => exist.imdb === newItem.imdb),
     );
 
     if (uniqueNew.length === 0) return existingTitles;
@@ -537,7 +539,7 @@ class CatalogEnrichmentService {
     if (anime.demographics && Array.isArray(anime.demographics)) {
       if (
         anime.demographics.some(
-          (d) => d.name && d.name.toLowerCase().includes("kids")
+          (d) => d.name && d.name.toLowerCase().includes("kids"),
         )
       )
         return false;
@@ -565,7 +567,7 @@ class CatalogEnrichmentService {
     if (item.genres && Array.isArray(item.genres)) {
       if (
         item.genres.some(
-          (d) => typeof d === "string" && d.toLowerCase().includes("family")
+          (d) => typeof d === "string" && d.toLowerCase().includes("family"),
         )
       )
         return false;
@@ -597,7 +599,7 @@ class CatalogEnrichmentService {
           const isValid = await ImageUtils.validateUrl(images.backdrop);
           if (isValid) {
             console.log(
-              `[CatalogService] Upgraded backdrop for ${item.title} with TMDB image`
+              `[CatalogService] Upgraded backdrop for ${item.title} with TMDB image`,
             );
             item.background = images.backdrop;
             item.tmdbBackdrop = images.backdrop;
@@ -615,7 +617,7 @@ class CatalogEnrichmentService {
           const isValid = await ImageUtils.validateUrl(images.logo);
           if (isValid) {
             console.log(
-              `[CatalogService] Upgraded logo for ${item.title} with TMDB image`
+              `[CatalogService] Upgraded logo for ${item.title} with TMDB image`,
             );
             item.logo = images.logo;
             item.tmdbLogo = images.logo;
@@ -630,7 +632,7 @@ class CatalogEnrichmentService {
     } catch (error) {
       console.warn(
         `[CatalogService] TMDB image enhancement failed for ${item.title}:`,
-        error
+        error,
       );
       return item;
     }
@@ -672,7 +674,7 @@ class CatalogEnrichmentService {
         runtime = window.MetadataModules.runtimeUtils.RuntimeUtils.format(
           minutes,
           type,
-          episodeCount
+          episodeCount,
         );
       } else {
         runtime = rawRuntime;
@@ -708,8 +710,8 @@ class CatalogEnrichmentService {
       genres: apiItem.genres
         ? apiItem.genres.map((g) => g.name || g)
         : apiItem.genre
-        ? [apiItem.genre]
-        : [],
+          ? [apiItem.genre]
+          : [],
       interests: apiItem.themes ? apiItem.themes.map((t) => t.name) : null,
       demographics:
         apiItem.demographics && apiItem.demographics.length > 0
@@ -743,25 +745,93 @@ class CatalogEnrichmentService {
     if (!url) {
       console.error(
         "[CatalogService] Missing Catalog URL in Config for type:",
-        type
+        type,
       );
       return [];
     }
 
-    try {
-      // Use CORS proxy to bypass restrictions
-      // NOTE: Using a public proxy for testing. For production, consider a self-hosted one.
-      const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(url);
+    // HELPER: Fetch with optional proxy fallback
+    const fetchWithFallback = async (targetUrl) => {
+      // OPTIMIZATION: Cinemeta is trusted and supports CORS. Go DIRECT always.
+      if (targetUrl.includes("cinemeta")) {
+        // console.log(`[CatalogService] Cinemeta URL detected. Direct Fetch: ${targetUrl}`);
+        const response = await fetch(targetUrl);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.json();
+      }
 
-      const response = await fetch(proxyUrl);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
+      // 1. Try DIRECT first
+      try {
+        const response = await fetch(targetUrl);
+        if (response.ok) return await response.json();
+      } catch (directError) {
+        // console.warn(`[CatalogService] Direct fetch failed for ${targetUrl}. Engaging proxy chain...`);
+      }
+
+      // 2. Iterate Proxy Chain
+      const proxies = this.config.PROXY_LIST || ["https://corsproxy.io/?"]; // Default fallback
+      const encodedUrl = encodeURIComponent(targetUrl);
+
+      for (const proxyPrefix of proxies) {
+        try {
+          const proxyUrl = proxyPrefix + encodedUrl;
+
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout per proxy
+
+          const response = await fetch(proxyUrl, { signal: controller.signal });
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            const data = await response.json();
+            // Basic validation to ensure we didn't get an HTML error page masquerading as JSON
+            if (data && (Array.isArray(data) || data.metas || data.contents)) {
+              return data;
+            }
+          }
+        } catch (e) {
+          // Continue to next proxy
+        }
+      }
+
+      throw new Error("All fetch methods (Direct + Proxy Chain) failed.");
+    };
+
+    try {
+      const data = await fetchWithFallback(url);
 
       // Handle both Cinemeta format ({ metas: [] }) and MDBList format ([...])
       const metas = Array.isArray(data) ? data : data.metas || [];
       return metas.slice(0, limit);
     } catch (e) {
-      console.error("[CatalogService] Failed to fetch catalog:", e);
+      console.warn(
+        `[CatalogService] Primary catalog failed (${url}). Checking for fallback...`,
+        e,
+      );
+
+      // FALLBACK: If MDBList/Others fail, try default Cinemeta
+      const cinemetaUrl =
+        type === "series"
+          ? "https://v3-cinemeta.strem.io/catalog/series/top.json"
+          : "https://v3-cinemeta.strem.io/catalog/movie/top.json";
+
+      // Only fallback if we weren't already trying Cinemeta
+      if (url !== cinemetaUrl && !url.includes("cinemeta")) {
+        try {
+          // console.log(`[CatalogService] Falling back to Cinemeta: ${cinemetaUrl}`);
+          const fallbackData = await fetchWithFallback(cinemetaUrl);
+          const fallbackMetas = Array.isArray(fallbackData)
+            ? fallbackData
+            : fallbackData.metas || [];
+          return fallbackMetas.slice(0, limit);
+        } catch (fallbackError) {
+          console.error(
+            "[CatalogService] Cinemeta Fallback also failed:",
+            fallbackError,
+          );
+        }
+      }
+
       return [];
     }
   }
@@ -816,6 +886,69 @@ class CatalogEnrichmentService {
       console.error("[CatalogService] Failed to fetch Jikan:", e);
       return [];
     }
+  }
+  /**
+   * TEST UTILITY: Batch test proxy candidates
+   */
+  async testProxies() {
+    console.log("--- STARTING PROXY CANDIDATE TEST ---");
+    const target = "https://mdblist.com/lists/snoak/trending-movies/json";
+
+    // Note: Some proxies require strict encoding, some don't.
+    // We will test with encoded URLs.
+    const encodedTarget = encodeURIComponent(target);
+
+    const candidates = [
+      { name: "Cors.lol", prefix: "https://api.cors.lol/?url=" },
+      { name: "CorsProxy.io", prefix: "https://corsproxy.io/?" },
+      { name: "CodeTabs", prefix: "https://api.codetabs.com/v1/proxy?quest=" }, // Official Codetabs API url
+      { name: "AllOriginsRaw", prefix: "https://api.allorigins.win/raw?url=" },
+      { name: "CorsFix", prefix: "https://corsfix.com/free-cors-proxy?url=" }, // Usually requires ?url=
+      { name: "TestWorkers", prefix: "https://test.cors.workers.dev/?url=" },
+      { name: "ThingProxy", prefix: "https://thingproxy.freeboard.io/fetch/" },
+      { name: "CorsAnywhere", prefix: "https://cors-anywhere.com/" }, // Often requires activation
+    ];
+
+    for (const c of candidates) {
+      const url = c.prefix + encodedTarget;
+      try {
+        const start = performance.now();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
+        const response = await fetch(url, { signal: controller.signal });
+        const ms = (performance.now() - start).toFixed(0);
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          // Verify JSON content to ensure it's not an HTML error page
+          try {
+            const data = await response.json();
+            if (Array.isArray(data) || data.metas) {
+              console.log(`✅ [PASS] ${c.name.padEnd(12)} | ${ms}ms`);
+            } else {
+              console.warn(
+                `⚠️ [WARN] ${c.name.padEnd(12)} | ${ms}ms | Status 200 but invalid JSON`,
+              );
+            }
+          } catch (e) {
+            console.warn(
+              `⚠️ [WARN] ${c.name.padEnd(12)} | ${ms}ms | Status 200 but Parse Error`,
+            );
+          }
+        } else {
+          console.error(
+            `❌ [FAIL] ${c.name.padEnd(12)} | ${ms}ms | Status: ${response.status}`,
+          );
+        }
+      } catch (e) {
+        // console.log(e);
+        console.error(
+          `❌ [ERR ] ${c.name.padEnd(12)} | Error: ${e.name === "AbortError" ? "Timeout" : e.message}`,
+        );
+      }
+    }
+    console.log("--- TEST COMPLETE ---");
   }
 }
 

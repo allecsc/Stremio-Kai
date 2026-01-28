@@ -62,6 +62,40 @@
       return label ? label.closest(".option-container-EGlcv") : null;
     },
 
+    createToggleOption(label, isChecked, onChange) {
+      const container = document.createElement("div");
+      container.className = "option-container-EGlcv auto-fullscreen-option";
+
+      const nameContainer = document.createElement("div");
+      nameContainer.className = "option-name-container-exGMI";
+
+      const labelEl = document.createElement("div");
+      labelEl.className = "label-FFamJ";
+      labelEl.textContent = label;
+
+      nameContainer.appendChild(labelEl);
+
+      const toggleContainer = document.createElement("div");
+      toggleContainer.tabIndex = -1;
+      toggleContainer.className = `option-input-container-NPgpT toggle-container-lZfHP button-container-zVLH6${
+        isChecked ? " checked" : ""
+      }`;
+
+      const toggle = document.createElement("div");
+      toggle.className = "toggle-toOWM";
+      toggleContainer.appendChild(toggle);
+
+      toggleContainer.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onChange();
+      });
+
+      container.appendChild(nameContainer);
+      container.appendChild(toggleContainer);
+      return container;
+    },
+
     updateVisualState() {
       if (!state.toggleContainer) return;
 
@@ -81,36 +115,18 @@
       if (document.querySelector(".auto-fullscreen-option")) return true;
 
       const uiLanguageOption = this.findOptionByLabel("UI Language");
-      const cloneSource = this.findOptionByLabel("Escape key exit full screen");
+      if (!uiLanguageOption) return false;
 
-      if (!uiLanguageOption || !cloneSource) return false;
-
-      const newOption = cloneSource.cloneNode(true);
-      newOption.classList.add("auto-fullscreen-option");
-
-      const label = newOption.querySelector(".label-FFamJ");
-      if (label) label.textContent = "Auto Fullscreen";
+      // Create Option from scratch
+      const newOption = this.createToggleOption(
+        "Auto Fullscreen",
+        state.isEnabled,
+        () => FullscreenManager.toggle(),
+      );
 
       state.toggleContainer = newOption;
-      const inputContainer = newOption.querySelector(".toggle-container-lZfHP");
 
-      if (inputContainer) {
-        inputContainer.onclick = null;
-        inputContainer.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          FullscreenManager.toggle();
-        });
-
-        this.updateVisualState();
-      }
-
-      // Insert after UI Language (Order will be: UI Lang -> (Maybe OLED) -> Auto Fullscreen)
-      // By inserting after UI Lang always, we stack them.
-      // If I insertBefore UI Lang's sibling, I take the spot right after UI Lang.
-      // oled-theme-toggle also does this. So the *second* script to run takes the top spot.
-      // To ensure consistent ordering, we could look for OLED option first.
-
+      // Insert after UI Language (and potentially after OLED option)
       const oledOption = document.querySelector(".oled-theme-option");
       const target = oledOption || uiLanguageOption;
 

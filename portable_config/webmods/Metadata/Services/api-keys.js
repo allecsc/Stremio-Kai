@@ -39,13 +39,6 @@
     MDBLIST: "https://api.mdblist.com/user",
   });
 
-  // CORS proxy for APIs that don't support browser CORS (MDBList)
-  const CORS_PROXY = "https://api.allorigins.win/raw?url=";
-
-  function proxyUrl(url) {
-    return CORS_PROXY + encodeURIComponent(url);
-  }
-
   // Rate limit cooldown: 1 hour
   const RATE_LIMIT_COOLDOWN_MS = 60 * 60 * 1000;
 
@@ -286,12 +279,9 @@
           break;
 
         case "MDBLIST":
-          // Use corsproxy.io for better reliability with MDBList
-          // Verify against the /lists/user endpoint as requested
-          const proxyBase = "https://corsproxy.io/?";
           const targetUrl = `https://api.mdblist.com/lists/user/?apikey=${trimmedKey}`;
 
-          response = await fetch(proxyBase + encodeURIComponent(targetUrl), {
+          response = await fetch(targetUrl, {
             signal: controller.signal,
           });
 
@@ -300,10 +290,29 @@
           if (response.ok) {
             result = { valid: true };
             console.log("[API Keys] MDBList key validated successfully.");
-          } else if (response.status === 401 || response.status === 403) {
-            result = { valid: false, error: "Invalid API key" };
           } else {
-            result = { valid: false, error: `HTTP ${response.status}` };
+            // Try to get error message from body
+            let errorMsg = `HTTP ${response.status}`;
+            try {
+              const errorText = await response.text();
+              // Try parsing as JSON first
+              try {
+                const errorJson = JSON.parse(errorText);
+                if (errorJson.error) errorMsg = errorJson.error;
+                else if (errorJson.message) errorMsg = errorJson.message;
+              } catch (_) {
+                // Not JSON, use text if short enough
+                if (errorText && errorText.length < 100) errorMsg = errorText;
+              }
+            } catch (_) {
+              /* ignore body read errors */
+            }
+
+            if (response.status === 401 || response.status === 403) {
+              result = { valid: false, error: errorMsg || "Invalid API key" };
+            } else {
+              result = { valid: false, error: errorMsg };
+            }
           }
           break;
 

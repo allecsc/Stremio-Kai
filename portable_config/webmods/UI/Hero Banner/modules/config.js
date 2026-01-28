@@ -17,6 +17,14 @@ window.HeroPlugin.Config = {
   GLOBAL_CACHE_TIMESTAMP_KEY: "heroGlobalTimestamp",
   CHECK_INTERVAL: 60 * 60 * 1000, // Check every hour
 
+  // Priority List of CORS Proxies (for fallback chain)
+  PROXY_LIST: [
+    "https://corsproxy.io/?", // 1. Primary (High Uptime)
+    "https://api.cors.lol/?url=", // 2. Fast Secondary
+    "https://api.codetabs.com/v1/proxy?quest=", // 3. Reliable Backup
+    "https://api.allorigins.win/raw?url=", // 4. Deep Fallback
+  ],
+
   // API Sources
   SOURCES: {
     MOVIES: [

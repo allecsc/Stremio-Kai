@@ -14,9 +14,11 @@
 
 .hero-image {
     position: absolute;
-    right: -100px;
-    width: 80vw;
-    height: 70vh;
+    /* Compensate for app zoom to maintain physical relation to screen */
+    right: calc(-5vw / var(--app-zoom, 1));
+    width: calc(80vw / var(--app-zoom, 1));
+    height: calc(70vh / var(--app-zoom, 1));
+    min-width: 1000px;
     object-fit: cover;
     object-position: center 20%;
     display: block;
@@ -41,21 +43,23 @@
    HERO METADATA CONTAINER (FLEXBOX ARCHITECTURE)
    ========================================================================= */
 
+/* [MODIFIED] Dynamic Width Compensation */
 .hero-overlay {
     position: absolute;
     top: var(--horizontal-nav-bar-size);
     left: 8rem;
-    width: clamp(100px, 45vw, 600px);
+    /* Divide by zoom to keep "physical" width consistent, prevent blowing up */
+    width: clamp(300px, calc(40vw / var(--app-zoom, 1)), 600px);
     max-height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    gap: 12px;
+    gap: 1.5vh; /* Responsive gap */
     z-index: 10;
     margin: 0;
     pointer-events: none;
-    overflow: hidden;
+    overflow: visible;
     filter: var(--shadow);
     transition: opacity 0.3s ease;
 }
@@ -63,7 +67,7 @@
 /* Vertical Media Queries for Overlay Compactness */
 @media (max-height: 700px) {
     .hero-overlay {
-        gap: 8px; /* Tighter gaps on short screens */
+        gap: 1vh; /* Tighter gaps on short screens */
     }
 }
 
@@ -77,7 +81,7 @@
 .hero-logo-container {
     max-width: 450px;
     /* Reduced min-height to 80px to fit in 45vh on small screens */
-    height: clamp(80px, 20vh, 200px); 
+    height: clamp(40px, 10vh, 200px); 
     display: flex;
     align-items: center; 
     flex-shrink: 0; /* Scaling handled by clamp, don't flex-shrink */
@@ -104,12 +108,13 @@
 }
 
 .hero-title-text {
-    font-size: clamp(1.5rem, 3vw, 4rem);
+    /* Use vh for font size to respect vertical space */
+    font-size: clamp(1.5rem, 6vh, 4rem);
     font-weight: 800;
     color: white;
     line-height: 1.1;
     text-shadow: 0 4px 8px rgba(0,0,0,0.6);
-    margin-bottom: 4px;
+    margin-bottom: 0.5vh;
     display: inline-block;
     overflow: visible;
 }
@@ -121,7 +126,7 @@
     font-weight: 700;
     color: rgba(255, 255, 255, 0.85);
     text-shadow: 0 2px 4px rgba(0,0,0,0.6);
-    margin: 4px 0 8px 0;
+    margin: 0.5vh 0 1vh 0;
     line-height: 1.3;
     transition: opacity 0.3s ease-in-out;
 }
@@ -132,7 +137,8 @@
     align-items: center;
     gap: 16px; 
     width: 100%;
-    height: 28px;
+    height: auto;
+    min-height: 28px;
     /* margin-bottom: handled by parent gap */
     flex-wrap: wrap;
     transition: opacity 0.3s ease-in-out;
@@ -350,7 +356,7 @@
 .hero-rating-mdblist {
     font-weight: 600;
     font-size: 0.75rem;
-    padding: 4px 5px; /* Adjusted padding */
+    padding: 3px 6px; /* Adjusted padding */
     border-radius: 999px; /* Pill shape */
     color: white;
     text-align: center;
@@ -457,12 +463,10 @@
 /* --- 4. DESCRIPTION (Sacrificial Element) --- */
 .hero-description-container {
     width: 100%;
-    /* Start at 140px, but allow shrinking aggressively */
-    flex-basis: 130px; 
-    flex-grow: 0;
+    flex-basis: 150px; 
+    flex-grow: 1;
     flex-shrink: 10; /* High shrink priority: Collapse this before anything else */
     min-height: 0; /* Allow shrinking to 0 */
-    max-height: 100px;
     padding-top: 8px !important;
     
     /* Dual mask: Fades top and bottom for premium scroll effect */
@@ -522,7 +526,7 @@
   gap: 12px; /* Standardized */
   font-size: 0.925rem;
   cursor: pointer;
-  margin: 0;
+  margin-bottom: 2vh;
   transition: all 0.3s ease-in-out;
   
   /* Button styling */

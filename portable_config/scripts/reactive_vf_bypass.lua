@@ -377,6 +377,12 @@ mp.register_event("seek", function()
                 mp.set_property_native("vf", restore_vf_chain)
                 
                 mp.msg.info("[RESTORE PHASE] Re-enabled SVP filter: " .. (target_filter.label or target_filter.name))
+                
+                -- MICRO-SEEK LOGIC: Force A/V resync after SVP re-enable
+                ignore_next_seek = true -- Engage guard for OUR seek
+                mp.commandv("seek", "0", "relative+exact")
+                mp.msg.info("[RESTORE PHASE] Performed guarded micro-seek for A/V sync")
+                
                 expected_state = "normal"
             else
                 mp.msg.info("[RESTORE PHASE] Target filter not found or gone, skipping restore")

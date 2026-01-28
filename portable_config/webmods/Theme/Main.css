@@ -40,6 +40,11 @@ html {
 /* Kai Logo */
 .logo-oPx1q {
   content: url('https://github.com/user-attachments/assets/5a43dbc5-8c78-49f9-bced-a428eed1b6f8') !important;
+  cursor: pointer !important;
+}
+
+.logo-container-jteMT {
+    cursor: pointer !important;
 }
 
 /*=============================================

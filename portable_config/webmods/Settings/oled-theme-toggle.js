@@ -75,11 +75,43 @@
       return label ? label.closest(".option-container-EGlcv") : null;
     },
 
+    createToggleOption(label, isChecked, onChange) {
+      const container = document.createElement("div");
+      container.className = "option-container-EGlcv oled-theme-option";
+
+      const nameContainer = document.createElement("div");
+      nameContainer.className = "option-name-container-exGMI";
+
+      const labelEl = document.createElement("div");
+      labelEl.className = "label-FFamJ";
+      labelEl.textContent = label;
+
+      nameContainer.appendChild(labelEl);
+
+      const toggleContainer = document.createElement("div");
+      toggleContainer.tabIndex = -1;
+      toggleContainer.className = `option-input-container-NPgpT toggle-container-lZfHP button-container-zVLH6${
+        isChecked ? " checked" : ""
+      }`;
+
+      const toggle = document.createElement("div");
+      toggle.className = "toggle-toOWM";
+      toggleContainer.appendChild(toggle);
+
+      toggleContainer.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onChange();
+      });
+
+      container.appendChild(nameContainer);
+      container.appendChild(toggleContainer);
+      return container;
+    },
+
     updateVisualState() {
       if (!state.toggleContainer) return;
 
-      // Stremio uses the 'checked' class on the toggle container (not the outer option container)
-      // Structure: .option-input-container-NPgpT.toggle-container-lZfHP
       const inputContainer = state.toggleContainer.querySelector(
         ".toggle-container-lZfHP",
       );
@@ -96,39 +128,21 @@
       // Avoid duplicates
       if (document.querySelector(".oled-theme-option")) return true;
 
-      // 1. Find Navigation Anchors
+      // 1. Find Anchor (UI Language)
       const uiLanguageOption = this.findOptionByLabel("UI Language");
-      const cloneSource = this.findOptionByLabel("Escape key exit full screen");
+      if (!uiLanguageOption) return false;
 
-      if (!uiLanguageOption || !cloneSource) return false;
+      // 2. Create Option from scratch
+      const newOption = this.createToggleOption(
+        "OLED Theme",
+        state.isOledMode,
+        () => ThemeManager.toggle(),
+      );
 
-      // 2. Clone the Source Element
-      // We use 'Escape key exit full screen' because it is a toggle, unlike UI Language
-      const newOption = cloneSource.cloneNode(true);
-      newOption.classList.add("oled-theme-option");
-
-      // 3. Update Text
-      const label = newOption.querySelector(".label-FFamJ");
-      if (label) label.textContent = "OLED Theme";
-
-      // 4. Reset & Bind Events
+      // 3. Store reference
       state.toggleContainer = newOption;
-      const inputContainer = newOption.querySelector(".toggle-container-lZfHP");
 
-      if (inputContainer) {
-        // Ensure we start clean
-        inputContainer.onclick = null;
-        inputContainer.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          ThemeManager.toggle();
-        });
-
-        // Set initial visual state
-        this.updateVisualState();
-      }
-
-      // 5. Inject
+      // 4. Inject
       uiLanguageOption.parentNode.insertBefore(
         newOption,
         uiLanguageOption.nextSibling,

@@ -79,6 +79,9 @@
     const osdProfileMessages =
       localStorage.getItem("kai-osd-profile-messages") !== "false"; // Default true
     const vulkanMode = localStorage.getItem("kai-vulkan-api") === "true"; // Default false
+    const ultrawideZoom =
+      window.MpvSettings?.getUltrawideZoom?.() ||
+      localStorage.getItem("kai-ultrawide-zoom") === "true"; // Default false
 
     const metadata = JSON.stringify({
       is_anime: isAnime,
@@ -94,6 +97,7 @@
       target_peak: targetPeak,
       osd_profile_messages: osdProfileMessages,
       vulkan_mode: vulkanMode,
+      ultrawide_zoom: ultrawideZoom,
     });
 
     sendToMpv("script-message-to", [
@@ -102,7 +106,7 @@
       metadata,
     ]);
     console.log(
-      `[MPV Bridge] Sent: ${imdbId} → anime:${isAnime}, type:${contentType}, HDR:${hdrPassthrough}, peak:${targetPeak}, shaders:${shaderPreset}, SVP:${svpEnabled}, Color:${colorProfile}, ICC:${iccProfile}, OSD:${osdProfileMessages}, Vulkan:${vulkanMode}`,
+      `[MPV Bridge] Sent: ${imdbId} → anime:${isAnime}, type:${contentType}, HDR:${hdrPassthrough}, peak:${targetPeak}, shaders:${shaderPreset}, SVP:${svpEnabled}, Color:${colorProfile}, ICC:${iccProfile}, OSD:${osdProfileMessages}, Vulkan:${vulkanMode}, Ultrawide:${ultrawideZoom}`,
     );
   }
 
@@ -169,6 +173,13 @@
 
       match_audio_to_video: customConfig.match_audio_to_video,
       use_forced_for_native: customConfig.use_forced_for_native,
+
+      // Context for Smart Memory (Persistence)
+      title_id: window.RouteDetector
+        ? window.RouteDetector.getRouteState().id
+        : null,
+      remember_track_selection: localProfile.rememberTrackSelection ?? false,
+      subtitle_selection_mode: localProfile.subtitleSelectionMode || "default",
     });
 
     sendToMpv("script-message", ["track-selector-config", payload]);
@@ -249,21 +260,27 @@
 
     window.addEventListener("hashchange", onRouteChange);
 
-    // Listen for storage changes to update config dynamically (e.g. user toggles setting while playing)
+    const handleSettingsChange = () => {
+      const state = window.RouteDetector.getRouteState();
+      if (state.view === "PLAYER") {
+        console.log("[MPV Bridge] Settings changed, updating all configs...");
+        sendTrackSelectorConfig();
+        sendNotifySkipConfig();
+        // Re-send anime/profile metadata (HDR, Ultrawide, etc.)
+        waitForMetadata(state.id, state.type);
+      }
+    };
+
+    // Listen for storage changes (cross-window)
     window.addEventListener("storage", (e) => {
       // Check for kai-smart-track-* keys OR localProfile
       if (e.key?.startsWith("kai-") || e.key === "localProfile") {
-        // If we are currently watching something, send update
-        const state = window.RouteDetector.getRouteState();
-        if (state.view === "PLAYER") {
-          console.log(
-            "[MPV Bridge] Settings changed, updating track config...",
-          );
-          sendTrackSelectorConfig();
-          sendNotifySkipConfig();
-        }
+        handleSettingsChange();
       }
     });
+
+    // Listen for custom event (same-window)
+    window.addEventListener("kai-settings-changed", handleSettingsChange);
 
     // Check on initial load (in case we start on player page)
     onRouteChange();

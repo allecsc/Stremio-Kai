@@ -27,6 +27,10 @@
     SECTION_TITLE: "Enhanced Metadata",
     SECTION_INDEX: 3,
 
+    // General Settings Info
+    CURRENT_VERSION: "4.2.0",
+    GITHUB_URL: "https://github.com/allecsc/Stremio-Kai",
+
     // Full ISO-639-1 list - Sorted Alphabetically by Label, with English first
     LANGUAGES: [
       { code: "en", label: "English" }, // Default / Top
@@ -244,6 +248,16 @@
 
       CHECK:
         '<svg class="icon-jg2il" viewBox="0 0 512 512" style="fill: currentcolor;"><path d="m91.7 213.799 145.4 169.6c2.1 2.536 4.7 4.592 7.6 6.031 2.9 1.487 6.1 2.381 9.5 2.633 3.2.251 6.5-.148 9.6-1.171 3.1-1.035 6-2.663 8.5-4.793.9-.797 1.8-1.703 2.6-2.7l145.4-169.6c3.1-3.647 4.9-8.083 5.6-12.8.7-4.719 0-9.539-1.9-13.869-2-4.344-5.2-8.023-9.2-10.599s-8.7-3.942-13.6-3.932H110.6c-3.3-.01-6.6.626-9.6 1.873-4.7 1.86-8.6 5.058-11.2 9.175-2.7 4.109-4.2 8.924-4.2 13.852.1 5.99 2.3 11.756 6.1 16.3"></path></svg>',
+
+      NOTE: '<svg class="kai-note-icon" viewBox="0 0 24 24" fill="none"><path d="M12 16V12M12 8H12.01M7.8 21H16.2C17.8802 21 18.7202 21 19.362 20.673C19.9265 20.3854 20.3854 19.9265 20.673 19.362C21 18.7202 21 17.8802 21 16.2V7.8C21 6.11984 21 5.27976 20.673 4.63803C20.3854 4.07354 19.9265 3.6146 19.362 3.32698C18.7202 3 17.8802 3 16.2 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V16.2C3 17.8802 3 18.7202 3.32698 19.362C3.6146 19.9265 4.07354 20.3854 4.63803 20.673C5.27976 21 6.11984 21 7.8 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+
+      GITHUB:
+        '<svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>',
+
+      STAR: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="kai-icon kai-icon-star" style="width: 18px; height: 18px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+
+      HEART:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="kai-icon kai-icon-heart" style="width: 18px; height: 18px; margin-left: 6px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>',
     },
 
     buildCategoryHeader(label, iconSvg) {
@@ -647,9 +661,7 @@
       const footer = document.createElement("div");
       footer.className = "wrapper-FMNA6";
 
-      const iconSvg = `<svg class="kai-note-icon" viewBox="0 0 24 24" fill="none"><path d="M12 16V12M12 8H12.01M7.8 21H16.2C17.8802 21 18.7202 21 19.362 20.673C19.9265 20.3854 20.3854 19.9265 20.673 19.362C21 18.7202 21 17.8802 21 16.2V7.8C21 6.11984 21 5.27976 20.673 4.63803C20.3854 4.07354 19.9265 3.6146 19.362 3.32698C18.7202 3 17.8802 3 16.2 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V16.2C3 17.8802 3 18.7202 3.32698 19.362C3.6146 19.9265 4.07354 20.3854 4.63803 20.673C5.27976 21 6.11984 21 7.8 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-
-      footer.innerHTML = `<div class="footer-jhua_ kai-api-keys-footer"><div class="description-label-h5DXc kai-info-note">${iconSvg} <span><strong>Note:</strong> Preference changes apply to new items. Clear cache to refresh existing items.</span></div></div>`;
+      footer.innerHTML = `<div class="footer-jhua_ kai-api-keys-footer"><div class="description-label-h5DXc kai-info-note">${this.ICONS.NOTE} <span><strong>Note:</strong> Preference changes apply to new items. Clear cache to refresh existing items.</span></div></div>`;
       section.appendChild(footer);
 
       const children = Array.from(sectionsContainer.children);
@@ -659,14 +671,146 @@
         sectionsContainer.appendChild(section);
       }
 
-      // Global cleanup listener
-      document.addEventListener("click", (e) => {
-        if (!e.target.closest(".multiselect-container-w0c9l")) {
-          this.closeAllDropdowns(null);
-        }
-      });
-
       this.updatePreferencesState();
+
+      // Apply General Settings Patches (Version, GitHub, Donation)
+      ConfigurationPatcher.applyPatches();
+    },
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // GENERAL SETTINGS PATCHER (Version, GitHub, Donation)
+  // ─────────────────────────────────────────────────────────────────────────────
+  const ConfigurationPatcher = {
+    // init removed - driven by UIManager
+    // No redundant state - checks DOM directly for idempotency
+
+    applyPatches() {
+      if (!window.location.hash.startsWith(CONFIG.TARGET_ROUTE)) return;
+
+      this.injectVersionLabel();
+      this.replaceGithubLink();
+      this.injectDonationButton();
+    },
+
+    injectVersionLabel() {
+      const sideMenu = document.querySelector(".side-menu-container-NG17D");
+      if (!sideMenu) return;
+
+      // Check if ALREADY injected by looking for unique text content or exact class match if distinct
+      // But we used the same class "version-info-label-uMkm7".
+      // Let's check if any version label contains "Stremio Kai"
+      const existingLabels = sideMenu.querySelectorAll(
+        ".version-info-label-uMkm7",
+      );
+      const alreadyInjected = Array.from(existingLabels).some((el) =>
+        el.textContent.includes("Stremio Kai"),
+      );
+      if (alreadyInjected) return;
+
+      const firstLabel = existingLabels[0]; // Can be undefined if Stremio removes it, but usually there.
+
+      const kaiVersionLabel = document.createElement("div");
+      kaiVersionLabel.className = "version-info-label-uMkm7";
+      kaiVersionLabel.title = CONFIG.CURRENT_VERSION;
+      kaiVersionLabel.textContent =
+        "Stremio Kai Version: " + CONFIG.CURRENT_VERSION;
+
+      if (firstLabel) {
+        sideMenu.insertBefore(kaiVersionLabel, firstLabel);
+      } else {
+        sideMenu.appendChild(kaiVersionLabel);
+      }
+      console.log("[Settings] Kai Version Label injected");
+    },
+
+    replaceGithubLink() {
+      const links = document.querySelectorAll("a.option-input-container-NPgpT");
+      // Find the ORIGINAL Stremio link (by title or partial href)
+      // AND ensure it hasn't been modified yet (href check)
+      const targetLink = Array.from(links).find(
+        (link) =>
+          (link.href.includes("stremio-community-v5") ||
+            link.title === "Stremio Community V5 Github") &&
+          link.href !== CONFIG.GITHUB_URL,
+      );
+
+      if (!targetLink) return;
+
+      targetLink.href = CONFIG.GITHUB_URL;
+      targetLink.title = "Stremio Kai Github";
+
+      const label = targetLink.querySelector(".label-FFamJ");
+      if (label) {
+        label.innerHTML = `
+             <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                 ${UIManager.ICONS.GITHUB}
+                 <span>Stremio Kai Github</span>
+             </div>
+         `;
+      }
+      console.log("[Settings] GitHub link replaced");
+    },
+
+    injectDonationButton() {
+      // Check if wrapper already exists
+      if (document.querySelector(".kai-links-row")) return;
+
+      // Find our modified GitHub link to append after/around it
+      const githubLink = document.querySelector(
+        'a[href="' + CONFIG.GITHUB_URL + '"]',
+      );
+      // Wait, if replaceGithubLink hasn't run yet, this might fail?
+      // But they run in order synchronously.
+      if (!githubLink) return;
+
+      const parent = githubLink.parentNode;
+      if (!parent) return;
+
+      // Wrap them
+      const wrapper = document.createElement("div");
+      wrapper.className = "kai-links-row";
+      wrapper.style.display = "flex";
+      wrapper.style.alignItems = "center";
+      wrapper.style.gap = "2rem";
+      wrapper.style.marginTop = "0.5rem";
+
+      parent.insertBefore(wrapper, githubLink);
+      wrapper.appendChild(githubLink);
+
+      // Star Link
+      const starLink = githubLink.cloneNode(true);
+      starLink.href = CONFIG.GITHUB_URL;
+      starLink.title = "Star on GitHub";
+      starLink.classList.add("kai-muted-link");
+      const starLabel = starLink.querySelector(".label-FFamJ");
+      if (starLabel) {
+        starLabel.innerHTML = `
+               <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                   ${UIManager.ICONS.STAR}
+                   <span>Star the project</span>
+               </div>
+           `;
+      }
+      wrapper.appendChild(starLink);
+
+      // Support Link
+      const supportLink = githubLink.cloneNode(true);
+      supportLink.href = "https://revolut.me/altcelalalt";
+      supportLink.title = "Support Development";
+      supportLink.classList.add("kai-muted-link");
+      const supportLabel = supportLink.querySelector(".label-FFamJ");
+      if (supportLabel) {
+        supportLabel.innerHTML = `
+              <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                  ${UIManager.ICONS.HEART}
+                  <span>Support Development</span>
+              </div>
+           `;
+      }
+      wrapper.appendChild(supportLink);
+
+      console.log("[Settings] Donation buttons injected");
     },
   };
 
@@ -685,7 +829,26 @@
       return;
     }
 
-    const observer = new MutationObserver(() => UIManager.injectSection());
+    // Initialize global cleanup listener (once)
+    document.addEventListener("click", (e) => {
+      // Only close if UIManager is fully loaded and initialized
+      if (window.MetadataModules.settingsUI.initialized) {
+        if (!e.target.closest(".multiselect-container-w0c9l")) {
+          UIManager.closeAllDropdowns(null);
+        }
+      }
+    });
+
+    let debounceTimeout;
+    const observer = new MutationObserver(() => {
+      if (debounceTimeout) clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        if (window.location.hash.startsWith(CONFIG.TARGET_ROUTE)) {
+          UIManager.injectSection();
+        }
+      }, 50);
+    });
+
     if (window.location.hash.startsWith(CONFIG.TARGET_ROUTE)) {
       UIManager.injectSection();
       observer.observe(document.body, { childList: true, subtree: true });
@@ -701,6 +864,10 @@
     });
 
     window.MetadataModules.settingsUI.initialized = true;
+
+    // Initialize General Settings Patcher immediately
+    // ConfigurationPatcher.init(); // Driven by UIManager
+
     console.log("[Settings UI] Initialized");
   }
 

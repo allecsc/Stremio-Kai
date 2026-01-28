@@ -5,6 +5,7 @@
  * @author allecsc
  *
  * @changelog
+ *   v2.3 - Added Ultrawide Zoom toggle
  *   v2.2 - Fixed Memory Leak & Optimized Observer (Debounce)
  *   v2.1 - Integrated Smart Track Selector configuration (injected directly into Player settings)
  *   v2.0 - Added Anime Enhancements section (Anime4K presets, SVP toggle)
@@ -45,6 +46,7 @@
     HDR_TARGET_PEAK: "kai-hdr-target-peak",
     OSD_PROFILE_MESSAGES: "kai-osd-profile-messages",
     VULKAN_API: "kai-vulkan-api",
+    ULTRAWIDE_ZOOM: "kai-ultrawide-zoom",
   };
 
   // ... (existing helper functions) ...
@@ -130,8 +132,10 @@
   }
 
   function sendConfigUpdate() {
-    // Log update for debugging, bridge should react to storage or polling
+    // Log update for debugging
     console.log("[MPV Settings] Configuration updated via UI");
+    // Dispatch custom event for same-window reactivity (since storage event only fires for other windows)
+    window.dispatchEvent(new Event("kai-settings-changed"));
   }
 
   const SETTINGS_CONTAINER_SELECTOR = ".settings-content-lLXmk";
@@ -442,6 +446,15 @@
   function setIccProfile(value) {
     localStorage.setItem(STORAGE_KEYS.iccProfile, value.toString());
     console.log(`[MPV Settings] ICC Profile set to: ${value}`);
+  }
+
+  function getUltrawideZoom() {
+    return localStorage.getItem(STORAGE_KEYS.ULTRAWIDE_ZOOM) === "true"; // Default OFF
+  }
+
+  function setUltrawideZoom(value) {
+    localStorage.setItem(STORAGE_KEYS.ULTRAWIDE_ZOOM, value.toString());
+    console.log(`[MPV Settings] Ultrawide Zoom set to: ${value}`);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -886,6 +899,18 @@
     iccToggle.appendChild(iccNote);
     injectionFragment.appendChild(iccToggle);
 
+    // 1d. Ultrawide Zoom
+    const ultrawideToggle = createToggleOption(
+      "Ultrawide Zoom",
+      "Zooms video to fill screen (Removes black bars on 21:9 content). Warning: Crops image on 16:9 content.",
+      getUltrawideZoom(),
+      (val) => {
+        setUltrawideZoom(val);
+        sendConfigUpdate();
+      },
+    );
+    injectionFragment.appendChild(ultrawideToggle);
+
     // 2. Anime Enhancements section header
     const animeHeader = createSectionHeader(
       "Anime Enhancements",
@@ -946,6 +971,7 @@
       hdrToggle, // hdrNote is already inside
       hdrTargetPeakInput, // HDR Target Peak textbox
       iccToggle, // iccNote is already inside
+      ultrawideToggle,
     );
 
     // Wrap Anime Section

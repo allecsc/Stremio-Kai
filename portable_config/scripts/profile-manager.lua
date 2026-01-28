@@ -1,10 +1,11 @@
 --[[
   @name Profile Manager
   @description Hybrid profile system: static base profiles + dynamic layers
-  @version 7.0
+  @version 7.1
   @author allecsc
   
   @changelog
+    v7.1 - Added Ultrawide Zoom support (panscan toggle via Stremio metdata)
     v7.0 - ARCHITECTURE REFACTOR: Hybrid static+dynamic approach
            - Base profiles (sdr, anime-sdr) in mpv.conf contain only static settings
            - Dynamic layers (HDR handling, shaders, VF chains) applied via mp.set_property()
@@ -174,7 +175,17 @@ mp.register_script_message("anime-metadata", function(json_str)
             ", type=" .. tostring(stremio_metadata.content_type) ..
             ", hdr=" .. tostring(stremio_metadata.hdr_passthrough) ..
             ", shaders=" .. tostring(stremio_metadata.shader_preset) ..
-            ", svp=" .. tostring(stremio_metadata.svp_enabled))
+            ", svp=" .. tostring(stremio_metadata.svp_enabled) ..
+            ", uw=" .. tostring(stremio_metadata.ultrawide_zoom))
+            
+        -- Apply Ultrawide Zoom immediately (safe to do anytime)
+        if stremio_metadata.ultrawide_zoom then
+            mp.set_property("panscan", "1.0")
+            log("[Ultrawide] Zoom enabled (panscan=1.0)")
+        else
+            -- Reset to default (0.0 means normal fit-to-screen with black bars)
+            mp.set_property("panscan", "0.0")
+        end
     end
 end)
 
@@ -221,74 +232,7 @@ local function detect_hdr(video_params)
     return false
 end
 
--- ═══════════════════════════════════════════════════════════════════════════
--- A/V SYNC WATCHDOG
--- ═══════════════════════════════════════════════════════════════════════════
 
-local Watchdog = {
-    timer = nil,
-    grace_period_end = 0,
-    consecutive_errors = 0,
-    THRESHOLD = 0.4, -- seconds (video lagging behind audio)
-    MAX_ERRORS = 2
-}
-
-function Watchdog:start()
-    self:stop() -- Ensure no previous timer
-    self.grace_period_end = mp.get_time() + 5 -- 5s grace period
-    self.consecutive_errors = 0
-    
-    self.timer = mp.add_periodic_timer(1.0, function()
-        self:check()
-    end)
-    log("[Watchdog] Started active monitoring")
-end
-
-function Watchdog:stop()
-    if self.timer then
-        self.timer:kill()
-        self.timer = nil
-        -- log("[Watchdog] Stopped")
-    end
-end
-
-function Watchdog:check()
-    -- Skip if paused or in grace period
-    if mp.get_property_bool("pause") then return end
-    if mp.get_property_bool("seeking") then return end
-    if mp.get_time() < self.grace_period_end then return end
-    
-    -- Skip if fast-forwarding (speed > 2.0)
-    -- This prevents the watchdog from fighting notify_skip during 90x skips
-    if mp.get_property_number("speed", 1) > 2 then return end
-
-    local av_delay = mp.get_property_number("avsync") or 0
-    
-    -- "avsync" is Audio Time - Video Time. 
-    -- Positive/High value means Audio is ahead (Video lagging).
-    -- User reports Video lagging, so we look for positive drift.
-    
-    if av_delay > self.THRESHOLD then
-        self.consecutive_errors = self.consecutive_errors + 1
-        log(string.format("[Watchdog] Drift detected: %.3fs (Count: %d/%d)", av_delay, self.consecutive_errors, self.MAX_ERRORS))
-        
-        if self.consecutive_errors >= self.MAX_ERRORS then
-            self:resync()
-        end
-    else
-        if self.consecutive_errors > 0 then
-            self.consecutive_errors = 0
-            log(string.format("[Watchdog] Drift recovered (current: %.3fs)", av_delay))
-        end
-    end
-end
-
-function Watchdog:resync()
-    log("[Watchdog] CRITICAL DESYNC DETECTED - Forcing Hard Resync")
-    mp.commandv("seek", "0", "relative+exact")
-    self.consecutive_errors = 0
-    self.grace_period_end = mp.get_time() + 2 -- Give it 2s to settle after seek
-end
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- DYNAMIC LAYER HELPER FUNCTIONS
@@ -419,7 +363,13 @@ local function matches_group(filename, group_list)
         end
         
         -- Pattern 3: x265-GroupName or x264-GroupName (common scene format)
-        if filename:find("x26[45]%-" .. escaped) then
+        -- FIXED: Added boundary check to prevent partial matches (e.g. EDGE matching EDGE2020)
+        local p3_match = filename:match("x26[45]%-" .. escaped .. "([%.%s%-%[])") or 
+                         filename:match("x26[45]%-" .. escaped .. "$") or
+                         filename:match("x26[45]%-" .. escaped .. "%.mkv$") or
+                         filename:match("x26[45]%-" .. escaped .. "%.mp4$")
+        
+        if p3_match then
             return group
         end
     end
@@ -495,12 +445,15 @@ local function apply_visual_settings(profile_name, icc_enabled, is_hdr_passthrou
     log("[Visuals] Applying Profile: " .. (current_visual_profile or "nil") .. ", ICC: " .. tostring(icc_enabled) .. ", HDR Passthrough: " .. tostring(is_hdr_passthrough))
 
     -- 1. ICC Profile Logic
-    if icc_enabled then
+    -- 1. ICC Profile Logic
+    -- FIXED: Force ICC OFF if HDR Passthrough is active (prevents override during cycling)
+    if icc_enabled and not is_hdr_passthrough then
         mp.set_property("icc-profile-auto", "yes")
         log("[Visuals] ICC Profile: Validated Auto")
     else
         mp.set_property("icc-profile", "") -- Clears it (sRGB/Monitor Native)
-        log("[Visuals] ICC Profile: OFF")
+        local reason = is_hdr_passthrough and "Forced OFF (HDR Passthrough)" or "OFF"
+        log("[Visuals] ICC Profile: " .. reason)
     end
 
     -- 2. Color Profile Logic
@@ -727,30 +680,6 @@ end)
         log("OSD profile messages disabled by user")
     end
     
-    -- A/V RESYNC: Anime profiles have heavy shaders/VF that cause desync on D3D11
-    if is_anime then
-        Watchdog:start()
-        
-        -- FORCE PIPELINE SETTLE: Start paused to let shaders compile/init logic run
-        -- This prevents the "silent desync" race condition by holding playback until ready.
-        -- mp.set_property("pause", "yes")
-        -- log("[Startup] Pausing for 2.0s to allow GPU pipeline to settle...")
-        
-        -- DEFERRED RESYNC: Instead of pausing, schedule a micro-seek to force A/V realignment after SVP loads
-        mp.add_timeout(2.5, function()
-            -- Checks: Don't seek if user paused or is skipping
-            if not mp.get_property_bool("pause") and mp.get_property_number("speed", 1) <= 1.5 then
-                 -- Send signal to reactive_vf_bypass.lua to ignore this specific seek
-                 -- This prevents it from stripping SVP filters during our maintenance seek
-                 mp.commandv("script-message", "bypass-ignore-seek")
-                 
-                 -- Seek 0 to realign audio/video clock
-                mp.commandv("seek", "0", "relative+exact") 
-                log("SVP Initialization: Performed micro-seek for A/V sync")
-            end
-        end)
-    end
-    
     profile_applied_for_this_file = true
     
     -- Unregister the observer once profile is applied
@@ -776,8 +705,7 @@ mp.register_event('start-file', function()
     
 
     
-    -- Stop any active watchdog from previous file
-    Watchdog:stop()
+
     
     log("Lists cleared. Waiting for profile selection...")
     

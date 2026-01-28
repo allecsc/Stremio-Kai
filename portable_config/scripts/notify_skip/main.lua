@@ -270,6 +270,12 @@ mp.register_script_message("content-metadata", function(json)
     local data = utils.parse_json(json)
     if not data then return end
     
+    -- Optimize: Don't re-process if identity hasn't changed (reduces log spam)
+    if content.get_content_type() == data.content_type and 
+       content.get_imdb_id() == data.imdb_id then
+       return 
+    end
+    
     -- Store content metadata
     content.update_metadata(data.content_type, data.imdb_id)
     
@@ -282,6 +288,27 @@ mp.register_script_message("content-metadata", function(json)
         content.set_setup_pending(false)
         mp.msg.info("Content type now available, running deferred setup")
         finalize_setup()
+    end
+end)
+
+-- Handler for dynamic config updates (Web UI)
+mp.register_script_message("notify-skip-config", function(json)
+    local data = utils.parse_json(json)
+    if not data then return end
+    
+    local changed = false
+    if data.auto_skip ~= nil and config.opts.auto_skip ~= data.auto_skip then
+        config.opts.auto_skip = data.auto_skip
+        changed = true
+    end
+    if data.show_notification ~= nil and config.opts.show_notification ~= data.show_notification then
+        config.opts.show_notification = data.show_notification
+        changed = true
+    end
+    
+    if changed then
+        mp.msg.info("Updated config: auto_skip=" .. tostring(config.opts.auto_skip) .. 
+                    ", show_notify=" .. tostring(config.opts.show_notification))
     end
 end)
 

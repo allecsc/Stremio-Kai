@@ -27,14 +27,6 @@
   const API_BASE = "https://api.mdblist.com";
   const TIMEOUT_MS = 5000;
 
-  // CORS proxy (MDBList doesn't support browser CORS)
-  // Using corsproxy.io - more reliable than allorigins.win
-  const CORS_PROXY = "https://corsproxy.io/?";
-
-  function proxyUrl(url) {
-    return CORS_PROXY + encodeURIComponent(url);
-  }
-
   // ─────────────────────────────────────────────────────────────────────────────
   // HELPERS
   // ─────────────────────────────────────────────────────────────────────────────
@@ -93,9 +85,7 @@
       // MDBList endpoint: /imdb/movie/{id} or /imdb/show/{id}
       // Docs: https://mdblist.docs.apiary.io
       const mediaType = type === "series" ? "show" : "movie";
-      const url = proxyUrl(
-        `${this.apiBase}/imdb/${mediaType}/${imdbId}?apikey=${apiKey}`,
-      );
+      const url = `${this.apiBase}/imdb/${mediaType}/${imdbId}?apikey=${apiKey}`;
 
       try {
         const result = await fetchUtils.makeRequest(url, {
@@ -305,7 +295,7 @@
       if (!apiKey) return null;
 
       const fetchUtils = getFetchUtils();
-      const url = proxyUrl(`${this.apiBase}/user/limits?apikey=${apiKey}`);
+      const url = `${this.apiBase}/user/limits?apikey=${apiKey}`;
 
       try {
         const result = await fetchUtils.makeRequest(url, {
@@ -333,7 +323,7 @@
 
       const fetchUtils = getFetchUtils();
       // Use /lists/user/ endpoint as requested for validation
-      const url = proxyUrl(`${this.apiBase}/lists/user/?apikey=${apiKey}`);
+      const url = `${this.apiBase}/lists/user/?apikey=${apiKey}`;
 
       try {
         const result = await fetchUtils.makeRequest(url, {
@@ -345,7 +335,7 @@
 
         return {
           valid: result.ok,
-          error: result.ok ? null : result.error,
+          error: result.ok ? null : result.error, // Now contains detailed error from fetch-utils
           // /lists/user returns a list, not limits, but validity is what matters here
           limits: null,
         };
@@ -375,9 +365,7 @@
       const mediaType = type === "series" ? "show" : "movie";
 
       // MDBList batch endpoint: POST /imdb/{type}?apikey=xxx
-      const url = proxyUrl(
-        `${this.apiBase}/imdb/${mediaType}?apikey=${apiKey}`,
-      );
+      const url = `${this.apiBase}/imdb/${mediaType}?apikey=${apiKey}`;
 
       try {
         const result = await fetchUtils.makeRequest(url, {
