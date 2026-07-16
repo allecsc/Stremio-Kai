@@ -10,6 +10,35 @@
   window.KaiNavigation = window.KaiNavigation || {};
   window.KaiNavigation.initialized = true;
 
+  // Shared scroll gate — suppresses hover/prefetch work while catalog is moving
+  if (!window.KaiScrollGate) {
+    let scrollActive = false;
+    let scrollTimer = null;
+    const markScrolling = () => {
+      scrollActive = true;
+      clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      scrollActive = false;
+      window.dispatchEvent(new CustomEvent("kai-scroll-idle"));
+    }, 200);
+    };
+    for (const eventName of ["wheel", "touchmove"]) {
+      document.addEventListener(eventName, markScrolling, {
+        passive: true,
+        capture: true,
+      });
+    }
+    window.KaiScrollGate = { isActive: () => scrollActive };
+  }
+
+  const runWhenIdle = (fn) => {
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(fn, { timeout: 2500 });
+    } else {
+      setTimeout(fn, 0);
+    }
+  };
+
   const CONFIG = {
     RELEASES_URL: "https://allecsc.github.io/Stremio-Kai/changelog.html",
   };
@@ -78,23 +107,33 @@
           type: match[1],
           id,
           source,
-          element: link,
+          element: link.closest(".meta-item-container-Tj0Ib") || link,
         };
       };
 
-      const warmDetailCache = (parsed) => {
+      const warmDetailCache = (parsed, options = {}) => {
         if (!parsed) return;
+        const run = () => {
+          // Board pipeline: priorityProcessElement saves full metadata to IndexedDB
+          if (window.ShowPageEnhancer?.prefetchDetail) {
+            window.ShowPageEnhancer.prefetchDetail({
+              ...parsed,
+              element: parsed.element,
+            });
+            return;
+          }
 
-        // Board pipeline: priorityProcessElement saves full metadata to IndexedDB
-        if (window.ShowPageEnhancer?.prefetchDetail) {
-          window.ShowPageEnhancer.prefetchDetail(parsed);
-          return;
-        }
+          if (window.metadataHelper?.priorityProcessElement && parsed.element) {
+            window.metadataHelper
+              .priorityProcessElement(parsed.element)
+              .catch(() => {});
+          }
+        };
 
-        if (window.metadataHelper?.priorityProcessElement && parsed.element) {
-          window.metadataHelper
-            .priorityProcessElement(parsed.element)
-            .catch(() => {});
+        if (options.immediate) {
+          run();
+        } else {
+          runWhenIdle(run);
         }
       };
 
@@ -104,7 +143,7 @@
         const parsed = parseDetailFromElement(target);
         if (!parsed) return null;
 
-        warmDetailCache(parsed);
+        warmDetailCache(parsed, { immediate: true });
         return parsed;
       };
 
@@ -137,7 +176,7 @@
       // Wake enhancer after Stremio's native SPA navigation mounts detail DOM.
       // Do NOT preventDefault — blocking Stremio breaks React mount (Ctrl+F5 was the workaround).
       const wakeDetailEnhancer = (parsed) => {
-        warmDetailCache(parsed);
+        warmDetailCache(parsed, { immediate: true });
         const detailHash = buildDetailHash(parsed);
 
         const tick = () => {
@@ -182,19 +221,20 @@
         "mouseover",
         (e) => {
           if (!window.location.hash.startsWith("#/discover")) return;
+          if (window.KaiScrollGate?.isActive()) return;
           const item = e.target.closest(".meta-item-container-Tj0Ib");
           if (!item) return;
           const now = Date.now();
           if (now - (NavigationManager._lastDiscoverWarm || 0) < 400) return;
           NavigationManager._lastDiscoverWarm = now;
           const parsed = parseDetailFromElement(item);
-          warmDetailCache(parsed);
+          warmDetailCache(parsed, { immediate: true });
         },
         true,
       );
 
       console.log(
-        "[Kai Navigation] Discover detail hash + inject (v1.5.0)",
+        "[Kai Navigation] Discover detail hash + inject (v1.5.3 prefetch restore)",
       );
     },
 

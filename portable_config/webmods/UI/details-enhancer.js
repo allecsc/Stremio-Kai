@@ -1,7 +1,7 @@
 /**
  * @name Show Page Enhancer
  * @description Enriches Stremio detail pages with metadata from the database
- * @version 1.5.1
+ * @version 1.5.6
  * @patched 2026-07-16 — DOM-first detail shell watcher (no preventDefault)
  *
  * Injects enhanced ratings, tags, awards, and cast/crew information into title detail pages
@@ -111,6 +111,15 @@
  * Changelog v1.5.1:
  * - Discover catalog scroll: disconnect DOM observers when no detail shell visible
  * - Clear pinned route on catalog grid; remove viewport prefetch scan on scroll
+ *
+ * Changelog v1.5.2:
+ * - Discover scroll perf II: remove IntersectionObserver viewport prefetch entirely
+ * - Stop inject retry loops on catalog-only; boot-time route cleanup
+ * - Prefetch deferred via requestIdleCallback when not user-initiated
+ *
+ * Changelog v1.5.3:
+ * - Restore Discover catalog prefetch (IntersectionObserver) when scroll is idle
+ * - Hover/mouseover immediate warm — metadata popups work again without scroll jank
  */
 
 (function () {
@@ -122,11 +131,12 @@
   // Expose control object for debugging and cleanup
   window.ShowPageEnhancer = {
     initialized: true,
+    version: "1.5.6",
     cleanup: null, // Will be set after init
   };
 
   console.log(
-    "%c[Show Page Enhancer] v1.5.1 loaded (Discover scroll perf)",
+    "%c[Show Page Enhancer] v1.5.6 loaded (hover cinemeta fix)",
     "color: #7b5bf5; font-weight: bold",
   );
 
@@ -1252,6 +1262,7 @@
       this._prefetchCache = new Map();
       this._discoverCatalogObserved = new WeakSet();
       this.discoverCatalogObserver = null;
+      this._discoverScanTimer = null;
       this.lastSeasonParam = null;
       this.lastDiscoverDetailId = null;
       this._activeRouteKey = "";
@@ -1322,6 +1333,7 @@
       window.ShowPageEnhancer.cleanup = () => this.cleanup();
 
       this.flushPendingRoute();
+      this.handleRouteChange();
     }
 
     setupMetadataDeps() {
@@ -1361,6 +1373,13 @@
       if (this._detailWatchdogTimer) {
         clearInterval(this._detailWatchdogTimer);
         this._detailWatchdogTimer = null;
+      }
+    }
+
+    stopInjectionRetryTimer() {
+      if (this._injectionRetryTimer) {
+        clearInterval(this._injectionRetryTimer);
+        this._injectionRetryTimer = null;
       }
     }
 
@@ -1448,12 +1467,13 @@
       if (this.episodeInjector) this.episodeInjector.disconnect(); // Clean up episodes
       if (this.debounceTimer) clearTimeout(this.debounceTimer);
       if (this._processRouteTimer) clearTimeout(this._processRouteTimer);
-      if (this._injectionRetryTimer) clearInterval(this._injectionRetryTimer);
+      this.stopInjectionRetryTimer();
       this.stopDetailWatchdog();
       this.stopPersistentInjectLoop();
       this.disconnectDetailShellWatcher();
       if (this._detailShellWatcher) this._detailShellWatcher.disconnect();
       if (this.discoverCatalogObserver) this.discoverCatalogObserver.disconnect();
+      if (this._discoverScanTimer) clearTimeout(this._discoverScanTimer);
       this.currentMetadata = null;
       this.lastInjectedId = null;
       MetadataInjector.clearInjectedContent();
@@ -1522,9 +1542,13 @@
     }
 
     setupDiscoverCatalogObserver() {
+      if (this.discoverCatalogObserver) return;
+
       this.discoverCatalogObserver = new IntersectionObserver(
         (entries) => {
           if (!window.location.hash.startsWith("#/discover")) return;
+          if (!RouteDetector.isDiscoverCatalogOnly()) return;
+          if (window.KaiScrollGate?.isActive()) return;
 
           for (const entry of entries) {
             if (!entry.isIntersecting) continue;
@@ -1535,18 +1559,41 @@
 
             const routeInfo = this.parseRouteFromClickTarget(item);
             if (routeInfo) {
-              this.prefetchFromRoute(routeInfo, routeInfo.element);
+              this.prefetchFromRoute(routeInfo, routeInfo.element, {
+                immediate: true,
+              });
             }
             this.discoverCatalogObserver.unobserve(item);
           }
         },
-        { rootMargin: "250px" },
+        { rootMargin: "200px" },
       );
+    }
+
+    scheduleDiscoverCatalogScan() {
+      if (this._discoverScanTimer) return;
+
+      const tick = () => {
+        if (window.KaiScrollGate?.isActive()) {
+          this._discoverScanTimer = setTimeout(tick, 150);
+          return;
+        }
+        this._discoverScanTimer = null;
+        this.scanDiscoverCatalogItems();
+      };
+
+      this._discoverScanTimer = setTimeout(tick, 150);
     }
 
     scanDiscoverCatalogItems() {
       if (!this.discoverCatalogObserver) return;
       if (!window.location.hash.startsWith("#/discover")) return;
+      if (!RouteDetector.isDiscoverCatalogOnly()) return;
+
+      if (window.KaiScrollGate?.isActive()) {
+        this.scheduleDiscoverCatalogScan();
+        return;
+      }
 
       document.querySelectorAll(".meta-item-container-Tj0Ib").forEach((item) => {
         if (!this._discoverCatalogObserved.has(item)) {
@@ -1658,10 +1705,6 @@
           );
           if (episodesList) {
             this.episodeInjector.handleEpisodesMutation(episodesList);
-          }
-
-          if (window.location.hash.startsWith("#/discover")) {
-            this.scanDiscoverCatalogItems();
           }
         } catch (err) {
           console.error("[Show Page Enhancer] Error in MutationObserver:", err);
@@ -1775,6 +1818,7 @@
         this.disconnectDetailShellWatcher();
         this.stopDetailWatchdog();
         this.stopPersistentInjectLoop();
+        this.stopInjectionRetryTimer();
         this.isProcessing = false;
         return;
       }
@@ -1787,6 +1831,10 @@
         this.disconnectDetailShellWatcher();
         this.stopDetailWatchdog();
         this.stopPersistentInjectLoop();
+        this.stopInjectionRetryTimer();
+        this.isProcessing = false;
+        this.setupDiscoverCatalogObserver();
+        this.scanDiscoverCatalogItems();
         this.setContainerState(true);
         return;
       }
@@ -1797,6 +1845,8 @@
         this.disconnectDetailShellWatcher();
         this.stopDetailWatchdog();
         this.stopPersistentInjectLoop();
+        this.stopInjectionRetryTimer();
+        this.isProcessing = false;
         this.setContainerState(true);
         return;
       }
@@ -2096,7 +2146,22 @@
       return metadata;
     }
 
-    prefetchFromRoute(routeInfo, element = null) {
+    prefetchFromRoute(routeInfo, element = null, options = {}) {
+      if (!routeInfo?.type || !routeInfo?.id) return;
+
+      const run = () => this._prefetchFromRouteImpl(routeInfo, element);
+      if (options.immediate || element) {
+        run();
+        return;
+      }
+      if (typeof requestIdleCallback === "function") {
+        requestIdleCallback(run, { timeout: 2500 });
+      } else {
+        setTimeout(run, 0);
+      }
+    }
+
+    _prefetchFromRouteImpl(routeInfo, element = null) {
       if (!routeInfo?.type || !routeInfo?.id) return;
 
       const key = this.getRouteKey(routeInfo);
@@ -2332,18 +2397,17 @@
     }
 
     scheduleInjectionAttempts(maxAttempts = 25, intervalMs = 200) {
-      if (this._injectionRetryTimer) {
-        clearInterval(this._injectionRetryTimer);
-        this._injectionRetryTimer = null;
-      }
+      this.stopInjectionRetryTimer();
 
       let attempts = 0;
       this._injectionRetryTimer = setInterval(() => {
         attempts += 1;
 
-        if (!RouteDetector.isDetailContext()) {
-          clearInterval(this._injectionRetryTimer);
-          this._injectionRetryTimer = null;
+        if (
+          !RouteDetector.isDetailContext() ||
+          RouteDetector.isDiscoverCatalogOnly()
+        ) {
+          this.stopInjectionRetryTimer();
           return;
         }
 
@@ -2354,8 +2418,7 @@
 
         const injected = container?.classList.contains(CONFIG.MARKER_CLASS);
         if (injected || attempts >= maxAttempts) {
-          clearInterval(this._injectionRetryTimer);
-          this._injectionRetryTimer = null;
+          this.stopInjectionRetryTimer();
         }
       }, intervalMs);
     }
@@ -2381,7 +2444,7 @@
 
       if (this.isMetadataComplete(metadata)) {
         this.applyMetadataAndInject(this.normalizePeopleForUI(metadata));
-        showKaiToast("Kai v1.5.0 — metadata spremna", "ok");
+        showKaiToast("Kai v1.5.6 — metadata spremna", "ok");
         return;
       }
 
@@ -2417,7 +2480,7 @@
 
           if (this.hasDetailPageFields(metadata)) {
             this.applyMetadataAndInject(this.normalizePeopleForUI(metadata));
-            showKaiToast("Kai v1.5.0 — prikaz spreman", "ok");
+            showKaiToast("Kai v1.5.6 — prikaz spreman", "ok");
           }
         }
       } catch (e) {
@@ -2443,7 +2506,7 @@
           });
 
           if (this.isMetadataComplete(resolved)) {
-            showKaiToast("Kai v1.5.0 — metadata spremna", "ok");
+            showKaiToast("Kai v1.5.6 — metadata spremna", "ok");
           }
         })
         .catch((e) => {
@@ -2538,7 +2601,7 @@
       );
       this.lastInjectedId = routeInfo.id;
       RouteDetector.clearPinnedRoute();
-      showKaiToast("Kai v1.5.0 — prikaz detalja ucitan", "ok");
+      showKaiToast("Kai v1.5.6 — prikaz detalja ucitan", "ok");
 
       this.setContainerState(true);
     }
@@ -2588,6 +2651,14 @@
       return;
     }
     enhancer.handleRouteChange();
+  });
+
+  window.addEventListener("kai-scroll-idle", () => {
+    const enhancer = getEnhancer();
+    if (!enhancer._ready) return;
+    if (RouteDetector.isDiscoverCatalogOnly()) {
+      enhancer.scanDiscoverCatalogItems();
+    }
   });
 
   window.addEventListener("metadata-core-ready", () => {

@@ -3,6 +3,26 @@
  * @description Interactive hover pop-up displaying detailed metadata for Stremio catalog items
  */
 
+if (!window.KaiScrollGate) {
+  let scrollActive = false;
+  let scrollTimer = null;
+  const markScrolling = () => {
+    scrollActive = true;
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      scrollActive = false;
+      window.dispatchEvent(new CustomEvent("kai-scroll-idle"));
+    }, 200);
+  };
+  for (const eventName of ["wheel", "touchmove"]) {
+    document.addEventListener(eventName, markScrolling, {
+      passive: true,
+      capture: true,
+    });
+  }
+  window.KaiScrollGate = { isActive: () => scrollActive };
+}
+
 // Configuration constants - no magic numbers
 const POPUP_CONFIG = {
   popupClass: "metadata-hover-popup",
@@ -969,7 +989,22 @@ class MetadataHoverPopupService {
     document.body.removeEventListener("focusout", this.boundFocusOut);
   }
 
+  resolveCatalogItem(container) {
+    return (
+      container.closest(".meta-item-container-Tj0Ib, [class*='meta-item-container']") ||
+      container.closest('a[href*="/detail/"], div[tabindex]') ||
+      container
+    );
+  }
+
   handleDelegatedMouseOver(event) {
+    if (
+      window.KaiScrollGate?.isActive() &&
+      (window.location.hash || "").startsWith("#/discover")
+    ) {
+      return;
+    }
+
     const container = event.target.closest(POPUP_CONFIG.containerSelector);
 
     // If not a poster container, or if we are moving internally within the same container
@@ -977,12 +1012,13 @@ class MetadataHoverPopupService {
       return;
     }
 
-    // Store the catalog item reference if not already there (lazy extraction)
-    if (!container._catalogItem) {
-      const catalogItem = container.closest("a, div[tabindex]");
-      if (catalogItem) {
-        container._catalogItem = catalogItem;
-      }
+    container._catalogItem = this.resolveCatalogItem(container);
+
+    const catalogItem = container._catalogItem;
+    if (catalogItem && window.metadataHelper?.priorityProcessElement) {
+      window.metadataHelper
+        .priorityProcessElement(catalogItem)
+        .catch(() => {});
     }
 
     this.triggerShowPopup(container);
@@ -1408,11 +1444,28 @@ class MetadataHoverPopupService {
     });
   }
 
+  hasPopupMetadata(metadata) {
+    if (!metadata) return false;
+    if (metadata.metaSource === "complete") return true;
+    return !!(
+      metadata.plot ||
+      metadata.genres?.length ||
+      metadata.ratingsImdb != null ||
+      metadata.ratings?.imdb ||
+      metadata.stars?.length ||
+      metadata.directors?.length ||
+      metadata.runtime ||
+      metadata.year
+    );
+  }
+
   // Load metadata for popup content
   async loadMetadataForPopup(container, popup) {
     try {
       // Use the stored catalog item for media info extraction
-      const catalogItem = container._catalogItem;
+      const catalogItem =
+        container._catalogItem || this.resolveCatalogItem(container);
+      container._catalogItem = catalogItem;
       if (!catalogItem) {
         PopupUtils.log(
           "error",
@@ -1450,7 +1503,7 @@ class MetadataHoverPopupService {
       );
 
       // Only show skeleton if we don't have complete metadata
-      if (!existingMetadata || existingMetadata.metaSource !== "complete") {
+      if (!existingMetadata || !this.hasPopupMetadata(existingMetadata)) {
         const basicContent = this.generateBasicPopupContent(mediaInfo);
         this.updatePopupContent(basicContent);
       }
@@ -1462,7 +1515,7 @@ class MetadataHoverPopupService {
           "Title not found in database, triggering priority processing for immediate enrichment",
         );
         const priorityData = await this.priorityProcessElement(catalogItem);
-        if (priorityData && priorityData.metaSource === "complete") {
+        if (this.hasPopupMetadata(priorityData)) {
           // Success! Show complete content
           PopupUtils.log(
             "debug",
@@ -1483,7 +1536,7 @@ class MetadataHoverPopupService {
             PopupTemplates.createNoDataState(mediaInfo.title),
           );
         }
-      } else if (existingMetadata.metaSource === "complete") {
+      } else if (this.hasPopupMetadata(existingMetadata)) {
         // Complete metadata available - show immediately
         PopupUtils.log("debug", "Complete metadata available, showing content");
 
@@ -1529,7 +1582,7 @@ class MetadataHoverPopupService {
           "Incomplete metadata found, triggering priority processing",
         );
         const priorityData = await this.priorityProcessElement(catalogItem);
-        if (priorityData && priorityData.metaSource === "complete") {
+        if (this.hasPopupMetadata(priorityData)) {
           // Success! Show complete content
           PopupUtils.log(
             "debug",

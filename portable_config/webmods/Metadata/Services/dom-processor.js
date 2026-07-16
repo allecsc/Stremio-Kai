@@ -20,8 +20,41 @@ class DOMTitleProcessor {
     this.pendingNodes = new Set();
     this.debounceTimer = null;
     this.DEBOUNCE_DELAY = 200; // ms
+    this._catalogScrollPaused = false;
+    this._scrollPauseTimer = null;
+    this._boundMarkCatalogScroll = this.markCatalogScroll.bind(this);
 
     this.start();
+  }
+
+  markCatalogScroll() {
+    const hash = window.location.hash || "";
+    if (!hash.startsWith("#/discover")) return;
+
+    this._catalogScrollPaused = true;
+    clearTimeout(this._scrollPauseTimer);
+    this._scrollPauseTimer = setTimeout(() => {
+      this._catalogScrollPaused = false;
+      if (this.pendingNodes.size > 0) {
+        this.scheduleBatchProcessing();
+      }
+    }, 220);
+  }
+
+  isDiscoverCatalogOnly() {
+    const hash = window.location.hash || "";
+    if (!hash.startsWith("#/discover")) return false;
+
+    for (const el of document.querySelectorAll(
+      ".meta-info-container-ub8AH, [class*='metadetails-container']",
+    )) {
+      if (!el.isConnected) continue;
+      const style = window.getComputedStyle(el);
+      if (style.display === "none" || style.visibility === "hidden") continue;
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 2 && rect.height > 2) return false;
+    }
+    return true;
   }
 
   subscribe(callback) {
@@ -51,6 +84,12 @@ class DOMTitleProcessor {
     // Listen for route changes to optimize performance
     this.boundHandleRouteChange = this.handleRouteChange.bind(this);
     window.addEventListener("hashchange", this.boundHandleRouteChange);
+    for (const eventName of ["wheel", "touchmove"]) {
+      document.addEventListener(eventName, this._boundMarkCatalogScroll, {
+        passive: true,
+        capture: true,
+      });
+    }
     // Initial check
     this.handleRouteChange();
 
@@ -75,6 +114,15 @@ class DOMTitleProcessor {
       window.removeEventListener("hashchange", this.boundHandleRouteChange);
       this.boundHandleRouteChange = null;
     }
+    if (this._boundMarkCatalogScroll) {
+      for (const eventName of ["wheel", "touchmove"]) {
+        document.removeEventListener(eventName, this._boundMarkCatalogScroll, {
+          capture: true,
+        });
+      }
+    }
+    clearTimeout(this._scrollPauseTimer);
+    this._scrollPauseTimer = null;
 
     this.pendingNodes.clear();
     this.processing.clear();
@@ -114,6 +162,8 @@ class DOMTitleProcessor {
   }
 
   async processExistingTitles() {
+    if (this.isDiscoverCatalogOnly()) return;
+
     // Use requestIdleCallback to avoid blocking main thread during initial load
     this.runIdle(() => {
       const elements = this.findTitleElements();
@@ -256,6 +306,8 @@ class DOMTitleProcessor {
     }
 
     this.observer = new MutationObserver((mutations) => {
+      if (this.isDiscoverCatalogOnly()) return;
+
       let hasRelevantMutations = false;
 
       for (const mutation of mutations) {
@@ -294,6 +346,21 @@ class DOMTitleProcessor {
   }
 
   scheduleBatchProcessing() {
+    if (this.isDiscoverCatalogOnly()) {
+      this.pendingNodes.clear();
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+      return;
+    }
+
+    if (this._catalogScrollPaused && (window.location.hash || "").startsWith("#/discover")) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        this.scheduleBatchProcessing();
+      }, 220);
+      return;
+    }
+
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
     }
@@ -394,6 +461,12 @@ class DOMTitleProcessor {
 
   // Private DOM extraction methods
   findTargetElement(element) {
+    if (!element) return null;
+
+    const posterHost =
+      element.closest?.(".meta-item-container-Tj0Ib, [class*='meta-item-container']") ||
+      element;
+
     // Check if element itself is already a suitable target (<a> from meta-items-container)
     if (
       element.tagName === "A" &&
@@ -404,6 +477,26 @@ class DOMTitleProcessor {
       return element;
     }
 
+    // Discover/Board detail links often have href but no id attribute
+    const detailLink =
+      posterHost.closest?.('a[href*="/detail/"]') ||
+      posterHost.querySelector?.('a[href*="/detail/"]') ||
+      element.closest?.('a[href*="/detail/"]') ||
+      element.querySelector?.('a[href*="/detail/"]');
+    if (detailLink) return detailLink;
+
+    const tabItem =
+      posterHost.querySelector?.('div[tabindex], a[id]') ||
+      posterHost.closest?.("div[tabindex]");
+    if (tabItem) return tabItem;
+
+    if (
+      posterHost.querySelector?.(this.domSelectors.posterImageGeneric) ||
+      posterHost.className?.includes?.("meta-item-container")
+    ) {
+      return posterHost;
+    }
+
     // Fallback: Try catalog rows (<a id="...">)
     const linkElement = element.closest("a[id]");
     if (linkElement) return linkElement;
@@ -412,7 +505,86 @@ class DOMTitleProcessor {
     const divElement = element.closest("div[tabindex]");
     if (divElement) return divElement;
 
-    return null; // No suitable element found
+    return posterHost !== element ? posterHost : null;
+  }
+
+  inferTypeFromContext() {
+    const hash = window.location.hash || "";
+    const hashMatch = hash.match(/\/(movie|series)(?:\/|$|\?)/);
+    if (hashMatch) return hashMatch[1];
+    return null;
+  }
+
+  mergeIdFromRaw(rawId, ids) {
+    if (!rawId) return;
+    const decoded = decodeURIComponent(String(rawId).split("/")[0].split("?")[0]);
+    const parsed = this.parseId(decoded);
+    if (!parsed?.id || parsed.idSource === "unknown") return;
+    if (!ids.type && (decoded.includes("movie") || decoded.includes("series"))) {
+      const typeMatch = decoded.match(/\/(movie|series)\//);
+      if (typeMatch) ids.type = typeMatch[1];
+    }
+    ids[parsed.idSource] = parsed.id;
+  }
+
+  mergeFromHref(href, ids) {
+    if (!href) return;
+    const urlData = this.extractFromUrl(href);
+    if (urlData?.id) {
+      if (!ids.type) ids.type = urlData.type;
+      ids[urlData.idSource] = urlData.id;
+      return;
+    }
+    const imdbMatch = href.match(/tt\d{7,}/);
+    if (imdbMatch) ids.imdb = imdbMatch[0];
+  }
+
+  mergeFromPosterSrc(src, ids) {
+    if (!src) return;
+
+    const urlData = this.extractFromUrl(src);
+    if (urlData?.id) {
+      if (!ids.type) ids.type = urlData.type;
+      ids[urlData.idSource] = urlData.id;
+      return;
+    }
+
+    const posterMatch = src.match(/\/poster\/(?:small|medium|large)\/([^/?]+)/);
+    if (posterMatch) {
+      this.mergeIdFromRaw(posterMatch[1], ids);
+      return;
+    }
+
+    const metahubMatch = src.match(/metahub\.space\/(?:poster|background|logo)\/[^/]+\/([^/?]+)/);
+    if (metahubMatch) {
+      this.mergeIdFromRaw(metahubMatch[1], ids);
+      return;
+    }
+
+    const rpdbMatch = src.match(/ratingsposterdb\.com\/[^/]+\/imdb\/[^/]+\/(tt\d{7,})/);
+    if (rpdbMatch) {
+      ids.imdb = rpdbMatch[1];
+      return;
+    }
+
+    const imdbMatch = src.match(/tt\d{7,}/);
+    if (imdbMatch) ids.imdb = imdbMatch[0];
+  }
+
+  extractTitleFromRoot(root, fallback = "") {
+    if (!root) return fallback;
+    const candidates = [
+      root.getAttribute?.("title"),
+      root.querySelector?.('[class*="title-bar"] [class*="label"]')?.textContent,
+      root.querySelector?.('[class*="title-bar-container"]')?.textContent,
+      root.querySelector?.('[class*="name-label"]')?.textContent,
+      root.querySelector?.('[class*="title-label"]')?.textContent,
+    ];
+    for (const value of candidates) {
+      const text = String(value || "").trim();
+      if (text) return text;
+    }
+    return fallback;
   }
 
   extractIdsFromElement(element) {
@@ -426,40 +598,33 @@ class DOMTitleProcessor {
       type: null,
     };
 
-    // Extract from element ID
-    if (element.id) {
-      const parsed = this.parseId(element.id);
-      if (parsed && typeof parsed.id === "string") {
-        ids[parsed.idSource] = parsed.id;
-      }
-    }
+    const roots = new Set([element]);
+    const posterHost = element.closest?.(
+      ".meta-item-container-Tj0Ib, [class*='meta-item-container']",
+    );
+    if (posterHost) roots.add(posterHost);
 
-    // Extract from href
-    const href = element.getAttribute("href");
-    if (href) {
-      const urlData = this.extractFromUrl(href);
-      if (urlData && typeof urlData.id === "string") {
-        ids.type = urlData.type;
-        ids[urlData.idSource] = urlData.id;
-      }
-    }
+    for (const root of roots) {
+      if (root.id) this.mergeIdFromRaw(root.id, ids);
 
-    // Extract from poster image
-    const img = element.querySelector(this.domSelectors.posterImage);
-    if (img?.src) {
-      const urlData = this.extractFromUrl(img.src);
-      if (urlData && typeof urlData.id === "string") {
-        if (!ids.type) ids.type = urlData.type;
-        ids[urlData.idSource] = urlData.id;
-      } else {
-        // Fallback for poster URLs
-        const match = img.src.match(
-          /\/poster\/(?:small|medium|large)\/(tt\d{7,})/,
+      this.mergeFromHref(root.getAttribute?.("href"), ids);
+
+      root.querySelectorAll?.('a[href*="/detail/"], a[href*="imdb.com/title/"]').forEach((link) => {
+        this.mergeFromHref(
+          decodeURIComponent(link.getAttribute("href") || link.href || ""),
+          ids,
         );
-        if (match && typeof match[1] === "string") {
-          ids.imdb = match[1];
-        }
-      }
+      });
+
+      root.querySelectorAll?.(
+        `${this.domSelectors.posterImage}, ${this.domSelectors.posterImageGeneric}, img[src*="metahub"], img[src*="poster"]`,
+      ).forEach((img) => {
+        this.mergeFromPosterSrc(img.getAttribute("src") || img.src, ids);
+      });
+    }
+
+    if (!ids.type) {
+      ids.type = this.inferTypeFromContext() || "movie";
     }
 
     return ids;
@@ -480,14 +645,26 @@ class DOMTitleProcessor {
 
   extractMediaInfo(titleText, element) {
     const targetElement = this.findTargetElement(element);
+    const root = targetElement || element;
+    const title =
+      titleText ||
+      this.extractTitleFromRoot(root, "") ||
+      this.extractTitleFromRoot(element, "");
+
     if (!targetElement) {
-      return this.createEmptyResult(titleText, element);
+      const ids = this.extractIdsFromElement(element);
+      const hasValidIds =
+        ids.imdb || ids.mal || ids.anilist || ids.kitsu || ids.tvdb || ids.tmdb;
+      if (!hasValidIds) {
+        return this.createEmptyResult(title, element);
+      }
+      return { ...ids, title };
     }
 
     const ids = this.extractIdsFromElement(targetElement);
     return {
       ...ids,
-      title: titleText || element.getAttribute("title") || "",
+      title,
     };
   }
 
