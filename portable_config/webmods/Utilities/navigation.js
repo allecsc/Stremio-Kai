@@ -184,6 +184,9 @@
           if (!window.location.hash.startsWith("#/discover")) return;
           const item = e.target.closest(".meta-item-container-Tj0Ib");
           if (!item) return;
+          const now = Date.now();
+          if (now - (NavigationManager._lastDiscoverWarm || 0) < 400) return;
+          NavigationManager._lastDiscoverWarm = now;
           const parsed = parseDetailFromElement(item);
           warmDetailCache(parsed);
         },

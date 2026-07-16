@@ -1,7 +1,7 @@
 /**
  * @name Show Page Enhancer
  * @description Enriches Stremio detail pages with metadata from the database
- * @version 1.5.0
+ * @version 1.5.1
  * @patched 2026-07-16 — DOM-first detail shell watcher (no preventDefault)
  *
  * Injects enhanced ratings, tags, awards, and cast/crew information into title detail pages
@@ -107,6 +107,10 @@
  * - Inject into visible meta container only (Discover had hidden duplicate DOM)
  * - Persistent inject loop until spe-injected marker appears
  * - navigation sets #/detail/ hash once detail DOM is visible (matches Ctrl+F5 route)
+ *
+ * Changelog v1.5.1:
+ * - Discover catalog scroll: disconnect DOM observers when no detail shell visible
+ * - Clear pinned route on catalog grid; remove viewport prefetch scan on scroll
  */
 
 (function () {
@@ -122,7 +126,7 @@
   };
 
   console.log(
-    "%c[Show Page Enhancer] v1.5.0 loaded (visible container + hash fix)",
+    "%c[Show Page Enhancer] v1.5.1 loaded (Discover scroll perf)",
     "color: #7b5bf5; font-weight: bold",
   );
 
@@ -220,6 +224,20 @@
     }
 
     return document.querySelector(CONFIG.META_CONTAINER);
+  }
+
+  /** Fast check — no getBoundingClientRect (used during catalog scroll). */
+  function hasVisibleDetailShell() {
+    for (const el of document.querySelectorAll(
+      `${CONFIG.META_CONTAINER}, [class*="metadetails-container"]`,
+    )) {
+      if (!el.isConnected) continue;
+      const style = window.getComputedStyle(el);
+      if (style.display === "none" || style.visibility === "hidden") continue;
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 2 && rect.height > 2) return true;
+    }
+    return false;
   }
 
   /**
@@ -430,11 +448,19 @@
     }
 
     static isDetailContext() {
-      return (
-        RouteDetector.isDetailPage() ||
-        RouteDetector.hasDetailShell() ||
-        !!RouteDetector.getPinnedRoute()?.id
-      );
+      if (RouteDetector.isDetailPage()) return true;
+      if (hasVisibleDetailShell()) return true;
+      const pinned = RouteDetector.getPinnedRoute();
+      if (pinned?.id && (window.location.hash || "").startsWith("#/detail")) {
+        return true;
+      }
+      return false;
+    }
+
+    static isDiscoverCatalogOnly() {
+      const hash = window.location.hash || "";
+      if (!hash.startsWith("#/discover")) return false;
+      return !hasVisibleDetailShell();
     }
 
     static extractFromDOM() {
@@ -1268,9 +1294,8 @@
 
       this.setupIntersectionObserver();
       this.setupMutationObserver();
-      this.connectMutationObserver();
       this.setupDiscoverCatalogObserver();
-      this.setupDetailShellWatcher();
+      // Observers connect only on detail pages (see handleRouteChange)
 
       this._shellReady = true;
       this._ready = true;
@@ -1290,6 +1315,8 @@
         if (parsed?.id) RouteDetector.pinRoute(parsed);
         RouteDetector.invalidateCache();
         this.markPendingRoute();
+        this.connectDetailShellWatcher();
+        this.connectMutationObserver();
         this.processRoute(true);
       };
       window.ShowPageEnhancer.cleanup = () => this.cleanup();
@@ -1337,11 +1364,13 @@
       }
     }
 
-    setupDetailShellWatcher() {
+    connectDetailShellWatcher() {
       if (this._detailShellWatcher) return;
 
       this._detailShellWatcher = new MutationObserver(
         debounce(() => {
+          if (RouteDetector.isDiscoverCatalogOnly()) return;
+
           const container = getMetaContainer();
           if (!container || container.classList.contains(CONFIG.MARKER_CLASS)) {
             return;
@@ -1351,13 +1380,24 @@
 
           this.connectMutationObserver();
           this.processRoute();
-        }, 200),
+        }, 350),
       );
 
       this._detailShellWatcher.observe(document.documentElement, {
         childList: true,
         subtree: true,
       });
+    }
+
+    disconnectDetailShellWatcher() {
+      if (this._detailShellWatcher) {
+        this._detailShellWatcher.disconnect();
+        this._detailShellWatcher = null;
+      }
+    }
+
+    setupDetailShellWatcher() {
+      this.connectDetailShellWatcher();
     }
 
     startDetailWatchdog() {
@@ -1411,6 +1451,7 @@
       if (this._injectionRetryTimer) clearInterval(this._injectionRetryTimer);
       this.stopDetailWatchdog();
       this.stopPersistentInjectLoop();
+      this.disconnectDetailShellWatcher();
       if (this._detailShellWatcher) this._detailShellWatcher.disconnect();
       if (this.discoverCatalogObserver) this.discoverCatalogObserver.disconnect();
       this.currentMetadata = null;
@@ -1731,27 +1772,42 @@
         RouteDetector.clearPinnedRoute();
         this.setContainerState(false);
         this.disconnectMutationObserver();
+        this.disconnectDetailShellWatcher();
         this.stopDetailWatchdog();
+        this.stopPersistentInjectLoop();
         this.isProcessing = false;
         return;
       }
 
-      // Ensure observer is connected on detail pages
+      const inDetail = RouteDetector.isDetailContext();
+
+      if (RouteDetector.isDiscoverCatalogOnly()) {
+        RouteDetector.clearPinnedRoute();
+        this.disconnectMutationObserver();
+        this.disconnectDetailShellWatcher();
+        this.stopDetailWatchdog();
+        this.stopPersistentInjectLoop();
+        this.setContainerState(true);
+        return;
+      }
+
+      if (!inDetail) {
+        RouteDetector.clearPinnedRoute();
+        this.disconnectMutationObserver();
+        this.disconnectDetailShellWatcher();
+        this.stopDetailWatchdog();
+        this.stopPersistentInjectLoop();
+        this.setContainerState(true);
+        return;
+      }
+
       this.connectMutationObserver();
+      this.connectDetailShellWatcher();
       this.setContainerState(true);
 
       const routeInfo = RouteDetector.resolveActiveRoute();
       this.processRoute(!!routeInfo?.id);
-
-      if (RouteDetector.isDetailContext()) {
-        this.startDetailWatchdog();
-      } else {
-        this.stopDetailWatchdog();
-      }
-
-      if (window.location.hash.startsWith("#/discover")) {
-        this.scanDiscoverCatalogItems();
-      }
+      this.startDetailWatchdog();
     }
 
     getRouteKey(routeInfo) {
@@ -2123,10 +2179,15 @@
 
       let elapsed = 0;
       this._persistentInjectTimer = setInterval(() => {
-        elapsed += 200;
-        if (elapsed > 45000) {
+        elapsed += 400;
+        if (elapsed > 20000) {
           clearInterval(this._persistentInjectTimer);
           this._persistentInjectTimer = null;
+          return;
+        }
+
+        if (RouteDetector.isDiscoverCatalogOnly()) {
+          this.stopPersistentInjectLoop();
           return;
         }
 
@@ -2143,7 +2204,7 @@
         }
 
         this.injectIfReady(container);
-      }, 200);
+      }, 400);
     }
 
     stopPersistentInjectLoop() {
@@ -2181,7 +2242,7 @@
       }
 
       if (!alreadyInjected || options.forceReinject) {
-        this.scheduleInjectionAttempts(100, 250);
+        this.scheduleInjectionAttempts(40, 300);
         this.startPersistentInjectLoop();
       }
     }
