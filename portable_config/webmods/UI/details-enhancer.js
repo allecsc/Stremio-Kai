@@ -1,7 +1,8 @@
 /**
  * @name Show Page Enhancer
  * @description Enriches Stremio detail pages with metadata from the database
- * @version 1.3.0
+ * @version 1.5.0
+ * @patched 2026-07-16 — DOM-first detail shell watcher (no preventDefault)
  *
  * Injects enhanced ratings, tags, awards, and cast/crew information into title detail pages
  * using route-based detection and the existing metadata system.
@@ -14,6 +15,98 @@
  * - Observer lifecycle management (disconnect on non-detail pages)
  * - Error boundary around observer callback
  * - Exposed cleanup via window.ShowPageEnhancer
+ *
+ * Changelog v1.3.1:
+ * - Fetch metadata on cache miss (Discover → Detail navigation)
+ * - Enrich incomplete cache entries on detail page load
+ * - Relax DOM readiness gate when enriched metadata is already available
+ *
+ * Changelog v1.3.2:
+ * - Force full fetch when cache has stub entries (Discover catalog scans)
+ * - Enrich even when metaSource is "complete" but cast/ratings are missing
+ * - Remove description DOM gate; retry injection until container is ready
+ * - Pull TMDB/MDBList private metadata for cast on detail page open
+ *
+ * Changelog v1.3.3:
+ * - Detect movie detail shown inside Discover tab (hash stays #/discover/...)
+ * - Extract IMDb ID from DOM when URL has no /detail/ segment
+ *
+ * Changelog v1.3.4:
+ * - Single priority fetch path (removed duplicate TMDB/Cinemeta enrichment passes)
+ * - Immediate UI inject + faster DOM retries (50ms)
+ * - Require cast photos before treating cache as "complete"
+ *
+ * Changelog v1.3.5:
+ * - Progressive inject: show Cinemeta data immediately, TMDB cast follows
+ * - Bypass slow storage pipeline on detail pages (direct API fetch)
+ * - Prefetch metadata on poster click before navigation
+ * - TMDB priority mode: credits-only fetch (no alt titles / heavy bundles)
+ *
+ * Changelog v1.3.6:
+ * - Expose prefetchDetail() for Discover → Board navigation bridge
+ * - Discover catalog clicks also parsed from meta-item containers
+ *
+ * Changelog v1.3.8:
+ * - TMDB-only Discover routes (tmdb:123) fetch via TMDB directly
+ * - processAndSaveData fallback even when metadata is null
+ * - Broader extractDetailFromDOM (metadetails, metahub, page-wide links)
+ * - Debounced processRoute; clear injection only when movie ID changes
+ * - Reduced injection retries (8×100ms) to stop F5 flicker/jumps
+ * - Map TMDB cast photo → image for UI injection
+ *
+ * Changelog v1.3.9:
+ * - Prefetch stores metadata promise (reuse on navigation, no double fetch)
+ * - Progressive inject: Cinemeta UI ~1s, TMDB cast upgrades in place
+ * - Skip slow processAndSaveData when partial metadata is already usable
+ * - saveTitle runs in background (no blocking before inject)
+ * - hashchange on detail pages skips debounce; Discover redirect uses rAF
+ *
+ * Changelog v1.4.0:
+ * - Discover prefetch uses Board pipeline (priorityProcessElement → IndexedDB)
+ * - Detail page reads cache like Board (findByAnyId → inject, no parallel API path)
+ * - mousedown prefetch on catalog items (same timing as Board hover enrichment)
+ *
+ * Changelog v1.4.1:
+ * - TMDB→IMDb via TMDB API (Discover tmdb: links no longer hit 15s title search)
+ * - Detail page enrichment non-blocking (UI updates via metadata-updated)
+ * - metadata-updated matches tmdb: routes; Discover viewport priority scan
+ *
+ * Changelog v1.4.2:
+ * - Root fix: metadata API no longer waits 15s for catalog on detail pages (main.js)
+ * - Instant UI: parallel Cinemeta+TMDB display fetch; Board enrich in background
+ *
+ * Changelog v1.4.3:
+ * - Early hashchange + metadata-modules-ready: works on first Discover click (no Ctrl+F5)
+ *
+ * Changelog v1.4.4:
+ * - Discover click forces processDetailRoute (Stremio native nav bypasses hashchange)
+ * - Mutation observer always on; longer inject retries; no PopupTemplates init gate
+ * - metadata-core-ready wakes enhancer immediately when storage is live
+ *
+ * Changelog v1.4.5:
+ * - Split init: observers/listeners run before metadata deps (no Ctrl+F5)
+ * - Detail watchdog retries inject every 500ms until Kai UI appears
+ * - navigation.js: preventDefault + force #/detail/ hash on Discover click
+ *
+ * Changelog v1.4.6:
+ * - Root fix: navigation no longer blocks Stremio click (preventDefault broke React mount)
+ * - MutationObserver triggers on detail DOM shell even when hash is still #/discover/
+ * - resolveActiveRouteInfo: match metadata via DOM-extracted ID (tmdb/imdb)
+ * - Persistent detail-shell watcher at boot (independent of hash/route cache)
+ *
+ * Changelog v1.4.7:
+ * - Pin route ID from Discover poster click (kai-detail-navigate carried ID but enhancer ignored it)
+ * - resolveActiveRoute uses pinned ID when hash=#/discover and DOM has no imdb link yet
+ *
+ * Changelog v1.4.8:
+ * - Dedupe identifyAndPrepare + processAndSaveData (fixed 300+ enrich loop)
+ * - metadata-updated upgrades inject in-place instead of clear+reprocess
+ * - force processRoute no longer stacks parallel runs for same route
+ *
+ * Changelog v1.5.0:
+ * - Inject into visible meta container only (Discover had hidden duplicate DOM)
+ * - Persistent inject loop until spe-injected marker appears
+ * - navigation sets #/detail/ hash once detail DOM is visible (matches Ctrl+F5 route)
  */
 
 (function () {
@@ -29,9 +122,33 @@
   };
 
   console.log(
-    "%c[Show Page Enhancer] Script loaded!",
+    "%c[Show Page Enhancer] v1.5.0 loaded (visible container + hash fix)",
     "color: #7b5bf5; font-weight: bold",
   );
+
+  function showKaiToast(message, type = "info") {
+    try {
+      let el = document.getElementById("kai-metadata-toast");
+      if (!el) {
+        el = document.createElement("div");
+        el.id = "kai-metadata-toast";
+        el.style.cssText =
+          "position:fixed;bottom:18px;right:18px;z-index:999999;padding:10px 14px;border-radius:8px;font:12px/1.4 Segoe UI,sans-serif;color:#fff;background:rgba(30,30,30,0.92);box-shadow:0 4px 16px rgba(0,0,0,0.35);pointer-events:none;max-width:320px;";
+        document.body.appendChild(el);
+      }
+      el.textContent = message;
+      el.style.background =
+        type === "error"
+          ? "rgba(176,48,48,0.95)"
+          : type === "ok"
+            ? "rgba(36,128,72,0.95)"
+            : "rgba(30,30,30,0.92)";
+      clearTimeout(el._kaiToastTimer);
+      el._kaiToastTimer = setTimeout(() => el.remove(), 5000);
+    } catch (_) {
+      /* ignore */
+    }
+  }
 
   // Configuration
   const CONFIG = {
@@ -69,12 +186,77 @@
     DESC_CLASS: "episode-description-spe",
   };
 
+  function isElementVisible(el) {
+    if (!el?.isConnected) return false;
+    const rect = el.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return false;
+    for (let node = el; node && node !== document.body; node = node.parentElement) {
+      const style = window.getComputedStyle(node);
+      if (style.display === "none" || style.visibility === "hidden") return false;
+    }
+    return true;
+  }
+
+  /** Prefer the largest visible meta container (Discover may mount hidden duplicates). */
+  function getMetaContainer() {
+    let best = null;
+    let bestArea = 0;
+
+    for (const el of document.querySelectorAll(CONFIG.META_CONTAINER)) {
+      if (!isElementVisible(el)) continue;
+      const rect = el.getBoundingClientRect();
+      const area = rect.width * rect.height;
+      if (area > bestArea) {
+        bestArea = area;
+        best = el;
+      }
+    }
+    if (best) return best;
+
+    for (const root of document.querySelectorAll('[class*="metadetails-container"]')) {
+      if (!isElementVisible(root)) continue;
+      const inner = root.querySelector(CONFIG.META_CONTAINER);
+      return inner && isElementVisible(inner) ? inner : root;
+    }
+
+    return document.querySelector(CONFIG.META_CONTAINER);
+  }
+
   /**
    * Route detector and ID extractor with caching
    */
   class RouteDetector {
     // Route state cache (invalidated on hash change)
     static _cache = { hash: "", state: null };
+    // ID captured from Discover poster click before DOM/hash expose it
+    static _pinnedRoute = null;
+
+    static pinRoute(parsed) {
+      if (!parsed?.id) return;
+      RouteDetector._pinnedRoute = {
+        view: "DETAIL",
+        type: parsed.type || "movie",
+        id: String(parsed.id),
+        source: parsed.source || "imdb",
+        fromDiscover: true,
+        pinnedAt: Date.now(),
+      };
+      RouteDetector.invalidateCache();
+    }
+
+    static clearPinnedRoute() {
+      RouteDetector._pinnedRoute = null;
+    }
+
+    static getPinnedRoute() {
+      const pinned = RouteDetector._pinnedRoute;
+      if (!pinned?.id) return null;
+      if (Date.now() - (pinned.pinnedAt || 0) > 120000) {
+        RouteDetector._pinnedRoute = null;
+        return null;
+      }
+      return pinned;
+    }
 
     // Known Route Regular Expressions
     static ROUTES = {
@@ -85,9 +267,13 @@
 
     static getRouteState() {
       const hash = window.location.hash;
+      const domDetail = RouteDetector.extractDetailFromDOM();
+      const cacheKey = domDetail?.id
+        ? `${hash}::${domDetail.type}::${domDetail.id}`
+        : hash;
 
-      // Return cached state if hash hasn't changed
-      if (RouteDetector._cache.hash === hash && RouteDetector._cache.state) {
+      // Return cached state if route context hasn't changed
+      if (RouteDetector._cache.hash === cacheKey && RouteDetector._cache.state) {
         return RouteDetector._cache.state;
       }
 
@@ -96,7 +282,7 @@
       // 1. Player (Nuclear Cleanup Phase)
       if (RouteDetector.ROUTES.PLAYER.test(hash)) {
         state = { view: "PLAYER", id: null };
-        RouteDetector._cache = { hash, state };
+        RouteDetector._cache = { hash: cacheKey, state };
         return state;
       }
 
@@ -114,7 +300,7 @@
           source: idInfo.source,
           episodeId: decodeURIComponent(streamsMatch[3]),
         };
-        RouteDetector._cache = { hash, state };
+        RouteDetector._cache = { hash: cacheKey, state };
         return state;
       }
 
@@ -134,12 +320,38 @@
           source: idInfo.source,
           season: season,
         };
-        RouteDetector._cache = { hash, state };
+        RouteDetector._cache = { hash: cacheKey, state };
+        return state;
+      }
+
+      // 4. Discover (and similar) routes keep #/discover/... while showing detail inline
+      if (/^#\/(discover|library)\//.test(hash) && domDetail?.id) {
+        state = {
+          view: "DETAIL",
+          type: domDetail.type,
+          id: domDetail.id,
+          source: domDetail.source || "imdb",
+          fromDiscover: hash.startsWith("#/discover/"),
+        };
+        RouteDetector._cache = { hash: cacheKey, state };
+        return state;
+      }
+
+      // 5. Fallback: visible detail shell in DOM (SPA remount, Discover inline, delayed hash)
+      if (domDetail?.id && getMetaContainer()) {
+        state = {
+          view: "DETAIL",
+          type: domDetail.type,
+          id: domDetail.id,
+          source: domDetail.source || "imdb",
+          fromDiscover: /^#\/discover/.test(hash),
+        };
+        RouteDetector._cache = { hash: cacheKey, state };
         return state;
       }
 
       state = { view: "UNKNOWN", id: null };
-      RouteDetector._cache = { hash, state };
+      RouteDetector._cache = { hash: cacheKey, state };
       return state;
     }
 
@@ -152,6 +364,11 @@
 
       // Handle case where ID might still have a / or ? attached
       idString = idString.split("/")[0].split("?")[0];
+
+      // Series detail URLs: tt0086659:1 → tt0086659 (season suffix)
+      if (idString.startsWith("tt") && idString.includes(":")) {
+        idString = idString.split(":")[0];
+      }
 
       let id = idString;
       let source = "imdb";
@@ -188,6 +405,38 @@
       return RouteDetector.getRouteState();
     }
 
+    /** Route from pinned click, hash, and/or mounted detail DOM. */
+    static resolveActiveRoute() {
+      const pinned = RouteDetector.getPinnedRoute();
+      if (pinned?.id) return pinned;
+
+      const state = RouteDetector.getRouteState();
+      if (state?.id && state.view !== "UNKNOWN") return state;
+
+      const dom = RouteDetector.extractDetailFromDOM();
+      if (!dom?.id) return null;
+
+      return {
+        view: "DETAIL",
+        type: dom.type || "movie",
+        source: dom.source || "imdb",
+        id: dom.id,
+        fromDiscover: (window.location.hash || "").startsWith("#/discover"),
+      };
+    }
+
+    static hasDetailShell() {
+      return !!getMetaContainer();
+    }
+
+    static isDetailContext() {
+      return (
+        RouteDetector.isDetailPage() ||
+        RouteDetector.hasDetailShell() ||
+        !!RouteDetector.getPinnedRoute()?.id
+      );
+    }
+
     static extractFromDOM() {
       const logoImg = document.querySelector(CONFIG.LOGO_IMAGE);
       const releaseInfo = document.querySelector(CONFIG.RELEASE_INFO);
@@ -199,6 +448,105 @@
       const year = yearText.match(/\d{4}/)?.[0] || "";
 
       return title ? { title, year } : null;
+    }
+
+    static extractDetailFromDOM() {
+      const inferType = (root) =>
+        root?.querySelector(CONFIG.EPISODES_CONTAINER) ? "series" : "movie";
+
+      const tryFromRoot = (metaContainer) => {
+        if (!metaContainer) return null;
+
+        const imdbBtn = metaContainer.querySelector(
+          '.imdb-button-container-gGjxp a[href*="tt"]',
+        );
+        if (imdbBtn) {
+          const id = (imdbBtn.getAttribute("href") || "").match(/tt\d+/)?.[0];
+          if (id) {
+            return { id, type: inferType(metaContainer), source: "imdb" };
+          }
+        }
+
+        for (const link of metaContainer.querySelectorAll(
+          'a[href*="/detail/"]',
+        )) {
+          const href = decodeURIComponent(link.getAttribute("href") || "");
+          const match = href.match(/\/(movie|series)\/([^/?#]+)/);
+          if (!match) continue;
+          const idInfo = RouteDetector.parseId(match[2]);
+          if (idInfo.id) {
+            return {
+              id: idInfo.id,
+              type: match[1],
+              source: idInfo.source,
+            };
+          }
+        }
+
+        for (const link of metaContainer.querySelectorAll('a[href*="tt"]')) {
+          const id = (link.getAttribute("href") || "").match(/tt\d+/)?.[0];
+          if (id) {
+            return { id, type: inferType(metaContainer), source: "imdb" };
+          }
+        }
+
+        const logoImg = metaContainer.querySelector(CONFIG.LOGO_IMAGE);
+        if (logoImg?.src) {
+          const tt = logoImg.src.match(/tt\d{7,}/);
+          if (tt) {
+            return {
+              id: tt[0],
+              type: inferType(metaContainer),
+              source: "imdb",
+            };
+          }
+        }
+
+        return null;
+      };
+
+      const roots = [];
+      const primary = getMetaContainer();
+      if (primary) roots.push(primary);
+
+      document
+        .querySelectorAll('[class*="metadetails-container"]')
+        .forEach((el) => {
+          if (!roots.includes(el)) roots.push(el);
+        });
+
+      for (const root of roots) {
+        const found = tryFromRoot(root);
+        if (found) return found;
+      }
+
+      for (const link of document.querySelectorAll(
+        'a[href*="imdb.com/title/tt"], a[href*="/detail/"]',
+      )) {
+        const href = decodeURIComponent(link.getAttribute("href") || "");
+        const tt = href.match(/tt\d{7,}/);
+        if (tt) {
+          const detailMatch = href.match(/\/(movie|series)\//);
+          return {
+            id: tt[0],
+            type: detailMatch?.[1] || inferType(link.closest("body")),
+            source: "imdb",
+          };
+        }
+        const match = href.match(/\/(movie|series)\/([^/?#]+)/);
+        if (match) {
+          const idInfo = RouteDetector.parseId(match[2]);
+          if (idInfo.id) {
+            return {
+              id: idInfo.id,
+              type: match[1],
+              source: idInfo.source,
+            };
+          }
+        }
+      }
+
+      return null;
     }
   }
 
@@ -225,7 +573,7 @@
       });
 
       // 1c. Restore stashed text node content
-      const metaContainer = document.querySelector(CONFIG.META_CONTAINER);
+      const metaContainer = getMetaContainer();
       if (metaContainer) {
         const desc = metaContainer.querySelector(
           ".description-container-yi8iU",
@@ -254,7 +602,7 @@
     static injectMetadata(metadata, intersectionObserver) {
       if (!metadata) return;
 
-      const metaContainer = document.querySelector(CONFIG.META_CONTAINER);
+      const metaContainer = getMetaContainer();
       if (!metaContainer) {
         console.error(
           "[Show Page Enhancer] Meta container not found during injection!",
@@ -867,6 +1215,7 @@
     constructor() {
       this.hashChangeHandler = this.handleRouteChange.bind(this);
       this.clickHandler = this.handleClick.bind(this);
+      this.prefetchHandler = this.handlePrefetchMousedown.bind(this);
       this.mutationObserver = null;
       this.intersectionObserver = null;
       this.currentMetadata = null;
@@ -874,46 +1223,182 @@
       this.debounceTimer = null;
       this.lastHash = "";
       this.lastInjectedId = null;
+      this._prefetchCache = new Map();
+      this._discoverCatalogObserved = new WeakSet();
+      this.discoverCatalogObserver = null;
       this.lastSeasonParam = null;
+      this.lastDiscoverDetailId = null;
+      this._activeRouteKey = "";
+      this._processRouteTimer = null;
+      this._injectionRetryTimer = null;
+      this._detailWatchdogTimer = null;
       this._observerConnected = false; // Track observer lifecycle
+      this._shellReady = false;
+      this._metadataReady = false;
+      this._ready = false;
+      this._pendingRoute = false;
+      this._identifyInflight = new Map();
       this.episodeInjector = new EpisodeInjector();
     }
 
+    markPendingRoute() {
+      this._pendingRoute = true;
+    }
+
+    flushPendingRoute() {
+      if (!this._ready) return;
+      if (this._pendingRoute || RouteDetector.isDetailContext()) {
+        this._pendingRoute = false;
+        this.handleRouteChange();
+      }
+    }
+
     init() {
-      // Dependency check (silent retry)
-      if (
-        !window.metadataHelper ||
-        !window.PopupTemplates ||
-        !window.MetadataModules?.metadataStorage
-      ) {
-        setTimeout(() => this.init(), 500);
+      this.setupShell();
+      this.setupMetadataDeps();
+    }
+
+    setupShell() {
+      if (this._shellReady) return;
+
+      this.episodeInjector.init();
+
+      document.body.addEventListener("click", this.clickHandler);
+      document.body.addEventListener("mousedown", this.prefetchHandler, true);
+
+      this.setupIntersectionObserver();
+      this.setupMutationObserver();
+      this.connectMutationObserver();
+      this.setupDiscoverCatalogObserver();
+      this.setupDetailShellWatcher();
+
+      this._shellReady = true;
+      this._ready = true;
+
+      window.ShowPageEnhancer.prefetchDetail = (routeInfo) =>
+        this.prefetchFromRoute(routeInfo, routeInfo?.element);
+      window.ShowPageEnhancer.processDetailRoute = (parsed) => {
+        if (parsed?.id) RouteDetector.pinRoute(parsed);
+        this.markPendingRoute();
+        this.setupShell();
+        this.setupMetadataDeps();
+        if (this._ready) {
+          this.processRoute(true);
+        }
+      };
+      window.ShowPageEnhancer.onDetailShellDetected = (parsed) => {
+        if (parsed?.id) RouteDetector.pinRoute(parsed);
+        RouteDetector.invalidateCache();
+        this.markPendingRoute();
+        this.processRoute(true);
+      };
+      window.ShowPageEnhancer.cleanup = () => this.cleanup();
+
+      this.flushPendingRoute();
+    }
+
+    setupMetadataDeps() {
+      if (this._metadataReady) return;
+
+      if (!window.metadataStorage || !window.metadataServices?.idLookup) {
+        if (!this._awaitingMetadataReady) {
+          this._awaitingMetadataReady = true;
+          window.addEventListener(
+            "metadata-core-ready",
+            () => this.setupMetadataDeps(),
+            { once: true },
+          );
+          window.addEventListener(
+            "metadata-modules-ready",
+            () => this.setupMetadataDeps(),
+            { once: true },
+          );
+        }
+        setTimeout(() => this.setupMetadataDeps(), 100);
         return;
       }
 
-      // Init Episode Injector (no storage needed - uses in-memory videos array)
-      this.episodeInjector.init();
+      this.setupMetadataListener();
+      this._metadataReady = true;
+      this.flushPendingRoute();
 
-      // Setup listeners
-      window.addEventListener("hashchange", this.hashChangeHandler);
-      document.body.addEventListener("click", this.clickHandler); // Delegated click listener
-      this.setupMetadataListener(); // Listener for background updates
-
-      // Setup observers
-      this.setupIntersectionObserver();
-      this.setupMutationObserver();
-
-      // Initial check
-      if (RouteDetector.isDetailPage()) {
-        this.handleRouteChange();
+      if (RouteDetector.isDetailContext()) {
+        const container = getMetaContainer();
+        if (!container?.classList.contains(CONFIG.MARKER_CLASS)) {
+          this.processRoute(true);
+        }
       }
+    }
 
-      // Expose cleanup for debugging
-      window.ShowPageEnhancer.cleanup = () => this.cleanup();
+    stopDetailWatchdog() {
+      if (this._detailWatchdogTimer) {
+        clearInterval(this._detailWatchdogTimer);
+        this._detailWatchdogTimer = null;
+      }
+    }
+
+    setupDetailShellWatcher() {
+      if (this._detailShellWatcher) return;
+
+      this._detailShellWatcher = new MutationObserver(
+        debounce(() => {
+          const container = getMetaContainer();
+          if (!container || container.classList.contains(CONFIG.MARKER_CLASS)) {
+            return;
+          }
+          if (!RouteDetector.resolveActiveRoute()?.id) return;
+          if (this._identifyInflight.size > 0) return;
+
+          this.connectMutationObserver();
+          this.processRoute();
+        }, 200),
+      );
+
+      this._detailShellWatcher.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+      });
+    }
+
+    startDetailWatchdog() {
+      this.stopDetailWatchdog();
+
+      if (!RouteDetector.isDetailContext()) return;
+
+      const container = getMetaContainer();
+      if (container?.classList.contains(CONFIG.MARKER_CLASS)) return;
+
+      let elapsed = 0;
+      const intervalMs = 500;
+      const maxMs = 30000;
+
+      this._detailWatchdogTimer = setInterval(() => {
+        elapsed += intervalMs;
+
+        if (!RouteDetector.isDetailContext()) {
+          this.stopDetailWatchdog();
+          return;
+        }
+
+        const currentContainer = getMetaContainer();
+        if (currentContainer?.classList.contains(CONFIG.MARKER_CLASS)) {
+          this.stopDetailWatchdog();
+          return;
+        }
+
+        if (elapsed >= maxMs) {
+          this.stopDetailWatchdog();
+          return;
+        }
+
+        this.connectMutationObserver();
+        this.processRoute(true);
+      }, intervalMs);
     }
 
     cleanup() {
-      window.removeEventListener("hashchange", this.hashChangeHandler);
       document.body.removeEventListener("click", this.clickHandler);
+      document.body.removeEventListener("mousedown", this.prefetchHandler, true);
       if (this.metadataListener) {
         window.removeEventListener("metadata-updated", this.metadataListener);
         this.metadataListener = null;
@@ -922,6 +1407,12 @@
       if (this.intersectionObserver) this.intersectionObserver.disconnect();
       if (this.episodeInjector) this.episodeInjector.disconnect(); // Clean up episodes
       if (this.debounceTimer) clearTimeout(this.debounceTimer);
+      if (this._processRouteTimer) clearTimeout(this._processRouteTimer);
+      if (this._injectionRetryTimer) clearInterval(this._injectionRetryTimer);
+      this.stopDetailWatchdog();
+      this.stopPersistentInjectLoop();
+      if (this._detailShellWatcher) this._detailShellWatcher.disconnect();
+      if (this.discoverCatalogObserver) this.discoverCatalogObserver.disconnect();
       this.currentMetadata = null;
       this.lastInjectedId = null;
       MetadataInjector.clearInjectedContent();
@@ -932,48 +1423,95 @@
       window.addEventListener("metadata-updated", this.metadataListener);
     }
 
+    routeMatchesUpdate(routeInfo, detail) {
+      if (!routeInfo?.id || !detail) return false;
+
+      const routeId = String(routeInfo.id);
+      if (routeId === String(detail.id)) return true;
+      if (detail.imdb && routeId === String(detail.imdb)) return true;
+      if (detail.tmdb && routeId === String(detail.tmdb)) return true;
+
+      if (routeInfo.source === "tmdb") {
+        if (this.currentMetadata?.tmdb && routeId === String(this.currentMetadata.tmdb)) {
+          return true;
+        }
+        if (detail.imdb && this.currentMetadata?.imdb === detail.imdb) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
     handleMetadataUpdate(event) {
       // Validation
       if (!event || !event.detail) return;
-      const { id, imdb } = event.detail;
+      const detail = event.detail;
 
       // Check if we are currently viewing the updated item
-      const routeInfo = RouteDetector.extractFromHash();
+      const routeInfo = RouteDetector.resolveActiveRoute();
       if (!routeInfo || !routeInfo.id) return;
 
-      if (routeInfo.id === id || routeInfo.id === imdb) {
-        // FIX: Defer DOM mutations to next frame to avoid colliding with React's
-        // reconciler during navigation transitions. Without this, clearInjectedContent()
-        // can .remove() nodes that React is mid-unmount on, causing an uncaught
-        // removeChild NotFoundError that kills the render loop (black screen freeze).
-        requestAnimationFrame(() => {
-          // Re-validate route — user may have navigated away during the frame delay
-          const currentRoute = RouteDetector.extractFromHash();
-          if (
-            !currentRoute ||
-            (currentRoute.id !== id && currentRoute.id !== imdb)
-          )
-            return;
+      if (!this.routeMatchesUpdate(routeInfo, detail)) return;
 
-          console.log(
-            `[Show Page Enhancer] Received metadata update for active item: ${id}`,
-          );
+      requestAnimationFrame(() => {
+        const currentRoute = RouteDetector.resolveActiveRoute();
+        if (
+          !currentRoute ||
+          !this.routeMatchesUpdate(currentRoute, detail)
+        )
+          return;
 
-          // Force re-process — clear current metadata to force a fresh lookup
-          this.currentMetadata = null;
+        const container = getMetaContainer();
+        if (
+          container?.classList.contains(CONFIG.MARKER_CLASS) &&
+          this.hasDetailPageFields(this.currentMetadata)
+        ) {
+          return;
+        }
 
-          const container = document.querySelector(CONFIG.META_CONTAINER);
-          if (container) {
-            // Remove marker to allow re-injection
-            container.classList.remove(CONFIG.MARKER_CLASS);
-            // Clean up content to prevent duplication before new content arrives
-            MetadataInjector.clearInjectedContent();
-          }
-
-          // Trigger processing
-          this.processRoute(true); // force=true
+        const merged = this.mergeDetailMetadata(
+          this.currentMetadata || {},
+          detail,
+        );
+        this.applyMetadataAndInject(this.normalizePeopleForUI(merged), {
+          forceReinject: !container?.classList.contains(CONFIG.MARKER_CLASS),
         });
-      }
+      });
+    }
+
+    setupDiscoverCatalogObserver() {
+      this.discoverCatalogObserver = new IntersectionObserver(
+        (entries) => {
+          if (!window.location.hash.startsWith("#/discover")) return;
+
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+
+            const item = entry.target;
+            if (this._discoverCatalogObserved.has(item)) continue;
+            this._discoverCatalogObserved.add(item);
+
+            const routeInfo = this.parseRouteFromClickTarget(item);
+            if (routeInfo) {
+              this.prefetchFromRoute(routeInfo, routeInfo.element);
+            }
+            this.discoverCatalogObserver.unobserve(item);
+          }
+        },
+        { rootMargin: "250px" },
+      );
+    }
+
+    scanDiscoverCatalogItems() {
+      if (!this.discoverCatalogObserver) return;
+      if (!window.location.hash.startsWith("#/discover")) return;
+
+      document.querySelectorAll(".meta-item-container-Tj0Ib").forEach((item) => {
+        if (!this._discoverCatalogObserved.has(item)) {
+          this.discoverCatalogObserver.observe(item);
+        }
+      });
     }
 
     setupIntersectionObserver() {
@@ -1007,7 +1545,7 @@
             document.querySelector(".player-panel-lBK74")
           );
 
-          if (!RouteDetector.isDetailPage() || isPlayer) {
+          if (!RouteDetector.isDetailContext() || isPlayer) {
             if (isPlayer) {
               // Release focus from injected buttons to prevent spacebar hijacking
               if (
@@ -1026,8 +1564,27 @@
             return;
           }
 
+          // 1b. Detail shell visible — process even if hash still #/discover/
+          const routeInfo =
+            RouteDetector.resolveActiveRoute() ||
+            RouteDetector.extractFromHash();
+          if (routeInfo?.id) {
+            if (this.clearInjectionIfMovieChanged(routeInfo)) {
+              this.processRoute(true);
+              return;
+            }
+            const container = getMetaContainer();
+            if (container?.classList.contains(CONFIG.MARKER_CLASS)) {
+              return;
+            }
+            if (container && !this.currentMetadata && !this._identifyInflight.size) {
+              this.processRoute();
+              return;
+            }
+          }
+
           // 2. Refresh injection if container is missing markers
-          const container = document.querySelector(CONFIG.META_CONTAINER);
+          const container = getMetaContainer();
           if (container && !container.classList.contains(CONFIG.MARKER_CLASS)) {
             if (this.currentMetadata) {
               this.injectIfReady(container);
@@ -1061,6 +1618,10 @@
           if (episodesList) {
             this.episodeInjector.handleEpisodesMutation(episodesList);
           }
+
+          if (window.location.hash.startsWith("#/discover")) {
+            this.scanDiscoverCatalogItems();
+          }
         } catch (err) {
           console.error("[Show Page Enhancer] Error in MutationObserver:", err);
         }
@@ -1072,7 +1633,7 @@
 
     handleClick(event) {
       // Only process clicks on the detail page
-      if (!RouteDetector.isDetailPage()) return;
+      if (!RouteDetector.isDetailContext()) return;
 
       // 1. Person Clicks (Cast/Director)
       const personItem = event.target.closest(".show-page-person-item");
@@ -1144,7 +1705,7 @@
      */
     setContainerState(isActive) {
       const targets = [
-        document.querySelector(CONFIG.META_CONTAINER),
+        getMetaContainer(),
         document.querySelector(CONFIG.EPISODES_CONTAINER),
         document.querySelector(".hero-container"),
         document.querySelector(".metadata-hover-popup"),
@@ -1167,8 +1728,10 @@
 
       // State Management: Only PLAYER view needs inert state
       if (routeState.view === "PLAYER") {
+        RouteDetector.clearPinnedRoute();
         this.setContainerState(false);
         this.disconnectMutationObserver();
+        this.stopDetailWatchdog();
         this.isProcessing = false;
         return;
       }
@@ -1177,9 +1740,67 @@
       this.connectMutationObserver();
       this.setContainerState(true);
 
-      // Trigger metadata processing directly (observer handles DOM changes)
-      // No additional debounce needed - observer is already debounced
-      this.processRoute();
+      const routeInfo = RouteDetector.resolveActiveRoute();
+      this.processRoute(!!routeInfo?.id);
+
+      if (RouteDetector.isDetailContext()) {
+        this.startDetailWatchdog();
+      } else {
+        this.stopDetailWatchdog();
+      }
+
+      if (window.location.hash.startsWith("#/discover")) {
+        this.scanDiscoverCatalogItems();
+      }
+    }
+
+    getRouteKey(routeInfo) {
+      if (!routeInfo?.id) return "";
+      return `${routeInfo.type || "?"}:${routeInfo.source || "imdb"}:${routeInfo.id}`;
+    }
+
+    shouldSkipProcessing(routeInfo) {
+      const key = this.getRouteKey(routeInfo);
+      if (!key || key !== this._activeRouteKey) return false;
+      const container = getMetaContainer();
+      return !!(
+        container?.classList.contains(CONFIG.MARKER_CLASS) &&
+        this.currentMetadata
+      );
+    }
+
+    clearInjectionIfMovieChanged(routeInfo) {
+      const key = this.getRouteKey(routeInfo);
+      if (!key || key === this._activeRouteKey) return false;
+
+      this._activeRouteKey = key;
+      this.lastDiscoverDetailId = routeInfo.id;
+      this.currentMetadata = null;
+      this.lastInjectedId = null;
+      RouteDetector.invalidateCache();
+
+      const container = getMetaContainer();
+      if (container) {
+        container.classList.remove(CONFIG.MARKER_CLASS);
+        MetadataInjector.clearInjectedContent();
+      }
+      return true;
+    }
+
+    processRoute(force = false) {
+      if (force) {
+        if (this._processRouteTimer) {
+          clearTimeout(this._processRouteTimer);
+          this._processRouteTimer = null;
+        }
+        return this._processRouteImpl(true);
+      }
+
+      if (this._processRouteTimer) clearTimeout(this._processRouteTimer);
+      this._processRouteTimer = setTimeout(() => {
+        this._processRouteTimer = null;
+        this._processRouteImpl(false);
+      }, 50);
     }
 
     connectMutationObserver() {
@@ -1201,15 +1822,30 @@
       }
     }
 
-    async processRoute(force = false) {
-      if (this.isProcessing && !force) return;
-      this.isProcessing = true;
+    async _processRouteImpl(force = false) {
+      const routeInfo = RouteDetector.resolveActiveRoute();
+      if (!routeInfo?.id) return;
 
-      const routeInfo = RouteDetector.extractFromHash();
-      if (!routeInfo || !routeInfo.id) {
-        this.isProcessing = false;
+      const routeKey = this.getRouteKey(routeInfo);
+
+      if (this._identifyInflight.has(routeKey)) {
+        if (!force) return;
+        await this._identifyInflight.get(routeKey);
+        const container = getMetaContainer();
+        if (container && this.currentMetadata) {
+          this.injectIfReady(container);
+        }
         return;
       }
+
+      if (this.isProcessing && !force) return;
+      if (!force && this.shouldSkipProcessing(routeInfo)) {
+        return;
+      }
+
+      this.isProcessing = true;
+
+      this.clearInjectionIfMovieChanged(routeInfo);
 
       // Season Check (For Series Description Updates)
       const currentSeason = routeInfo.season || null;
@@ -1241,40 +1877,522 @@
       );
 
       try {
-        await this.identifyAndPrepare(RouteDetector.getRouteState());
+        const work = this.identifyAndPrepare(
+          RouteDetector.resolveActiveRoute() ||
+            RouteDetector.getRouteState(),
+        );
+        this._identifyInflight.set(routeKey, work);
+        await work;
       } catch (err) {
         console.error("[Show Page Enhancer] Error processing route:", err);
       } finally {
+        this._identifyInflight.delete(routeKey);
         this.isProcessing = false;
       }
     }
 
-    async identifyAndPrepare(routeInfo) {
-      let metadata = null;
+    hasDetailPageFields(metadata) {
+      if (!metadata) return false;
 
-      if (
-        routeInfo &&
-        window.metadataServices &&
-        window.metadataServices.idLookup
-      ) {
-        try {
-          metadata = await window.metadataServices.idLookup.findByAnyId(
-            routeInfo.id,
-            routeInfo.source || "imdb",
-            { type: routeInfo.type },
-          );
-        } catch (e) {
-          console.warn("[Show Page Enhancer] ID Lookup failed:", e);
+      const hasPeople = !!(
+        metadata.stars?.length || metadata.directors?.length
+      );
+      const hasPlot = !!(
+        metadata.plot || metadata.overview || metadata.description
+      );
+      const hasRatings =
+        (metadata.ratings && Object.keys(metadata.ratings).length > 0) ||
+        metadata.ratingsImdb != null ||
+        metadata.ratingsMetacritic != null;
+
+      return hasPeople || (hasPlot && hasRatings);
+    }
+
+    isMetadataComplete(metadata) {
+      if (!metadata) return false;
+      if (metadata.metaSource === "complete") return true;
+      return this.hasDetailPageFields(metadata);
+    }
+
+    async lookupMetadata(routeInfo, domInfo) {
+      if (!window.metadataServices?.idLookup) return null;
+
+      try {
+        return await window.metadataServices.idLookup.findByAnyId(
+          routeInfo.id,
+          routeInfo.source || "imdb",
+          { type: routeInfo.type, title: domInfo?.title },
+        );
+      } catch (e) {
+        console.warn("[Show Page Enhancer] ID Lookup failed:", e);
+        return null;
+      }
+    }
+
+    needsCastPhotos(metadata) {
+      if (!metadata) return true;
+      const people = [
+        ...(metadata.stars || []),
+        ...(metadata.directors || []),
+      ];
+      if (people.length === 0) return true;
+      return !people.some((person) => person?.image || person?.photo);
+    }
+
+    mergeDetailMetadata(base, ...sources) {
+      const fetcher = window.metadataServices?.metadataFetcher;
+      let merged = { ...(base || {}) };
+
+      for (const source of sources) {
+        if (!source) continue;
+        if (fetcher?.smartMerge) {
+          Object.assign(merged, fetcher.smartMerge(merged, source));
+        } else {
+          Object.assign(merged, source);
         }
       }
 
-      if (metadata) {
-        this.currentMetadata = metadata;
-        const container = document.querySelector(CONFIG.META_CONTAINER);
+      return merged;
+    }
+
+    normalizePeopleForUI(metadata) {
+      if (!metadata) return metadata;
+
+      const mapPeople = (people) =>
+        (people || []).map((person) => ({
+          ...person,
+          image: person?.image || person?.photo || null,
+        }));
+
+      return {
+        ...metadata,
+        stars: mapPeople(metadata.stars),
+        directors: mapPeople(metadata.directors),
+      };
+    }
+
+    async fetchDisplayMetadataFast(routeInfo, metadata, processedData) {
+      const type =
+        routeInfo.type || metadata?.type || processedData?.extractedType;
+      if (!type) return metadata;
+
+      const fetcher = window.metadataServices?.metadataFetcher;
+      const metadataService = window.MetadataModules?.metadataService;
+      const tmdbFetcher = window.MetadataModules?.tmdbFetcher;
+
+      let imdbId =
+        this.resolveRouteImdbId(routeInfo, metadata) ||
+        metadata?.imdb ||
+        (routeInfo.source === "imdb" ? routeInfo.id : null);
+
+      if (
+        !imdbId &&
+        routeInfo.source === "tmdb" &&
+        tmdbFetcher?.resolveImdbIdFromTmdb
+      ) {
+        imdbId = await tmdbFetcher.resolveImdbIdFromTmdb(routeInfo.id, type);
+      }
+
+      if (imdbId && fetcher) {
+        const baseEntry = metadata || {
+          imdb: imdbId,
+          type,
+          title: processedData?.extractedTitle || null,
+        };
+
+        const [cinemetaData, privateData] = await Promise.all([
+          fetcher.fetchCinemetaData(imdbId, type, true),
+          metadataService?.hasPrivateApiAvailable?.()
+            ? metadataService.getEnrichedMetadata(imdbId, type, true)
+            : Promise.resolve(null),
+        ]);
+
+        return this.normalizePeopleForUI(
+          this.mergeDetailMetadata(baseEntry, cinemetaData, privateData, {
+            imdb: imdbId,
+            type,
+            tmdb: routeInfo.source === "tmdb" ? routeInfo.id : baseEntry.tmdb,
+          }),
+        );
+      }
+
+      if (routeInfo.source === "tmdb" && routeInfo.id && tmdbFetcher) {
+        const tmdbId = Number(routeInfo.id);
+        const details =
+          type === "series"
+            ? await tmdbFetcher.fetchTVDetails(tmdbId, true)
+            : await tmdbFetcher.fetchMovieDetails(tmdbId, true);
+        if (!details) return metadata;
+
+        return this.normalizePeopleForUI(
+          this.mergeDetailMetadata(
+            metadata || {
+              tmdb: tmdbId,
+              type,
+              title: details.title || processedData?.extractedTitle || null,
+            },
+            details,
+            { tmdb: tmdbId, type, metaSourcePrivate: "tmdb" },
+          ),
+        );
+      }
+
+      return metadata;
+    }
+
+    prefetchFromRoute(routeInfo, element = null) {
+      if (!routeInfo?.type || !routeInfo?.id) return;
+
+      const key = this.getRouteKey(routeInfo);
+      if (this._prefetchCache.has(key)) return;
+
+      const catalogElement = element || routeInfo.element;
+      let promise = null;
+
+      if (catalogElement && window.metadataHelper?.priorityProcessElement) {
+        console.log(
+          "[Show Page Enhancer] Board prefetch:",
+          routeInfo.source || "imdb",
+          routeInfo.id,
+        );
+        promise = window.metadataHelper.priorityProcessElement(catalogElement);
+      } else if (window.metadataStorage?.processAndSaveData) {
+        promise = window.metadataStorage.processAndSaveData(
+          this.buildProcessedDataFromRoute(routeInfo),
+          true,
+        );
+      }
+
+      if (!promise) return;
+
+      promise = promise.catch(() => null);
+      this._prefetchCache.set(key, promise);
+      promise.finally(() => {
+        setTimeout(() => {
+          if (this._prefetchCache.get(key) === promise) {
+            this._prefetchCache.delete(key);
+          }
+        }, 60000);
+      });
+    }
+
+    parseRouteFromClickTarget(target) {
+      if (!target?.closest) return null;
+
+      let link = target.closest('a[href*="/detail/"]');
+      if (!link) {
+        const posterHost = target.closest(".meta-item-container-Tj0Ib");
+        if (posterHost) {
+          link =
+            posterHost.closest('a[href*="/detail/"]') ||
+            posterHost.querySelector('a[href*="/detail/"]');
+        }
+      }
+      if (!link) return null;
+
+      const href = decodeURIComponent(link.getAttribute("href") || "");
+      const match = href.match(/\/(movie|series)\/([^/?#]+)/);
+      if (!match) return null;
+
+      const idInfo = RouteDetector.parseId(match[2]);
+      if (!idInfo?.id) return null;
+
+      return {
+        type: match[1],
+        id: idInfo.id,
+        source: idInfo.source || "imdb",
+        element: link.closest(".meta-item-container-Tj0Ib") || link,
+      };
+    }
+
+    handlePrefetchMousedown(event) {
+      const routeInfo = this.parseRouteFromClickTarget(event.target);
+      if (!routeInfo) return;
+      this.prefetchFromRoute(routeInfo, routeInfo.element);
+    }
+
+    tryInjectNow() {
+      const container = getMetaContainer();
+      if (container && this.currentMetadata) {
+        this.injectIfReady(container);
+      }
+    }
+
+    startPersistentInjectLoop() {
+      if (this._persistentInjectTimer) return;
+
+      let elapsed = 0;
+      this._persistentInjectTimer = setInterval(() => {
+        elapsed += 200;
+        if (elapsed > 45000) {
+          clearInterval(this._persistentInjectTimer);
+          this._persistentInjectTimer = null;
+          return;
+        }
+
+        if (!this.currentMetadata) return;
+
+        const container = getMetaContainer();
+        if (!container) return;
+
+        if (container.classList.contains(CONFIG.MARKER_CLASS)) {
+          clearInterval(this._persistentInjectTimer);
+          this._persistentInjectTimer = null;
+          RouteDetector.clearPinnedRoute();
+          return;
+        }
+
+        this.injectIfReady(container);
+      }, 200);
+    }
+
+    stopPersistentInjectLoop() {
+      if (this._persistentInjectTimer) {
+        clearInterval(this._persistentInjectTimer);
+        this._persistentInjectTimer = null;
+      }
+    }
+
+    applyMetadataAndInject(metadata, options = {}) {
+      if (!metadata) return;
+      this.currentMetadata = metadata;
+
+      const container = getMetaContainer();
+      const alreadyInjected =
+        container?.classList.contains(CONFIG.MARKER_CLASS) ?? false;
+      const castReady =
+        (metadata.stars?.length || metadata.directors?.length) &&
+        !this.needsCastPhotos(metadata);
+      const missingCastSection =
+        container &&
+        !container.querySelector(`.${CONFIG.CAST_SECTION_CLASS}`);
+
+      if (
+        container &&
+        alreadyInjected &&
+        (options.forceReinject || (castReady && missingCastSection))
+      ) {
+        container.classList.remove(CONFIG.MARKER_CLASS);
+        MetadataInjector.clearInjectedContent();
+      }
+
+      if (container) {
+        this.injectIfReady(container);
+      }
+
+      if (!alreadyInjected || options.forceReinject) {
+        this.scheduleInjectionAttempts(100, 250);
+        this.startPersistentInjectLoop();
+      }
+    }
+
+    resolveRouteImdbId(routeInfo, metadata = null) {
+      if (metadata?.imdb?.startsWith("tt")) return metadata.imdb;
+      if (routeInfo?.source === "imdb" && routeInfo?.id?.startsWith("tt")) {
+        return routeInfo.id;
+      }
+      return null;
+    }
+
+    buildProcessedDataFromRoute(routeInfo) {
+      const domInfo = RouteDetector.extractFromDOM();
+      const idSource = routeInfo.source || "imdb";
+      const extractedIds = {
+        imdb: null,
+        tmdb: null,
+        tvdb: null,
+        mal: null,
+        anilist: null,
+        kitsu: null,
+      };
+      extractedIds[idSource] = String(routeInfo.id);
+
+      return {
+        extractedIds,
+        extractedTitle: domInfo?.title || null,
+        extractedType: routeInfo.type,
+        year: domInfo?.year || null,
+      };
+    }
+
+    async enrichMetadataIfNeeded(metadata, routeInfo, force = false) {
+      if (!metadata) return metadata;
+
+      const imdbId = this.resolveRouteImdbId(routeInfo, metadata);
+      if (!imdbId || !window.metadataServices?.metadataFetcher) return metadata;
+
+      const needsEnrichment =
+        force || !this.hasDetailPageFields(metadata) || metadata.metaSource !== "complete";
+      if (!needsEnrichment) return metadata;
+
+      try {
+        const enriched =
+          await window.metadataServices.metadataFetcher.enrichTitleProgressively(
+            imdbId,
+            metadata.type || routeInfo.type,
+            metadata.metaSource || "dom",
+            metadata,
+            true,
+          );
+
+        if (enriched && window.metadataStorage) {
+          await window.metadataStorage.saveTitle(enriched);
+          return enriched;
+        }
+      } catch (e) {
+        console.warn("[Show Page Enhancer] Enrichment failed:", e);
+      }
+
+      return metadata;
+    }
+
+    async fetchPrivateMetadata(routeInfo, metadata) {
+      const imdbId = this.resolveRouteImdbId(routeInfo, metadata);
+      const metadataService = window.MetadataModules?.metadataService;
+      if (!imdbId || !metadataService?.getEnrichedMetadata) return metadata;
+
+      try {
+        const privateData = await metadataService.getEnrichedMetadata(
+          imdbId,
+          metadata?.type || routeInfo.type,
+          true,
+        );
+        if (!privateData) return metadata;
+
+        const merged = { ...metadata, ...privateData, imdb: imdbId };
+        if (window.metadataStorage) {
+          await window.metadataStorage.saveTitle(merged);
+        }
+        return merged;
+      } catch (e) {
+        console.warn("[Show Page Enhancer] Private metadata fetch failed:", e);
+        return metadata;
+      }
+    }
+
+    scheduleInjectionAttempts(maxAttempts = 25, intervalMs = 200) {
+      if (this._injectionRetryTimer) {
+        clearInterval(this._injectionRetryTimer);
+        this._injectionRetryTimer = null;
+      }
+
+      let attempts = 0;
+      this._injectionRetryTimer = setInterval(() => {
+        attempts += 1;
+
+        if (!RouteDetector.isDetailContext()) {
+          clearInterval(this._injectionRetryTimer);
+          this._injectionRetryTimer = null;
+          return;
+        }
+
+        const container = getMetaContainer();
         if (container) {
           this.injectIfReady(container);
         }
+
+        const injected = container?.classList.contains(CONFIG.MARKER_CLASS);
+        if (injected || attempts >= maxAttempts) {
+          clearInterval(this._injectionRetryTimer);
+          this._injectionRetryTimer = null;
+        }
+      }, intervalMs);
+    }
+
+    async identifyAndPrepare(routeInfo) {
+      if (!routeInfo?.id) return;
+
+      if (!this._metadataReady) {
+        this.markPendingRoute();
+        this.setupMetadataDeps();
+        if (this.currentMetadata) {
+          const container = getMetaContainer();
+          if (container) this.injectIfReady(container);
+        }
+        return;
       }
+
+      const domInfo = RouteDetector.extractFromDOM();
+      const processedData = this.buildProcessedDataFromRoute(routeInfo);
+      const routeKey = this.getRouteKey(routeInfo);
+
+      let metadata = await this.lookupMetadata(routeInfo, domInfo);
+
+      if (this.isMetadataComplete(metadata)) {
+        this.applyMetadataAndInject(this.normalizePeopleForUI(metadata));
+        showKaiToast("Kai v1.5.0 — metadata spremna", "ok");
+        return;
+      }
+
+      showKaiToast("Kai: ucitavam metadata...", "info");
+
+      const isActiveRoute = () =>
+        this.getRouteKey(RouteDetector.resolveActiveRoute()) === routeKey;
+
+      let fullEnrichPromise = this._prefetchCache.get(routeKey);
+      if (!fullEnrichPromise && window.metadataStorage) {
+        fullEnrichPromise = window.metadataStorage
+          .processAndSaveData(processedData, true)
+          .catch(() => null);
+        this._prefetchCache.set(routeKey, fullEnrichPromise);
+      }
+
+      try {
+        console.log(
+          "[Show Page Enhancer] Fast display fetch:",
+          routeInfo.source || "imdb",
+          routeInfo.id,
+        );
+        const displayMeta = await this.fetchDisplayMetadataFast(
+          routeInfo,
+          metadata,
+          processedData,
+        );
+
+        if (displayMeta && isActiveRoute()) {
+          metadata = metadata
+            ? this.mergeDetailMetadata(metadata, displayMeta)
+            : displayMeta;
+
+          if (this.hasDetailPageFields(metadata)) {
+            this.applyMetadataAndInject(this.normalizePeopleForUI(metadata));
+            showKaiToast("Kai v1.5.0 — prikaz spreman", "ok");
+          }
+        }
+      } catch (e) {
+        console.warn("[Show Page Enhancer] Fast display fetch failed:", e);
+      }
+
+      if (!fullEnrichPromise) return;
+
+      fullEnrichPromise
+        .then(async (fresh) => {
+          if (!isActiveRoute()) return;
+
+          let resolved = fresh;
+          if (!resolved || !this.isMetadataComplete(resolved)) {
+            resolved =
+              (await this.lookupMetadata(routeInfo, domInfo)) || resolved;
+          }
+          if (!resolved) return;
+
+          this.applyMetadataAndInject(this.normalizePeopleForUI(resolved), {
+            forceReinject: true,
+            upgraded: true,
+          });
+
+          if (this.isMetadataComplete(resolved)) {
+            showKaiToast("Kai v1.5.0 — metadata spremna", "ok");
+          }
+        })
+        .catch((e) => {
+          console.warn("[Show Page Enhancer] Background enrich failed:", e);
+        })
+        .finally(() => {
+          if (this._prefetchCache.get(routeKey) === fullEnrichPromise) {
+            this._prefetchCache.delete(routeKey);
+          }
+        });
     }
 
     injectIfReady(container) {
@@ -1290,9 +2408,9 @@
       // 2. Metadata availability
       if (!this.currentMetadata) return;
 
-      // 3. ID Validation
-      const routeInfo = RouteDetector.extractFromHash();
-      if (!routeInfo) return;
+      // 3. ID Validation — use DOM-aware route (Discover tmdb: vs imdb)
+      const routeInfo = RouteDetector.resolveActiveRoute();
+      if (!routeInfo?.id) return;
 
       let isCorrectMetadata =
         this.currentMetadata.imdb === routeInfo.id ||
@@ -1309,10 +2427,17 @@
           }
         }
       }
+      if (!isCorrectMetadata && routeInfo.source === "tmdb" && this.currentMetadata?.tmdb) {
+        isCorrectMetadata =
+          String(this.currentMetadata.tmdb) === String(routeInfo.id);
+      }
+      if (!isCorrectMetadata && routeInfo.source === "imdb" && this.currentMetadata?.imdb) {
+        isCorrectMetadata =
+          String(this.currentMetadata.imdb) === String(routeInfo.id);
+      }
       if (!isCorrectMetadata) return;
 
       // 4. Update Episode Context (ALWAYS run this, even if already injected)
-      // This ensures season changes update descriptions without needing full re-injection
       if (this.episodeInjector) {
         this.episodeInjector.updateContext(this.currentMetadata);
       }
@@ -1322,33 +2447,22 @@
         return;
       }
 
-      // 6. DOM Readiness Gate — wait until key elements have rendered.
-      // Logo/placeholder: needed for correct insertion anchor.
-      // Description with content: reliable signal that the container is fully
-      // rendered. Avoids injecting before React has finished populating children,
-      // which caused the IMDb button (and logo) to appear after our rows.
+      // 6. DOM Readiness — logo, placeholder, or any native detail anchor
       const logoReady = !!container.querySelector(CONFIG.LOGO_IMAGE);
       const logoPlaceholderReady = !!container.querySelector(
         ".logo-placeholder-rE1ld",
       );
-      if (!logoReady && !logoPlaceholderReady) {
-        // Logo not present yet — DOM not stable, let observer retry
+      const hasNativeAnchor = !!(
+        container.querySelector(CONFIG.RELEASE_INFO) ||
+        container.querySelector(CONFIG.RUNTIME_LABEL) ||
+        container.querySelector(".description-container-yi8iU") ||
+        container.querySelector('[class*="logo"]')
+      );
+      if (!logoReady && !logoPlaceholderReady && !hasNativeAnchor) {
         return;
       }
 
-      // Description with text = container fully rendered.
-      // Some titles have no IMDb button at all, so we cannot use it as a
-      // readiness signal — but a populated description proves the container
-      // skeleton is done.  If description text is absent we retry next mutation.
-      const descEl = container.querySelector(".description-container-yi8iU");
-      const descReady = descEl && descEl.textContent.trim().length > 0;
-      if (!descReady) {
-        // Description not populated yet — let observer retry
-        return;
-      }
-
-      // 7. Proceed with full injection (Movies, Series Detail, and now Series Streams)
-      // Container isolation via setContainerState() handles interactivity safely
+      // 7. Proceed with full injection
       const routeState = RouteDetector.getRouteState();
       const type = this.currentMetadata.type || routeState.type;
 
@@ -1362,17 +2476,73 @@
         this.intersectionObserver,
       );
       this.lastInjectedId = routeInfo.id;
+      RouteDetector.clearPinnedRoute();
+      showKaiToast("Kai v1.5.0 — prikaz detalja ucitan", "ok");
 
-      // State is managed in handleRouteChange() - this is just safety net for injection path
       this.setContainerState(true);
     }
   }
 
+  // Singleton — survives init retries; catches hashchange before deps are ready
+  let _enhancerInstance = null;
+
+  function getEnhancer() {
+    if (!_enhancerInstance) {
+      _enhancerInstance = new ShowPageEnhancer();
+    }
+    return _enhancerInstance;
+  }
+
+  function bootEnhancer() {
+    getEnhancer().init();
+  }
+
+  function wakeEnhancerFromDiscover(parsed) {
+    if (parsed?.id) RouteDetector.pinRoute(parsed);
+    const enhancer = getEnhancer();
+    enhancer.markPendingRoute();
+    bootEnhancer();
+    if (!enhancer._ready) return;
+    const key = `${parsed?.type || "movie"}:${parsed?.source || "imdb"}:${parsed?.id}`;
+    if (enhancer._identifyInflight.has(key)) {
+      enhancer.tryInjectNow();
+      return;
+    }
+    enhancer.processRoute(true);
+  }
+
+  window.ShowPageEnhancer.processDetailRoute = (parsed) => {
+    wakeEnhancerFromDiscover(parsed);
+  };
+
+  window.addEventListener("kai-detail-navigate", (e) => {
+    wakeEnhancerFromDiscover(e.detail);
+  });
+
+  window.addEventListener("hashchange", () => {
+    const enhancer = getEnhancer();
+    if (!enhancer._ready) {
+      enhancer.markPendingRoute();
+      bootEnhancer();
+      return;
+    }
+    enhancer.handleRouteChange();
+  });
+
+  window.addEventListener("metadata-core-ready", () => {
+    bootEnhancer();
+    getEnhancer().setupMetadataDeps();
+  });
+  window.addEventListener("metadata-modules-ready", () => {
+    bootEnhancer();
+    getEnhancer().setupMetadataDeps();
+  });
+  if (window.__kaiMetadataCoreReady) bootEnhancer();
+  if (window.MetadataModules?.ready) bootEnhancer();
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () =>
-      new ShowPageEnhancer().init(),
-    );
+    document.addEventListener("DOMContentLoaded", bootEnhancer);
   } else {
-    new ShowPageEnhancer().init();
+    bootEnhancer();
   }
 })();

@@ -85,6 +85,51 @@
   class TMDBFetcher {
     constructor() {
       this.apiBase = API_BASE;
+      this.imdbIdCache = new Map();
+    }
+
+    /**
+     * Resolve IMDb ID from TMDB ID (fast path for Discover tmdb: links)
+     */
+    async resolveImdbIdFromTmdb(tmdbId, type = "movie") {
+      if (!tmdbId) return null;
+
+      const cacheKey = `${type}:${tmdbId}`;
+      if (this.imdbIdCache.has(cacheKey)) {
+        return this.imdbIdCache.get(cacheKey);
+      }
+
+      const apiKey = this.getApiKey();
+      if (!apiKey) return null;
+
+      const fetchUtils = getFetchUtils();
+      let imdbId = null;
+
+      try {
+        if (type === "series") {
+          const url = `${this.apiBase}/tv/${tmdbId}/external_ids?api_key=${apiKey}`;
+          const result = await fetchUtils.makeRequest(url, {
+            timeout: TIMEOUT_MS,
+          });
+          imdbId = result.data?.imdb_id || null;
+        } else {
+          const url = `${this.apiBase}/movie/${tmdbId}?api_key=${apiKey}`;
+          const result = await fetchUtils.makeRequest(url, {
+            timeout: TIMEOUT_MS,
+          });
+          imdbId = result.data?.imdb_id || null;
+        }
+      } catch (error) {
+        console.warn(
+          `[TMDB Fetcher] IMDb lookup for tmdb:${tmdbId} failed:`,
+          error,
+        );
+      }
+
+      if (imdbId) {
+        this.imdbIdCache.set(cacheKey, imdbId);
+      }
+      return imdbId || null;
     }
 
     /**
@@ -160,14 +205,16 @@
      * @param {number} tmdbId - TMDB movie ID
      * @returns {Promise<Object|null>}
      */
-    async fetchMovieDetails(tmdbId) {
+    async fetchMovieDetails(tmdbId, fast = false) {
       const apiKey = this.getApiKey();
       if (!apiKey) return null;
 
       const fetchUtils = getFetchUtils();
       const userLang =
         window.MetadataModules?.preferences?.get("language") || "en";
-      const appendToResponse = "credits,images,release_dates,translations";
+      const appendToResponse = fast
+        ? "credits"
+        : "credits,images,release_dates,translations";
       const url = `${this.apiBase}/movie/${tmdbId}?api_key=${apiKey}&language=${userLang}&append_to_response=${appendToResponse}`;
 
       try {
@@ -194,14 +241,16 @@
      * @param {number} tmdbId - TMDB TV ID
      * @returns {Promise<Object|null>}
      */
-    async fetchTVDetails(tmdbId) {
+    async fetchTVDetails(tmdbId, fast = false) {
       const apiKey = this.getApiKey();
       if (!apiKey) return null;
 
       const fetchUtils = getFetchUtils();
       const userLang =
         window.MetadataModules?.preferences?.get("language") || "en";
-      const appendToResponse = "credits,content_ratings,images,translations";
+      const appendToResponse = fast
+        ? "credits"
+        : "credits,content_ratings,images,translations";
       const url = `${this.apiBase}/tv/${tmdbId}?api_key=${apiKey}&language=${userLang}&append_to_response=${appendToResponse}`;
 
       try {
@@ -268,6 +317,21 @@
       if (!tmdbId) {
         console.debug(`[TMDB Fetcher] No TMDB ID found for ${imdbId}`);
         return null;
+      }
+
+      // Priority detail pages: skip alt titles and heavy append bundles
+      if (priority) {
+        const details =
+          type === "series"
+            ? await this.fetchTVDetails(tmdbId, true)
+            : await this.fetchMovieDetails(tmdbId, true);
+
+        if (!details) return null;
+
+        details.tmdbId = tmdbId;
+        details.imdbId = imdbId;
+        console.debug(`[TMDB Fetcher] Fast fetch ${imdbId}: ${details.title}`);
+        return details;
       }
 
       // Step 2: Fetch details + alt titles in parallel
@@ -813,6 +877,9 @@
     // Convenience methods
     fetchByImdbId: (...args) => instance.fetchByImdbId(...args),
     convertToTmdbId: (...args) => instance.convertToTmdbId(...args),
+    resolveImdbIdFromTmdb: (...args) => instance.resolveImdbIdFromTmdb(...args),
+    fetchMovieDetails: (...args) => instance.fetchMovieDetails(...args),
+    fetchTVDetails: (...args) => instance.fetchTVDetails(...args),
     getImages: (...args) => instance.getImages(...args),
     isAvailable: () => instance.isAvailable(),
     validateAuthorization: () => instance.validateAuthorization(),

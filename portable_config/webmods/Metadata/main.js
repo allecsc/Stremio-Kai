@@ -62,10 +62,11 @@ class MetadataManager {
         // 1. Initialize Core (Once)
         if (!this.core) {
             this.core = new PersistentCore();
+            // Expose storage/fetcher immediately — detail pages must not wait for catalog grid
+            this.exposeCoreAPI();
         }
 
-        // 2. Initialize UI (Transient)
-        // We wait for the app to be fully loaded (routes container) to avoid attaching observers too early
+        // 2. Initialize UI (Transient) — hover/dom observers need catalog OR detail shell
         this.waitForApp().then(() => {
             this.startUI();
         });
@@ -86,136 +87,201 @@ class MetadataManager {
         }
     }
 
+    isNonCatalogRoute() {
+        const hash = window.location.hash || "";
+        return (
+            hash.startsWith("#/detail") ||
+            hash.startsWith("#/player") ||
+            hash.startsWith("#/meta") ||
+            hash.includes("/settings") ||
+            hash.includes("/addons")
+        );
+    }
+
+    hasDetailShell() {
+        return !!document.querySelector(
+            ".meta-info-container-ub8AH, [class*='metadetails-container'], .meta-details-container",
+        );
+    }
+
     waitForApp() {
         return new Promise((resolve) => {
-            // Wait for any of the catalog containers defined in config
-            // This ensures we only start the UI when there is actual content to process
-            const selectors = window.MetadataModules.config.METADATA_CONFIG.domSelectors.containers;
-            
-            if (document.querySelector(selectors)) {
-                console.log('[METADATA] Catalog container detected, starting UI...');
+            const selectors =
+                window.MetadataModules.config.METADATA_CONFIG.domSelectors.containers;
+
+            if (
+                document.querySelector(selectors) ||
+                this.isNonCatalogRoute() ||
+                this.hasDetailShell()
+            ) {
+                console.log("[METADATA] App shell ready, starting UI...");
                 return resolve();
             }
 
-            console.log('[METADATA] Waiting for catalog containers...');
-            const observer = new MutationObserver((mutations, obs) => {
-                if (document.querySelector(selectors)) {
-                    console.log('[METADATA] Catalog container detected!');
-                    obs.disconnect();
-                    resolve();
+            console.log("[METADATA] Waiting for catalog or detail shell...");
+            let settled = false;
+            const finish = (reason) => {
+                if (settled) return;
+                settled = true;
+                observer.disconnect();
+                console.log(`[METADATA] Starting UI (${reason})`);
+                resolve();
+            };
+
+            const observer = new MutationObserver(() => {
+                if (
+                    document.querySelector(selectors) ||
+                    this.isNonCatalogRoute() ||
+                    this.hasDetailShell()
+                ) {
+                    finish("shell detected");
                 }
             });
 
             observer.observe(document.body || document.documentElement, {
                 childList: true,
-                subtree: true
+                subtree: true,
             });
-            
-            // Fallback timeout - increased to 15s to allow for slow network/rendering
-            // If no catalog appears (e.g. settings page), we might not want to start at all?
-            // For now, we'll log a warning and resolve to ensure services are available if needed manually
-            setTimeout(() => {
-                if (!document.querySelector(selectors)) {
-                    console.warn('[METADATA] Catalog wait timeout - starting anyway (or maybe we are on a non-catalog page)');
-                }
-                observer.disconnect();
-                resolve(); 
-            }, 15000);
+
+            // Short fallback — detail pages never had catalog grids (old 15s caused Discover slowness)
+            setTimeout(() => finish("timeout fallback"), 1500);
         });
     }
 
-    exposeGlobalAPI() {
-        if (typeof window === 'undefined') return;
+    exposeCoreAPI() {
+        if (typeof window === "undefined" || !this.core) return;
 
-        const { metadataStorage, idLookup, metadataFetcher, idConverter, rateLimiter, titleSearcher } = this.core;
-        const { domProcessor } = this.ui;
+        const {
+            metadataStorage,
+            idLookup,
+            metadataFetcher,
+            idConverter,
+            rateLimiter,
+            titleSearcher,
+        } = this.core;
+        const manager = this;
 
-        // Debugging & Stats
-        window.metadataStats = () => metadataStorage.getStats().then(stats => {
-            console.log('[METADATA] Stats:', stats);
-            return stats;
-        });
-        window.metadataClear = () => metadataStorage.clear();
-
-    // Expose storage for manual operations
+        window.metadataStats =
+            window.metadataStats ||
+            (() =>
+                metadataStorage.getStats().then((stats) => {
+                    console.log("[METADATA] Stats:", stats);
+                    return stats;
+                }));
+        window.metadataClear =
+            window.metadataClear || (() => metadataStorage.clear());
         window.metadataStorage = metadataStorage;
-
-    // Expose services for debugging and testing
         window.metadataServices = {
             idConverter,
             rateLimiter,
             metadataFetcher,
             titleSearcher,
-            idLookup
+            idLookup,
         };
-
-        // External API
-        window.extractMediaInfo = (titleText, element) => domProcessor.extractMediaInfo(titleText, element);
         window.getTitle = (imdbId) => metadataStorage.getTitle(imdbId);
 
-    // Expose DOM processing functions for metadata-display plugin
         window.metadataHelper = {
-            // Lifecycle
-            destroy: () => this.stopUI(), // Allow manual cleanup
-
-            // Core DOM processing
-            processTitleElement: (element) => domProcessor.processTitleElement(element),
-            findTitleElements: () => domProcessor.findTitleElements(),
-            extractMediaInfo: (titleText, element) => domProcessor.extractMediaInfo(titleText, element),
-            findTitleElementsInNode: (node) => domProcessor.findTitleElementsInNode(node),
-            isTitleElement: (element) => domProcessor.isTitleElement(element),
-
-            // Storage
+            destroy: () => manager.stopUI(),
             getTitle: (imdbId) => metadataStorage.getTitle(imdbId),
             hasTitle: (imdbId) => metadataStorage.hasTitle(imdbId),
-
-        // Database access for advanced queries
             db: metadataStorage.db,
-
-        // Cross-referencing for hover popups and external scripts
             findExistingTitle: (extractedIds, extractedTitle, extractedType) =>
-                idLookup.findExistingTitle(extractedIds, extractedTitle, extractedType),
-
-        // Priority enrichment for hover popups - accepts any ID type
-            priorityEnrichTitle: async (anyId, idSource, type, progressCallback) => {
+                idLookup.findExistingTitle(
+                    extractedIds,
+                    extractedTitle,
+                    extractedType,
+                ),
+            priorityEnrichTitle: async (
+                anyId,
+                idSource,
+                type,
+                progressCallback,
+            ) => {
                 try {
-                // Use the full cross-referencing system to find the correct entry
-                    const existingData = await idLookup.findByAnyId(anyId, idSource);
-                    if (!existingData) {
-                        console.warn(`[METADATA][Priority Enrichment] No existing data found for ${idSource}:${anyId}`);
-                        return null;
-                    }
+                    const existingData = await idLookup.findByAnyId(
+                        anyId,
+                        idSource,
+                    );
+                    if (!existingData) return null;
 
-                // Use priority enrichment with progress callbacks
-                    const enrichedData = await metadataFetcher.enrichTitleProgressively(existingData.imdb, type, existingData.metaSource, existingData, true);
+                    const enrichedData =
+                        await metadataFetcher.enrichTitleProgressively(
+                            existingData.imdb,
+                            type,
+                            existingData.metaSource,
+                            existingData,
+                            true,
+                        );
 
                     if (enrichedData && enrichedData !== existingData) {
-                    // Save the enriched data
                         await metadataStorage.saveTitle(enrichedData);
-
-                    // Update progress if callback provided
-                        if (progressCallback && enrichedData.metaSource === 'complete') {
-                            progressCallback('Complete metadata loaded');
+                        if (
+                            progressCallback &&
+                            enrichedData.metaSource === "complete"
+                        ) {
+                            progressCallback("Complete metadata loaded");
                         }
                     }
-
                     return enrichedData;
                 } catch (error) {
-                    console.error(`[METADATA][Priority Enrichment] Failed for ${anyId}:`, error);
+                    console.error(
+                        `[METADATA][Priority Enrichment] Failed for ${anyId}:`,
+                        error,
+                    );
                     return null;
                 }
             },
-
-            // Priority processing for new elements discovered by popup
             priorityProcessElement: async (element) => {
+                const domProcessor = manager.ui?.domProcessor;
+                if (!domProcessor) return null;
                 try {
-                    return await metadataStorage.processAndSaveTitleElement(element, domProcessor, true);
+                    return await metadataStorage.processAndSaveTitleElement(
+                        element,
+                        domProcessor,
+                        true,
+                    );
                 } catch (error) {
-                    console.error(`[METADATA][Priority Process] Failed for element:`, error);
+                    console.error(
+                        `[METADATA][Priority Process] Failed for element:`,
+                        error,
+                    );
                     return null;
                 }
-            }
+            },
+            processTitleElement: (element) => {
+                const domProcessor = manager.ui?.domProcessor;
+                return domProcessor
+                    ? domProcessor.processTitleElement(element)
+                    : null;
+            },
+            findTitleElements: () =>
+                manager.ui?.domProcessor?.findTitleElements?.() || [],
+            extractMediaInfo: (titleText, element) => {
+                const domProcessor = manager.ui?.domProcessor;
+                return domProcessor
+                    ? domProcessor.extractMediaInfo(titleText, element)
+                    : null;
+            },
+            findTitleElementsInNode: (node) =>
+                manager.ui?.domProcessor?.findTitleElementsInNode?.(node) || [],
+            isTitleElement: (element) =>
+                manager.ui?.domProcessor?.isTitleElement?.(element) ?? false,
         };
+
+        if (!window.__kaiMetadataCoreReady) {
+            window.__kaiMetadataCoreReady = true;
+            window.dispatchEvent(new CustomEvent("metadata-core-ready"));
+        }
+    }
+
+    exposeGlobalAPI() {
+        if (typeof window === "undefined" || !this.core || !this.ui) return;
+
+        this.exposeCoreAPI();
+
+        const { domProcessor } = this.ui;
+        window.extractMediaInfo = (titleText, element) =>
+            domProcessor.extractMediaInfo(titleText, element);
     }
 }
 

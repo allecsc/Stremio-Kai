@@ -441,7 +441,8 @@ class MetadataStorage {
               new CustomEvent("metadata-updated", {
                 detail: {
                   imdb: storageData.imdb,
-                  id: storageData.imdb, // Compatible with different listeners
+                  id: storageData.imdb || storageData.tmdb,
+                  tmdb: storageData.tmdb,
                   type: storageData.type,
                   source: "storage",
                 },
@@ -671,7 +672,8 @@ class MetadataStorage {
             new CustomEvent("metadata-updated", {
               detail: {
                 imdb: existing.imdb,
-                id: existing.imdb,
+                id: existing.imdb || existing.tmdb,
+                tmdb: existing.tmdb,
                 type: existing.type,
                 source: "enrichment",
               },
@@ -1071,6 +1073,53 @@ class MetadataStorage {
     }
 
     // 2. If no existing entry found, proceed with standard resolution (which might include title search)
+
+    // Discover links often use tmdb: IDs — resolve via TMDB API (fast) before slow title search
+    if (!currentEntry.imdb && extractedIds.tmdb) {
+      const tmdbFetcher = window.MetadataModules?.tmdbFetcher;
+      if (tmdbFetcher?.resolveImdbIdFromTmdb) {
+        try {
+          const imdbFromTmdb = await tmdbFetcher.resolveImdbIdFromTmdb(
+            extractedIds.tmdb,
+            extractedType || currentEntry.type || "movie",
+          );
+
+          if (imdbFromTmdb) {
+            const existingByImdb = await this.getTitle(imdbFromTmdb);
+
+            if (existingByImdb) {
+              if (
+                currentEntry.id &&
+                currentEntry.id !== existingByImdb.id
+              ) {
+                await this.db.titles.delete(currentEntry.id);
+              }
+
+              const mergedEntry = this._mergeEntryData(existingByImdb, {
+                ...extractedIds,
+                imdb: imdbFromTmdb,
+                tmdb: extractedIds.tmdb,
+              });
+              await this.db.titles.put(mergedEntry);
+              return mergedEntry;
+            }
+
+            const updatedEntry = {
+              ...currentEntry,
+              imdb: imdbFromTmdb,
+              tmdb: extractedIds.tmdb,
+              type: extractedType || currentEntry.type,
+              lastUpdated: Date.now(),
+            };
+            await this.db.titles.put(updatedEntry);
+            return updatedEntry;
+          }
+        } catch (err) {
+          console.warn("[METADATA] TMDB→IMDb resolution failed:", err);
+        }
+      }
+    }
+
     const resolvedEntry = await this.idLookup.tryResolveImdbId(
       currentEntry,
       extractedIds,
@@ -1117,8 +1166,9 @@ class MetadataStorage {
       }
     }
 
-    // Skip if already complete
-    if (finalEntry.metaSource === "complete") {
+    // Skip if already complete AND has cast data for the detail UI
+    const hasCast = !!(finalEntry.stars?.length || finalEntry.directors?.length);
+    if (finalEntry.metaSource === "complete" && hasCast) {
       return finalEntry;
     }
 

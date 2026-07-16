@@ -20,8 +20,8 @@
       this.enhanceBackButton();
       this.enhanceKeyboardNavigation();
       this.enhanceFocusState();
+      this.enhanceDiscoverDetailNavigation();
       this.initGamepad();
-      this.initSkipButtonClick();
 
       // Programmatically seize Electron Window Focus after rendering.
       // `.horizontal-nav-bar-container-Y_zvK` is always mounted regardless of hero settings.
@@ -37,6 +37,162 @@
       }, 200);
 
       console.log("[Kai Navigation] Initialized");
+    },
+
+    /**
+     * Discover tab: open films on the same #/detail/ route as Board (not inline).
+     * Warms metadata cache on mousedown so the detail page loads instantly.
+     */
+    enhanceDiscoverDetailNavigation() {
+      const parseDetailFromElement = (target) => {
+        if (!target?.closest) return null;
+
+        let link = target.closest('a[href*="/detail/"]');
+        if (!link) {
+          const posterHost = target.closest(".meta-item-container-Tj0Ib");
+          if (posterHost) {
+            link =
+              posterHost.closest('a[href*="/detail/"]') ||
+              posterHost.querySelector('a[href*="/detail/"]');
+          }
+        }
+        if (!link) return null;
+
+        const href = decodeURIComponent(
+          link.getAttribute("href") || link.href || "",
+        );
+        const match = href.match(/\/(movie|series)\/([^/?#]+)/);
+        if (!match) return null;
+
+        let id = decodeURIComponent(match[2]).split("/")[0].split("?")[0];
+        let source = "imdb";
+        if (id.startsWith("tmdb:")) {
+          source = "tmdb";
+          id = id.replace("tmdb:", "");
+        } else if (id.startsWith("tvdb:")) {
+          source = "tvdb";
+          id = id.replace("tvdb:", "");
+        }
+
+        return {
+          type: match[1],
+          id,
+          source,
+          element: link,
+        };
+      };
+
+      const warmDetailCache = (parsed) => {
+        if (!parsed) return;
+
+        // Board pipeline: priorityProcessElement saves full metadata to IndexedDB
+        if (window.ShowPageEnhancer?.prefetchDetail) {
+          window.ShowPageEnhancer.prefetchDetail(parsed);
+          return;
+        }
+
+        if (window.metadataHelper?.priorityProcessElement && parsed.element) {
+          window.metadataHelper
+            .priorityProcessElement(parsed.element)
+            .catch(() => {});
+        }
+      };
+
+      const handleDiscoverItem = (target) => {
+        if (!window.location.hash.startsWith("#/discover")) return null;
+
+        const parsed = parseDetailFromElement(target);
+        if (!parsed) return null;
+
+        warmDetailCache(parsed);
+        return parsed;
+      };
+
+      document.addEventListener(
+        "mousedown",
+        (e) => {
+          handleDiscoverItem(e.target);
+        },
+        true,
+      );
+
+      const buildDetailHash = (parsed) => {
+        const rawId =
+          parsed.source === "imdb"
+            ? parsed.id
+            : `${parsed.source}:${parsed.id}`;
+        return `#/detail/${parsed.type}/${rawId}`;
+      };
+
+      const isDetailDomVisible = () => {
+        for (const el of document.querySelectorAll(
+          ".meta-info-container-ub8AH, [class*='metadetails-container']",
+        )) {
+          const rect = el.getBoundingClientRect();
+          if (rect.width > 2 && rect.height > 2) return true;
+        }
+        return false;
+      };
+
+      // Wake enhancer after Stremio's native SPA navigation mounts detail DOM.
+      // Do NOT preventDefault — blocking Stremio breaks React mount (Ctrl+F5 was the workaround).
+      const wakeDetailEnhancer = (parsed) => {
+        warmDetailCache(parsed);
+        const detailHash = buildDetailHash(parsed);
+
+        const tick = () => {
+          if (isDetailDomVisible() && window.location.hash !== detailHash) {
+            window.location.hash = detailHash;
+          }
+          window.dispatchEvent(
+            new CustomEvent("kai-detail-navigate", { detail: parsed }),
+          );
+          window.ShowPageEnhancer?.onDetailShellDetected?.(parsed);
+          window.ShowPageEnhancer?.processDetailRoute?.(parsed);
+        };
+
+        tick();
+        [100, 300, 600, 1200, 2000, 3500].forEach((ms) =>
+          setTimeout(tick, ms),
+        );
+      };
+
+      document.addEventListener(
+        "click",
+        (e) => {
+          const parsed = handleDiscoverItem(e.target);
+          if (!parsed) return;
+          wakeDetailEnhancer(parsed);
+        },
+        true,
+      );
+
+      document.addEventListener(
+        "keydown",
+        (e) => {
+          if (e.key !== "Enter") return;
+          const parsed = handleDiscoverItem(e.target);
+          if (!parsed) return;
+          wakeDetailEnhancer(parsed);
+        },
+        true,
+      );
+
+      document.addEventListener(
+        "mouseover",
+        (e) => {
+          if (!window.location.hash.startsWith("#/discover")) return;
+          const item = e.target.closest(".meta-item-container-Tj0Ib");
+          if (!item) return;
+          const parsed = parseDetailFromElement(item);
+          warmDetailCache(parsed);
+        },
+        true,
+      );
+
+      console.log(
+        "[Kai Navigation] Discover detail hash + inject (v1.5.0)",
+      );
     },
 
     /**
@@ -901,40 +1057,6 @@
         },
         { capture: true },
       );
-    },
-
-    /**
-     * Click-to-skip: detects clicks in the skip button region and forwards to mpv.
-     * The skip button is an mpv ASS overlay — clicks can't reach Lua directly, so we
-     * mirror the Lua coordinate math here and send a script-message via the WebView bridge.
-     */
-    initSkipButtonClick() {
-      document.addEventListener('click', (e) => {
-        if (!window.location.hash.startsWith('#/player')) return;
-
-        // Mirror skip-toast.lua update_dimensions() math (base height = 1080)
-        const scale = window.innerHeight / 1080;
-        const margin = 80 * scale;
-        const btnWidth = 200 * scale;
-        const btnHeight = 60 * scale;
-        const extraOffset = 80 * scale; // space above control bar
-
-        const ax = window.innerWidth - btnWidth - margin;
-        const ay = window.innerHeight - btnHeight - margin - extraOffset;
-        const bx = window.innerWidth - margin;
-        const by = window.innerHeight - margin - extraOffset;
-
-        if (e.clientX >= ax && e.clientX <= bx && e.clientY >= ay && e.clientY <= by) {
-          e.stopPropagation();
-          e.preventDefault();
-          window.chrome?.webview?.postMessage(JSON.stringify({
-            type: 6,
-            object: 'transport',
-            method: 'handleInboundJSON',
-            args: ['mpv-command', ['script-message-to', 'notify_skip', 'perform-skip']],
-          }));
-        }
-      }, { capture: true });
     },
 
     /**
