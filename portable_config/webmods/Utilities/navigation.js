@@ -16,6 +16,14 @@
 
   const NavigationManager = {
     init() {
+      window.isAppFocused = document.hasFocus();
+      window.addEventListener("focus", () => {
+        window.isAppFocused = true;
+      });
+      window.addEventListener("blur", () => {
+        window.isAppFocused = false;
+      });
+
       this.enhanceLogo();
       this.enhanceBackButton();
       this.enhanceKeyboardNavigation();
@@ -182,6 +190,9 @@
       document.addEventListener(
         "keydown",
         (e) => {
+          // Ignore keydown events if the Stremio window is not actively focused (Fallback checks for Electron)
+          if (!window.isAppFocused && !document.hasFocus()) return;
+
           const activeEl = document.activeElement;
           const isTypingInInput =
             activeEl &&
@@ -909,46 +920,60 @@
      * mirror the Lua coordinate math here and send a script-message via the WebView bridge.
      */
     initSkipButtonClick() {
-      document.addEventListener('click', (e) => {
-        if (!window.location.hash.startsWith('#/player')) return;
+      document.addEventListener(
+        "click",
+        (e) => {
+          if (!window.location.hash.startsWith("#/player")) return;
 
-        // Ignore clicks that are clearly targeting an active Stremio playback overlay.
-        // The skip button is rendered by mpv as an ASS overlay beneath the web UI.
-        if (
-          e.target.closest(
-            '.menu-layer-HZFG9, .dropdown-container-T9bZ2, .menu-container-B6cqK, .dialog-container-S5c_E, .modal-backdrop, .control-bar-container-xsWA7, .search-input-IQ0ZW, .search-bar-container-asfq1, .button-container-zVLH6, .language-option-O1Yr9, .variant-option-t7_LA, .option-COcvW, .option-GcPlB',
-          )
-        ) {
-          return;
-        }
+          // Ignore clicks that are clearly targeting an active Stremio playback overlay.
+          // The skip button is rendered by mpv as an ASS overlay beneath the web UI.
+          if (
+            e.target.closest(
+              ".menu-layer-HZFG9, .dropdown-container-T9bZ2, .menu-container-B6cqK, .dialog-container-S5c_E, .modal-backdrop, .control-bar-container-xsWA7, .search-input-IQ0ZW, .search-bar-container-asfq1, .button-container-zVLH6, .language-option-O1Yr9, .variant-option-t7_LA, .option-COcvW, .option-GcPlB",
+            )
+          ) {
+            return;
+          }
 
-        // The ASS skip overlay can only be clicked through the player area, not through
-        // other interactive DOM layers. If the click reaches a UI control, ignore it.
-        // NOTE: Do not block video-area clicks by inspecting generic top-level elements here.
+          // The ASS skip overlay can only be clicked through the player area, not through
+          // other interactive DOM layers. If the click reaches a UI control, ignore it.
+          // NOTE: Do not block video-area clicks by inspecting generic top-level elements here.
 
-        // Mirror skip-toast.lua update_dimensions() math (base height = 1080)
-        const scale = window.innerHeight / 1080;
-        const margin = 80 * scale;
-        const btnWidth = 200 * scale;
-        const btnHeight = 60 * scale;
-        const extraOffset = 80 * scale; // space above control bar
+          // Mirror skip-toast.lua update_dimensions() math (base height = 1080)
+          const scale = window.innerHeight / 1080;
+          const margin = 80 * scale;
+          const btnWidth = 200 * scale;
+          const btnHeight = 60 * scale;
+          const extraOffset = 80 * scale; // space above control bar
 
-        const ax = window.innerWidth - btnWidth - margin;
-        const ay = window.innerHeight - btnHeight - margin - extraOffset;
-        const bx = window.innerWidth - margin;
-        const by = window.innerHeight - margin - extraOffset;
+          const ax = window.innerWidth - btnWidth - margin;
+          const ay = window.innerHeight - btnHeight - margin - extraOffset;
+          const bx = window.innerWidth - margin;
+          const by = window.innerHeight - margin - extraOffset;
 
-        if (e.clientX >= ax && e.clientX <= bx && e.clientY >= ay && e.clientY <= by) {
-          e.stopPropagation();
-          e.preventDefault();
-          window.chrome?.webview?.postMessage(JSON.stringify({
-            type: 6,
-            object: 'transport',
-            method: 'handleInboundJSON',
-            args: ['mpv-command', ['script-message-to', 'notify_skip', 'perform-skip']],
-          }));
-        }
-      }, { capture: true });
+          if (
+            e.clientX >= ax &&
+            e.clientX <= bx &&
+            e.clientY >= ay &&
+            e.clientY <= by
+          ) {
+            e.stopPropagation();
+            e.preventDefault();
+            window.chrome?.webview?.postMessage(
+              JSON.stringify({
+                type: 6,
+                object: "transport",
+                method: "handleInboundJSON",
+                args: [
+                  "mpv-command",
+                  ["script-message-to", "notify_skip", "perform-skip"],
+                ],
+              }),
+            );
+          }
+        },
+        { capture: true },
+      );
     },
 
     /**
@@ -973,17 +998,57 @@
 
       const pollGamepad = () => {
         if (!isPolling) return;
+
+        // Stop polling the gamepad if Stremio is in the background.
+        // This prevents controller inputs in other games from navigating Stremio!
+        if (!window.isAppFocused && !document.hasFocus()) {
+          requestAnimationFrame(pollGamepad);
+          return;
+        }
+
         const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
         if (!gamepads) return;
 
-        // Take the first connected active gamepad (loop avoids Array.from allocation at 60fps)
+        // Scan all connected gamepads and pick the first one with active input.
+        // This prevents virtual keyboard controllers (like Keychron) from hijacking index 0 and blocking real gamepads!
         let gp = null;
         for (let i = 0; i < gamepads.length; i++) {
-          if (gamepads[i]) {
-            gp = gamepads[i];
+          const pad = gamepads[i];
+          if (!pad) continue;
+
+          let hasInput = false;
+          for (let b = 0; b < pad.buttons.length; b++) {
+            const btn = pad.buttons[b];
+            if (typeof btn === "object" ? btn.pressed : btn === 1.0) {
+              hasInput = true;
+              break;
+            }
+          }
+          if (!hasInput) {
+            for (let a = 0; a < pad.axes.length; a++) {
+              if (Math.abs(pad.axes[a]) > 0.5) {
+                hasInput = true;
+                break;
+              }
+            }
+          }
+
+          if (hasInput) {
+            gp = pad;
             break;
           }
         }
+
+        // Fallback to the first available pad if nothing is actively pressed (needed for button cooldown tracking)
+        if (!gp) {
+          for (let i = 0; i < gamepads.length; i++) {
+            if (gamepads[i]) {
+              gp = gamepads[i];
+              break;
+            }
+          }
+        }
+
         if (!gp) {
           requestAnimationFrame(pollGamepad);
           return;

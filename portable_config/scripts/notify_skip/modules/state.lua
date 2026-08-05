@@ -47,6 +47,7 @@ M.chapter_cache = {
     skippable_chapters = nil,       -- Chapters with auto-notify from chapter start
     evaluated_chapters = nil,       -- All chapters with confidence levels (hybrid mode)
     has_high_confidence = false,    -- Cached: any HIGH confidence chapters exist?
+    introdb_segments = nil,         -- Raw IntroDB API response (preserved across reset_all)
 }
 
 -- Filter event tracking (for deduplication)
@@ -66,6 +67,8 @@ M.filter_tracking = {
 M.content_state = {
     content_type = nil,  -- "movie" or "series" or nil (unknown)
     imdb_id = nil,
+    season = nil,        -- Season number (series only)
+    episode = nil,       -- Episode number (series only)
     _setup_pending = nil,  -- Flag for deferred setup
 }
 
@@ -122,7 +125,9 @@ function M.reset_all()
         M.ui_state.chapter_debounce_timer = nil
     end
     
-    -- Reset caches
+    -- Reset caches (NOTE: introdb_segments is NOT reset here — it is managed by
+    -- the content-metadata handler and cleared only when episode identity changes,
+    -- matching the same lifecycle as content_state.)
     M.chapter_cache.skippable_chapters = nil
     M.chapter_cache.evaluated_chapters = nil
     M.chapter_cache.has_high_confidence = false

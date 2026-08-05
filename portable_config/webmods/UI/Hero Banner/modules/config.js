@@ -19,10 +19,9 @@ window.HeroPlugin.Config = {
 
   // Priority List of CORS Proxies (for fallback chain)
   PROXY_LIST: [
-    "https://corsproxy.io/?", // 1. Primary (High Uptime)
-    "https://api.cors.lol/?url=", // 2. Fast Secondary
-    "https://api.codetabs.com/v1/proxy?quest=", // 3. Reliable Backup
-    "https://api.allorigins.win/raw?url=", // 4. Deep Fallback
+    "https://proxy.cors.sh/", // 1. Primary (High Uptime & High Speed)
+    "https://api.allorigins.win/raw?url=", // 2. Raw Fallback
+    "https://api.allorigins.win/get?url=", // 3. Wrapped JSON Fallback
   ],
 
   // API Sources

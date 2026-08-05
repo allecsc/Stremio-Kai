@@ -44,9 +44,21 @@ function M.set_setup_pending(pending)
 end
 
 -- Update content metadata (called from message handler)
-function M.update_metadata(content_type, imdb_id)
+function M.update_metadata(content_type, imdb_id, season, episode)
     state.content_state.content_type = content_type
     state.content_state.imdb_id = imdb_id
+    state.content_state.season = season
+    state.content_state.episode = episode
+end
+
+-- Get current season number
+function M.get_season()
+    return state.content_state.season
+end
+
+-- Get current episode number
+function M.get_episode()
+    return state.content_state.episode
 end
 
 return M

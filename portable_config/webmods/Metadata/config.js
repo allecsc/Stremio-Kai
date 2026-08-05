@@ -7,7 +7,7 @@
 const METADATA_CONFIG = {
   cinemetaApiBase: "https://cinemeta-live.strem.io/meta",
   //    cinemetaApiV3: 'https://v3-cinemeta.strem.io/meta',
-  imdbApiBase: "https://api.imdbapi.dev",
+  // imdbApiBase: "https://api.imdbapi.dev", // DISABLED: api.imdbapi.dev is permanently offline (July 2026)
 
   // Private API endpoints
   tmdbApiBase: "https://api.themoviedb.org/3",

@@ -87,7 +87,7 @@
   content: '';
   display: block;
   width: 32px;
-  height: 20px;
+  height: 16px;
   border-left: 4px solid #fff;
   border-bottom: 4px solid #fff;
   transform: rotate(-45deg);
@@ -99,9 +99,9 @@
 .meta-item-container-Tj0Ib .watched-icon-layer-bi3DO::after {
   content: 'Watched';
   display: block;
-  color: #fff;
+  color: #e0e0e0;
   font-weight: 700;
-  font-size: 0.875rem;
+  font-size: 1.15rem;
   letter-spacing: 0.6px;
   text-transform: none;
 }

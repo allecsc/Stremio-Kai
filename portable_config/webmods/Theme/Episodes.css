@@ -9,6 +9,7 @@
 /* Dropdown menu fix */
 .label-container-XOyzm .menu-container-B6cqK.menu-direction-bottom-right-aJ89V {
     background: var(--background);
+    z-index: 3;
 }
 
 .metadetails-container-K_Dqa {
@@ -143,6 +144,10 @@
     z-index: -1;
 }
 
+.videos-list-container-NepX5 .notifications-toggle-PaWY3 {
+    justify-content: center;
+}
+
 /* Thumbnail size always fits container */
 .video-container-ezBpK .thumbnail-container-Zm8Cl .thumbnail-J81W3,
 .video-container-ezBpK .thumbnail-container-Zm8Cl .placeholder-icon-GNOI3 {
@@ -150,10 +155,17 @@
 	width: 100%;
 }
 
+/* Episode Item Container */
+.video-container-ezBpK {
+    position: relative !important;
+}
+
 /* Thumbnail container */
 .video-container-ezBpK .thumbnail-container-Zm8Cl {
-    width: clamp(30px, 15vw, 350px);
+    width: clamp(180px, 15vw, 350px);
     aspect-ratio: 16 / 9;
+    flex: 0 0 auto !important;
+    align-self: flex-start !important;
 }
 
 /* Episode's progress bar */
@@ -170,6 +182,7 @@
 .video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .released-container-XLPqf {
     font-size: 1rem;
     margin-right: 4px;
+    display: none;
 }
 
 /* Remove search bar for episodes */
@@ -188,36 +201,110 @@
 
 
 /*=============================================
-=            UPCOMING/WATCHED            =
+=            UPCOMING/WATCHED OVERLAY         =
 =============================================*/
 
-/* Container Position */
-.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq {
-	position: absolute;
-	left: 10px;
-	top: 10px;
-    overflow: visible;
+/* Position overlay container on thumbnail (works both before and after JS reparenting) */
+.video-container-ezBpK {
+    position: relative !important;
 }
 
-/* Container Style */
-.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .upcoming-container-LXfQ7,
-.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .watched-container-gvzs3 {
-    background: var(--background) !important;
-    border: 1px solid var(--accent) !important;
-    border-radius: 99px;
-    backdrop-filter: var(--backdrop-filter) !important;
-    box-shadow: var(--box-shadow), var(--outer-glow);
+.video-container-ezBpK .thumbnail-container-Zm8Cl {
+    position: relative !important;
 }
 
-/* TEXT Labels */
-.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .upcoming-container-LXfQ7 .flag-label-zJloD,
-.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .upcoming-container-LXfQ7 .flag-icon-RDrvf {
-    color: #cacaca;
+/* Base overlay container styling prior to DOM reparenting */
+.video-container-ezBpK .upcoming-watched-container-msCaq {
+    position: absolute !important;
+    top: 8px !important;
+    left: 8px !important;
+    width: clamp(180px, 15vw, 350px) !important;
+    aspect-ratio: 16 / 9 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
-.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .watched-container-gvzs3 .flag-label-zJloD,
-.video-container-ezBpK .info-container-xyynk .flex-row-container-CAyQu .upcoming-watched-container-msCaq .watched-container-gvzs3 .flag-icon-RDrvf {
-    color: var(--tertiary-accent-color);
+/* Once reparented inside thumbnail container */
+.thumbnail-container-Zm8Cl .upcoming-watched-container-msCaq {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Neutral Overlay Panel (No blur) */
+.video-container-ezBpK .upcoming-watched-container-msCaq .watched-container-gvzs3,
+.video-container-ezBpK .upcoming-watched-container-msCaq .upcoming-container-LXfQ7 {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    background: rgba(0, 0, 0, 0.55) !important;
+    border-radius: inherit !important;
+    pointer-events: none !important;
+    transition: opacity 0.25s ease !important;
+}
+
+/* Smooth fade-out on card hover */
+.video-container-ezBpK:hover .upcoming-watched-container-msCaq .watched-container-gvzs3,
+.video-container-ezBpK:hover .upcoming-watched-container-msCaq .upcoming-container-LXfQ7 {
+    opacity: 0 !important;
+}
+
+/* Hide default SVG icons */
+.video-container-ezBpK .upcoming-watched-container-msCaq .flag-icon-RDrvf {
+    display: none !important;
+}
+
+/* White Checkmark for Watched (1:1 matching Library.css) */
+.video-container-ezBpK .upcoming-watched-container-msCaq .watched-container-gvzs3::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 16px;
+    border-left: 4px solid #fff;
+    border-bottom: 4px solid #fff;
+    transform: rotate(-45deg);
+    margin-bottom: 6px;
+    box-sizing: border-box;
+}
+
+/* White Schedule SVG Icon for Upcoming */
+.video-container-ezBpK .upcoming-watched-container-msCaq .upcoming-container-LXfQ7::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-.22-13h-.06c-.4 0-.72.32-.72.72v4.72c0 .35.18.68.49.86l4.15 2.49c.34.2.78.1.98-.24.21-.34.1-.79-.25-.99l-3.87-2.3V7.72c0-.4-.32-.72-.72-.72z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-bottom: 6px;
+}
+
+/* Neutral Classy Label */
+.video-container-ezBpK .upcoming-watched-container-msCaq .flag-label-zJloD {
+    color: #e0e0e0 !important;
+    font-weight: 700 !important;
+    font-size: 1.15rem !important;
+    letter-spacing: 0.6px !important;
+    text-transform: none !important;
 }
 
 /*=====  End of UPCOMING/WATCHED  ======*/
@@ -253,6 +340,20 @@
 =            PLAYER            =
 =============================================*/
 
+/* Gamepad Spatial UI Cursor */
+.layer-qalDW .button-container-zVLH6 {
+    border: 1px solid transparent; /* Base border so :focus-visible border-color has something to paint */
+    transition: all 0.2s ease-in-out;
+}
+
+.layer-qalDW .button-container-zVLH6:focus-visible {
+    background: none;
+    backdrop-filter: var(--backdrop-filter);
+    border-color: var(--primary-accent-color);
+    box-shadow: var(--box-shadow), var(--outer-glow);
+    outline: 2px solid var(--primary-accent-color);
+}
+
 .title-DGh6h {
     font-size: 1.8rem !important;
     font-weight: 700 !important;
@@ -266,6 +367,22 @@
     box-shadow: var(--box-shadow), var(--outer-glow) !important;
     filter: var(--shadow);
 }
+
+/* Hide broken Cast button from player control bar */
+.control-bar-buttons-menu-container-M6L0_ .button-container-zVLH6:has(path[d*="M91.54 104"]) {
+    display: none !important;
+}
+
+/* Ensure player container always fills 100% of viewport without stream-switch offsets */
+.player-container-wIELK {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    margin: 0 !important;
+}
+
 
 /*=====  End of PLAYER  ======*/
 
@@ -301,6 +418,10 @@
     justify-content: flex-end !important;
     position: absolute;
     top: -30px;
+}
+
+.seasons-bar-container-nOZjG {
+    z-index: 3;
 }
 
 /*=====  End of SIDE DRAWER MENU  ======*/

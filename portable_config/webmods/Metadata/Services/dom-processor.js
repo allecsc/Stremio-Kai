@@ -178,7 +178,15 @@ class DOMTitleProcessor {
     try {
       // Step 1: DOM Extraction -> IDs found
       mediaInfo = this.extractMediaInfo("", element);
-      titleKey = `${mediaInfo.type}:${mediaInfo.title}`;
+      const uniqueId =
+        mediaInfo.imdb ||
+        mediaInfo.tmdb ||
+        mediaInfo.tvdb ||
+        mediaInfo.mal ||
+        mediaInfo.anilist ||
+        mediaInfo.kitsu ||
+        mediaInfo.title;
+      titleKey = `${mediaInfo.type || "meta"}:${uniqueId}`;
 
       // Check if this title is already being processed
       if (this.processing.has(titleKey)) {
@@ -404,8 +412,8 @@ class DOMTitleProcessor {
       return element;
     }
 
-    // Fallback: Try catalog rows (<a id="...">)
-    const linkElement = element.closest("a[id]");
+    // Fallback: Try catalog rows (<a id="..."> or <a href="...">)
+    const linkElement = element.closest("a[id], a[href]");
     if (linkElement) return linkElement;
 
     // Fallback: Try continue watching (<div tabindex="0">)
@@ -452,10 +460,8 @@ class DOMTitleProcessor {
         if (!ids.type) ids.type = urlData.type;
         ids[urlData.idSource] = urlData.id;
       } else {
-        // Fallback for poster URLs
-        const match = img.src.match(
-          /\/poster\/(?:small|medium|large)\/(tt\d{7,})/,
-        );
+        // Fallback for poster URLs (handles Metahub, custom art providers, etc.)
+        const match = img.src.match(/(tt\d{7,})/);
         if (match && typeof match[1] === "string") {
           ids.imdb = match[1];
         }

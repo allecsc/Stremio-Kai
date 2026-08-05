@@ -1,6 +1,24 @@
 // Ensure namespace exists
 window.HeroPlugin = window.HeroPlugin || {};
 
+/**
+ * Decodes HTML entities in a string back to their literal characters.
+ * Required because metadata is HTML-encoded at ingestion (for innerHTML safety),
+ * but textContent assignments and DOM property writes render entities literally.
+ *
+ * Uses a throwaway <textarea> — the standard safe browser approach.
+ * A <textarea> never executes scripts, so this is not an XSS risk.
+ *
+ * @param {string|null} str - Potentially HTML-encoded string
+ * @returns {string|null} Decoded string, or the original value if not a string
+ */
+function decodeHTML(str) {
+  if (!str || typeof str !== "string") return str;
+  const ta = document.createElement("textarea");
+  ta.innerHTML = str;
+  return ta.value;
+}
+
 // IMDb rating color calculation - uses shared utility from ratingsUtils
 const IMDbColorCalculator = {
   calculateColor: (rating) => {
@@ -430,7 +448,7 @@ window.HeroPlugin.UI = {
 
       if (needsImage) {
         el.logo.src = title.logo;
-        el.logo.title = title.extractedTitle || title.title || "";
+        el.logo.title = decodeHTML(title.extractedTitle || title.title || "");
 
         // Safety Fallback: If image fails to load (despite validation), revert to text title
         el.logo.onerror = () => {
@@ -441,7 +459,7 @@ window.HeroPlugin.UI = {
           const newTitle = document.createElement("h1");
           newTitle.id = "heroLogo";
           newTitle.className = "hero-title-text";
-          newTitle.textContent = title.extractedTitle || title.title || "";
+          newTitle.textContent = decodeHTML(title.extractedTitle || title.title || "");
 
           if (el.logo && el.logo.parentNode) {
             el.logo.replaceWith(newTitle);
@@ -450,10 +468,10 @@ window.HeroPlugin.UI = {
           }
         };
       } else {
-        el.logo.textContent = title.extractedTitle || title.title || "";
+        el.logo.textContent = decodeHTML(title.extractedTitle || title.title || "");
       }
 
-      el.description.textContent = title.plot;
+      el.description.textContent = decodeHTML(title.plot);
       el.description.scrollTop = 0;
 
       // Update Tagline (dynamic add/remove)
@@ -469,7 +487,7 @@ window.HeroPlugin.UI = {
             logoContainer.insertAdjacentElement("afterend", taglineEl);
           }
         }
-        taglineEl.textContent = title.tagline;
+        taglineEl.textContent = decodeHTML(title.tagline);
       } else if (taglineEl) {
         taglineEl.remove();
       }
@@ -910,6 +928,13 @@ window.HeroPlugin.UI = {
       toggleBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         if (typeof toggleCatalog === "function") toggleCatalog();
+      });
+      toggleBtn.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.stopPropagation();
+          e.preventDefault();
+          if (typeof toggleCatalog === "function") toggleCatalog();
+        }
       });
       // Prepend so order is: Catalog | Fullscreen | Menu
       buttonsContainer.prepend(toggleBtn);

@@ -77,10 +77,23 @@
               }
             : null;
 
+        let season = null;
+        let episode = null;
+
+        const seriesMatch = decoded.match(
+          /\/(tt\d+)(?::|\/)(\d+)(?::|\/)(\d+)(?:\/|$)/,
+        );
+        if (seriesMatch) {
+          season = parseInt(seriesMatch[2], 10);
+          episode = parseInt(seriesMatch[3], 10);
+        }
+
         state = {
           view: "PLAYER",
           id: imdbId,
           type: type,
+          season: season,
+          episode: episode,
           source: animeIds ? "anime" : "imdb",
           animeIds: animeIds, // New: { mal, anilist, kitsu } or null
         };

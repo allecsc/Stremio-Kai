@@ -114,6 +114,10 @@ end
 
 -- Notification detection handler
 function M.handle_notification_detection(value, source)
+    if not config.opts.enable_filter_notifications then
+        return
+    end
+
     if config.CONSTANTS.DEBUG_MODE then
         mp.msg.info("=== NOTIFICATION DEBUG ===")
         mp.msg.info(string.format("notification_active=%s suppression=%s intro_skipped=%s seeking=%s",
@@ -670,7 +674,9 @@ function M.update_notification_filters_state()
     -- Only skip auto-start for HIGH-confidence chaptered files
     -- MEDIUM confidence (untitled) chapters need filter detection
     if not state.detection_state.notification_active and not has_high_confidence_chapters() then
-        M.start_filters()
+        if config.opts.enable_filter_notifications then
+            M.start_filters()
+        end
     end
     
     local current_time = utils.get_time()

@@ -769,12 +769,15 @@ class CatalogEnrichmentService {
       }
 
       // 2. Iterate Proxy Chain
-      const proxies = this.config.PROXY_LIST || ["https://corsproxy.io/?"]; // Default fallback
-      const encodedUrl = encodeURIComponent(targetUrl);
+      const proxies = this.config.PROXY_LIST || ["https://proxy.cors.sh/"]; // Default fallback
 
       for (const proxyPrefix of proxies) {
         try {
-          const proxyUrl = proxyPrefix + encodedUrl;
+          const isDirectAppend =
+            proxyPrefix.endsWith("/") && !proxyPrefix.includes("?");
+          const proxyUrl = isDirectAppend
+            ? proxyPrefix + targetUrl
+            : proxyPrefix + encodeURIComponent(targetUrl);
 
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout per proxy
@@ -783,9 +786,16 @@ class CatalogEnrichmentService {
           clearTimeout(timeoutId);
 
           if (response.ok) {
-            const data = await response.json();
+            let data = await response.json();
+            // Handle wrapper proxies (e.g., AllOrigins /get returns { contents: "..." })
+            if (data && typeof data.contents === "string") {
+              try {
+                data = JSON.parse(data.contents);
+              } catch (parseErr) {}
+            }
+
             // Basic validation to ensure we didn't get an HTML error page masquerading as JSON
-            if (data && (Array.isArray(data) || data.metas || data.contents)) {
+            if (data && (Array.isArray(data) || data.metas)) {
               return data;
             }
           }
@@ -899,18 +909,15 @@ class CatalogEnrichmentService {
     const encodedTarget = encodeURIComponent(target);
 
     const candidates = [
-      { name: "Cors.lol", prefix: "https://api.cors.lol/?url=" },
-      { name: "CorsProxy.io", prefix: "https://corsproxy.io/?" },
-      { name: "CodeTabs", prefix: "https://api.codetabs.com/v1/proxy?quest=" }, // Official Codetabs API url
-      { name: "AllOriginsRaw", prefix: "https://api.allorigins.win/raw?url=" },
-      { name: "CorsFix", prefix: "https://corsfix.com/free-cors-proxy?url=" }, // Usually requires ?url=
-      { name: "TestWorkers", prefix: "https://test.cors.workers.dev/?url=" },
-      { name: "ThingProxy", prefix: "https://thingproxy.freeboard.io/fetch/" },
-      { name: "CorsAnywhere", prefix: "https://cors-anywhere.com/" }, // Often requires activation
+      { name: "Cors.sh", prefix: "https://proxy.cors.sh/", direct: true },
+      { name: "AllOriginsRaw", prefix: "https://api.allorigins.win/raw?url=", direct: false },
+      { name: "AllOriginsGet", prefix: "https://api.allorigins.win/get?url=", direct: false, wrapper: true },
+      { name: "CorsProxy.io", prefix: "https://corsproxy.io/?", direct: false },
+      { name: "CodeTabs", prefix: "https://api.codetabs.com/v1/proxy?quest=", direct: false },
     ];
 
     for (const c of candidates) {
-      const url = c.prefix + encodedTarget;
+      const url = c.direct ? c.prefix + target : c.prefix + encodedTarget;
       try {
         const start = performance.now();
         const controller = new AbortController();
@@ -921,30 +928,31 @@ class CatalogEnrichmentService {
         clearTimeout(timeoutId);
 
         if (response.ok) {
-          // Verify JSON content to ensure it's not an HTML error page
           try {
-            const data = await response.json();
+            let data = await response.json();
+            if (c.wrapper && data && typeof data.contents === "string") {
+              data = JSON.parse(data.contents);
+            }
             if (Array.isArray(data) || data.metas) {
-              console.log(`✅ [PASS] ${c.name.padEnd(12)} | ${ms}ms`);
+              console.log(`✅ [PASS] ${c.name.padEnd(14)} | ${ms}ms`);
             } else {
               console.warn(
-                `⚠️ [WARN] ${c.name.padEnd(12)} | ${ms}ms | Status 200 but invalid JSON`,
+                `⚠️ [WARN] ${c.name.padEnd(14)} | ${ms}ms | Status 200 but invalid JSON`,
               );
             }
           } catch (e) {
             console.warn(
-              `⚠️ [WARN] ${c.name.padEnd(12)} | ${ms}ms | Status 200 but Parse Error`,
+              `⚠️ [WARN] ${c.name.padEnd(14)} | ${ms}ms | Status 200 but Parse Error`,
             );
           }
         } else {
           console.error(
-            `❌ [FAIL] ${c.name.padEnd(12)} | ${ms}ms | Status: ${response.status}`,
+            `❌ [FAIL] ${c.name.padEnd(14)} | ${ms}ms | Status: ${response.status}`,
           );
         }
       } catch (e) {
-        // console.log(e);
         console.error(
-          `❌ [ERR ] ${c.name.padEnd(12)} | Error: ${e.name === "AbortError" ? "Timeout" : e.message}`,
+          `❌ [ERR ] ${c.name.padEnd(14)} | Error: ${e.name === "AbortError" ? "Timeout" : e.message}`,
         );
       }
     }

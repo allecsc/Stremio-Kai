@@ -63,6 +63,278 @@ filter_engine.notification = notification
 skip_executor.filter_engine = filter_engine
 skip_executor.notification = notification
 
+-- Track active skippable chapter key to debounce and control notifications
+local active_skippable_chapter_key = nil
+
+-- Display names for virtual chapter categories
+local virtual_category_names = {
+    opening = "Intro",
+    ending  = "Outro",
+    recap   = "Recap",
+}
+
+-- Path to python.exe: navigate from notify_skip/ up 3 dirs to Stremio Kai root.
+-- Normalize backslashes first since Windows paths mix separators.
+local normalized_script_dir = script_dir:gsub("\\", "/")
+local stremio_root = normalized_script_dir:match("(.+/)[^/]+/[^/]+/[^/]+/$") or normalized_script_dir
+local python_exe   = stremio_root .. "python.exe"
+
+--============================================================================--
+--                     INTRODB VIRTUAL CHAPTER LOGIC                          --
+--============================================================================--
+
+-- Synchronize native MPV chapter list with IntroDB segments
+local function sync_native_chapters_from_introdb(segments)
+    if not segments then return end
+    local duration = mp.get_property_native("duration") or 0
+    local intro = segments.intro
+    local recap = segments.recap
+    local outro = segments.outro
+
+    local points = {}
+
+    if recap and recap.start_sec and recap.end_sec and recap.end_sec > recap.start_sec then
+        table.insert(points, { start_sec = recap.start_sec, end_sec = recap.end_sec, title = "Recap" })
+    end
+
+    if intro and intro.start_sec and intro.end_sec and intro.end_sec > intro.start_sec then
+        table.insert(points, { start_sec = intro.start_sec, end_sec = intro.end_sec, title = "Intro" })
+    end
+
+    if outro and outro.start_sec and outro.end_sec and outro.end_sec > outro.start_sec then
+        table.insert(points, { start_sec = outro.start_sec, end_sec = outro.end_sec, title = "Outro" })
+    end
+
+    table.sort(points, function(a, b) return a.start_sec < b.start_sec end)
+    if #points == 0 then return end
+
+    local native_list = {}
+
+    -- Add Cold Open if first segment starts > 2.0s
+    if points[1].start_sec > 2.0 then
+        table.insert(native_list, { time = 0.0, title = "Cold Open" })
+    end
+
+    for i, pt in ipairs(points) do
+        table.insert(native_list, { time = pt.start_sec, title = pt.title })
+
+        local next_start = (i < #points) and points[i + 1].start_sec or duration
+        if pt.end_sec > 0 and (next_start - pt.end_sec) > 5.0 then
+            local main_title = "Main Episode"
+            if i == #points and (duration - pt.end_sec) > 5.0 then
+                main_title = "Epilogue"
+            end
+            table.insert(native_list, { time = pt.end_sec, title = main_title })
+        end
+    end
+
+    if #native_list > 0 and native_list[1].time > 0 then
+        table.insert(native_list, 1, { time = 0.0, title = "Cold Open" })
+    end
+
+    -- Clean up near-duplicate timestamps
+    local cleaned = {}
+    for _, item in ipairs(native_list) do
+        if #cleaned == 0 or (item.time - cleaned[#cleaned].time) > 1.0 then
+            table.insert(cleaned, item)
+        end
+    end
+
+    if #cleaned > 0 then
+        mp.set_property_native("chapter-list", cleaned)
+        mp.msg.info(string.format("IntroDB: synced %d native MPV chapters", #cleaned))
+    end
+end
+
+-- Name any unnamed embedded chapters in MPV's chapter list
+local function update_unnamed_local_chapters(evaluated_chapters)
+    local raw_chapters = mp.get_property_native("chapter-list")
+    if not raw_chapters or #raw_chapters == 0 then return end
+
+    local updated = false
+    local eval_map = {}
+    if evaluated_chapters then
+        for _, eval in ipairs(evaluated_chapters) do
+            eval_map[eval.index] = eval
+        end
+    end
+
+    for i, ch in ipairs(raw_chapters) do
+        local title = ch.title or ""
+        if title == "" or title:find("^%s*$") or title:lower():find("unnamed") then
+            local eval = eval_map[i]
+            local new_title = nil
+            if eval and eval.matched_category then
+                local cat = eval.matched_category:lower()
+                if cat == "opening" or cat == "intro" then new_title = "Intro"
+                elseif cat == "ending" or cat == "outro" then new_title = "Outro"
+                elseif cat == "recap" then new_title = "Recap"
+                elseif cat == "logo" then new_title = "Logo"
+                end
+            elseif eval and eval.zone == "intro" then
+                new_title = "Intro"
+            elseif eval and eval.zone == "outro" then
+                new_title = "Outro"
+            else
+                new_title = "Chapter " .. i
+            end
+
+            if new_title and new_title ~= ch.title then
+                raw_chapters[i].title = new_title
+                updated = true
+            end
+        end
+    end
+
+    if updated then
+        mp.set_property_native("chapter-list", raw_chapters)
+        mp.msg.info("NotifySkip: updated unnamed local chapter titles in MPV")
+    end
+end
+
+-- Inject IntroDB segments as virtual chapters into skippable_chapters.
+-- IntroDB takes priority: if any valid segments exist, local chapters are cleared
+-- and replaced exclusively with IntroDB data. Local chapters are only used when
+-- IntroDB has no data at all (fetch failed or returned empty).
+local function inject_introdb_virtual_chapters()
+    local segments = state.chapter_cache.introdb_segments
+    if not segments then return end
+
+    local duration = mp.get_property_native("duration") or 0
+    local mapping = { intro = "opening", recap = "recap", outro = "ending" }
+
+    -- Pre-check: verify at least one valid segment exists before clearing local chapters
+    local has_valid = false
+    for api_key, _ in pairs(mapping) do
+        local seg = segments[api_key]
+        if seg and seg.start_sec and seg.end_sec and seg.end_sec > seg.start_sec then
+            has_valid = true
+            break
+        end
+    end
+
+    if not has_valid then
+        mp.msg.info("IntroDB: no valid segments found, keeping local chapters")
+        return
+    end
+
+    -- IntroDB has data — clear local chapters and use IntroDB exclusively
+    state.chapter_cache.skippable_chapters = {}
+    mp.msg.info("IntroDB: taking priority, local chapters cleared")
+
+    local added = 0
+    for api_key, category in pairs(mapping) do
+        local seg = segments[api_key]
+        if seg and seg.start_sec and seg.end_sec and seg.end_sec > seg.start_sec then
+            -- Cap end to duration - 1 to prevent end-of-file loop
+            local safe_end = seg.end_sec
+            if duration > 0 and safe_end >= duration then
+                safe_end = duration - 1
+            end
+            table.insert(state.chapter_cache.skippable_chapters, {
+                index      = "introdb_" .. category,
+                time       = seg.start_sec,
+                category   = category,
+                chapter_end = safe_end,
+                is_virtual = true,
+                confidence = "high",
+            })
+            added = added + 1
+            mp.msg.info(string.format("IntroDB: injected %s segment (%.1fs -> %.1fs)",
+                category, seg.start_sec, safe_end))
+        end
+    end
+
+    mp.msg.info(string.format("IntroDB: %d segment(s) active", added))
+
+    -- Sync native MPV chapters with IntroDB segments
+    sync_native_chapters_from_introdb(segments)
+end
+
+-- Fetch IntroDB segments asynchronously via Python subprocess (no CORS restrictions).
+local function fetch_introdb_segments(imdb_id, season, episode)
+    if not imdb_id or not season or not episode then return end
+
+    local python_code = string.format(
+        "import urllib.request,sys\n" ..
+        "try:\n" ..
+        " r=urllib.request.urlopen('https://api.introdb.app/segments?imdb_id=%s&season=%d&episode=%d',timeout=8)\n" ..
+        " sys.stdout.write(r.read().decode('utf-8'))\n" ..
+        "except: sys.stdout.write('{}')",
+        imdb_id, season, episode
+    )
+
+    mp.msg.info(string.format("IntroDB: fetching segments for %s S%dE%d", imdb_id, season, episode))
+
+    mp.command_native_async({
+        name = "subprocess",
+        args = { python_exe, "-c", python_code },
+        capture_stdout = true,
+        capture_stderr = false,
+        playback_only  = false,
+    }, function(success, result, err)
+        if not success or not result or not result.stdout or result.stdout == "" then
+            mp.msg.warn("IntroDB: fetch failed - " .. (err or "no output"))
+            return
+        end
+
+        local data = utils.parse_json(result.stdout)
+        if not data or type(data) ~= "table" then
+            mp.msg.warn("IntroDB: invalid JSON response")
+            return
+        end
+
+        -- Only store if this response still matches current episode
+        if content.get_imdb_id() ~= imdb_id or
+           content.get_season() ~= season or
+           content.get_episode() ~= episode then
+            mp.msg.info("IntroDB: stale response discarded (episode changed)")
+            return
+        end
+
+        state.chapter_cache.introdb_segments = data
+        mp.msg.info(string.format("IntroDB: segments stored (intro=%s, recap=%s, outro=%s)",
+            tostring(data.intro ~= nil), tostring(data.recap ~= nil), tostring(data.outro ~= nil)))
+
+        -- Late-arrival injection: if finalize_setup already ran, inject now
+        if state.skip_state.mode == "hybrid" then
+            inject_introdb_virtual_chapters()
+        end
+    end)
+end
+
+-- Check skippable chapter boundaries and fire/clear skip notifications.
+local function check_skippable_chapter_notifications(time)
+    if not time or state.skip_state.mode == "none" or state.skip_state.is_seeking then return end
+    local chapters = state.chapter_cache.skippable_chapters
+    if not chapters then return end
+
+    -- Find if we're inside any skippable chapter range
+    local active = nil
+    for _, ch in ipairs(chapters) do
+        if ch.time and ch.chapter_end and time >= ch.time and time < ch.chapter_end then
+            active = ch
+            break
+        end
+    end
+
+    local new_key = active and (active.index or (active.category .. "_" .. tostring(active.time))) or nil
+    if new_key == active_skippable_chapter_key then return end  -- no state change
+
+    active_skippable_chapter_key = new_key
+
+    if active then
+        local display = virtual_category_names[active.category] or
+            active.category:gsub("^%l", string.upper)
+        mp.msg.info(string.format("Skippable chapter notification: Skip %s", display))
+        -- Pass duration = 0 so the notification stays visible as long as playhead is inside segment
+        notification.show_skip_overlay("Skip " .. display, 0, true)
+    else
+        -- Exited skippable range: hide overlay
+        notification.hide_skip_overlay()
+    end
+end
+
 --============================================================================--
 --                          LIFECYCLE FUNCTIONS                               --
 --============================================================================--
@@ -126,7 +398,9 @@ local function finalize_setup()
         -- MEDIUM confidence chapters (untitled but valid) - need filter detection for notification
         mp.msg.info(string.format("Hybrid mode: MEDIUM confidence - %d chapters, filter detection active", 
             #state.chapter_cache.skippable_chapters))
+        if config.opts.enable_filter_notifications then
             filter_engine.start_filters() 
+        end
         
         -- Still check for chapter entry (for common length chapters at file start)
         skip_executor.check_auto_skip()
@@ -135,12 +409,22 @@ local function finalize_setup()
         -- Chapters exist but none auto-notify - need filter detection
         mp.msg.info(string.format("Hybrid mode: %d chapters evaluated (none auto-notify, filter detection active)", 
             #state.chapter_cache.evaluated_chapters))
+        if config.opts.enable_filter_notifications then
             filter_engine.start_filters() 
+        end
     else
         -- No chapters at all - pure filter detection
         mp.msg.info("Hybrid mode: no chapters, pure filter detection")
+        if config.opts.enable_filter_notifications then
             filter_engine.start_filters() 
+        end
     end
+
+    -- Update any unnamed embedded local chapters with clean names
+    update_unnamed_local_chapters(all_evaluated)
+
+    -- Inject IntroDB virtual chapters if segments already arrived (pre-emptive fetch)
+    inject_introdb_virtual_chapters()
 end
 
 local function on_file_loaded()
@@ -155,6 +439,7 @@ local function on_file_loaded()
     if state.skip_state.silence_active or state.skip_state.blackframe_skip_active then
         filter_engine.stop_silence_skip()
     end
+    active_skippable_chapter_key = nil
     state.reset_all()
     
     -- Wait a short time for content-metadata to arrive, then run setup
@@ -198,18 +483,21 @@ end
 local function on_time_change(_, time)
     if state.skip_state.mode ~= "none" then
         filter_engine.update_notification_filters_state()
+        check_skippable_chapter_notifications(time)
     end
 end
 
 local function on_chapter_change()
     if state.skip_state.mode ~= "none" then
         skip_executor.check_auto_skip()
-        notification.notify_on_chapter_entry()
+        local current_time = mp.get_property_native("time-pos")
+        check_skippable_chapter_notifications(current_time)
     end
 end
 
 local function on_seek()
     notification.hide_skip_overlay()
+    active_skippable_chapter_key = nil
     notification.start_notification_cooldown()
 
     -- Set seeking flag to prevent corrupted filter metadata processing
@@ -221,15 +509,14 @@ local function on_seek()
     end
 
     -- Re-enable notifications after seek settles
-    -- Re-enable notifications after seek settles
     state.skip_state.seek_timeout = mp.add_timeout(0.5, function()
         state.skip_state.is_seeking = false
         state.skip_state.seek_timeout = nil
         if config.CONSTANTS.DEBUG_MODE then mp.msg.info("Seek stabilization complete") end
         
-        -- Always check for chapter entry after seek settles
-        -- This ensures notification appears if we seek INTO a skippable chapter
-        notification.notify_on_chapter_entry()
+        -- Check if current time is inside a skippable chapter after seek settles
+        local current_time = mp.get_property_native("time-pos")
+        check_skippable_chapter_notifications(current_time)
     end)
 
     -- Reset intro_skipped if seeking back before skip point
@@ -272,19 +559,36 @@ mp.register_script_message("perform-skip", skip_executor.perform_skip)
 mp.register_script_message("content-metadata", function(json)
     local data = utils.parse_json(json)
     if not data then return end
-    
-    -- Optimize: Don't re-process if identity hasn't changed (reduces log spam)
-    if content.get_content_type() == data.content_type and 
-       content.get_imdb_id() == data.imdb_id then
-       return 
+
+    -- Detect episode identity change (imdb_id + season + episode)
+    local episode_changed = (
+        content.get_imdb_id()  ~= data.imdb_id or
+        content.get_season()   ~= data.season  or
+        content.get_episode()  ~= data.episode
+    )
+    local type_changed = content.get_content_type() ~= data.content_type
+
+    -- No-op if nothing changed
+    if not episode_changed and not type_changed then return end
+
+    -- Clear stale IntroDB segments when episode changes
+    if episode_changed then
+        state.chapter_cache.introdb_segments = nil
+        active_skippable_chapter_key = nil
     end
-    
+
     -- Store content metadata
-    content.update_metadata(data.content_type, data.imdb_id)
-    
-    mp.msg.info(string.format("Content metadata received: type=%s, id=%s", 
-        data.content_type or "unknown", data.imdb_id or "unknown"))
-    
+    content.update_metadata(data.content_type, data.imdb_id, data.season, data.episode)
+
+    mp.msg.info(string.format("Content metadata received: type=%s, id=%s, S%sE%s",
+        data.content_type or "unknown", data.imdb_id or "unknown",
+        tostring(data.season or "?"), tostring(data.episode or "?")))
+
+    -- Fetch IntroDB segments for series (async, no-op on failure)
+    if content.is_series() and data.imdb_id and data.season and data.episode then
+        fetch_introdb_segments(data.imdb_id, data.season, data.episode)
+    end
+
     -- If finalize_setup already ran but mode is still "none" (waiting for content type),
     -- trigger it now
     if state.skip_state.mode == "none" and content.is_series() and content.is_setup_pending() then
@@ -315,4 +619,4 @@ mp.register_script_message("notify-skip-config", function(json)
     end
 end)
 
-mp.msg.info("Notify Skip v3.1 loaded (modular architecture)")
+mp.msg.info("Notify Skip v3.2 loaded (modular architecture + IntroDB)")

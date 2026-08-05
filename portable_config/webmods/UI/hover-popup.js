@@ -1449,8 +1449,8 @@ class MetadataHoverPopupService {
         mediaInfo.type,
       );
 
-      // Only show skeleton if we don't have complete metadata
-      if (!existingMetadata || existingMetadata.metaSource !== "complete") {
+      // Only show skeleton if we have no data or only DOM-level data (no API data yet)
+      if (!existingMetadata || existingMetadata.metaSource === "dom") {
         const basicContent = this.generateBasicPopupContent(mediaInfo);
         this.updatePopupContent(basicContent);
       }
@@ -1462,30 +1462,30 @@ class MetadataHoverPopupService {
           "Title not found in database, triggering priority processing for immediate enrichment",
         );
         const priorityData = await this.priorityProcessElement(catalogItem);
-        if (priorityData && priorityData.metaSource === "complete") {
-          // Success! Show complete content
+        if (priorityData && priorityData.metaSource !== "dom") {
+          // Success! Show available content (cinemeta, private API, or complete)
           PopupUtils.log(
             "debug",
-            "Priority processing successful for new title, showing complete content",
+            "Priority processing successful for new title, showing content",
           );
           const content = this.generatePopupContent(priorityData);
           this.updatePopupContent(content, () =>
             this.triggerOscarEntranceAnimation(popup),
           );
         } else {
-          // Processing didn't complete - keep basic content, background will eventually complete
+          // Processing returned nothing useful - show no data state
           PopupUtils.log(
             "debug",
-            "Priority processing incomplete for new title, keeping basic content for background completion",
+            "Priority processing returned no API data for new title",
           );
 
           this.updatePopupContent(
             PopupTemplates.createNoDataState(mediaInfo.title),
           );
         }
-      } else if (existingMetadata.metaSource === "complete") {
-        // Complete metadata available - show immediately
-        PopupUtils.log("debug", "Complete metadata available, showing content");
+      } else if (existingMetadata.metaSource !== "dom") {
+        // API data is available (cinemeta, private, or complete) — show immediately
+        PopupUtils.log("debug", "API metadata available, showing content");
 
         // Trigger Jikan enrichment in background (for MAL rating)
         const metadataService = window.MetadataModules?.metadataService;
@@ -1529,11 +1529,11 @@ class MetadataHoverPopupService {
           "Incomplete metadata found, triggering priority processing",
         );
         const priorityData = await this.priorityProcessElement(catalogItem);
-        if (priorityData && priorityData.metaSource === "complete") {
-          // Success! Show complete content
+        if (priorityData && priorityData.metaSource !== "dom") {
+          // Success! Show available content
           PopupUtils.log(
             "debug",
-            "Priority processing successful, showing complete content",
+            "Priority processing successful, showing content",
           );
 
           // Trigger Lazy Jikan for newly prioritized items too
@@ -1849,3 +1849,22 @@ window.MetadataModules.hoverPopup = {
 
 // ALSO expose PopupTemplates directly on window for backward compatibility and easy access
 window.PopupTemplates = PopupTemplates;
+
+// ------------------------------------------------------------------
+// Caps Lock: show/hide toggle for the hover panel
+// Caps Lock ON  → adds `hover-popup-disabled` to <body> → CSS hides panel
+// Caps Lock OFF → removes the class → panel resumes normally
+// getModifierState on keyup returns the NEW state after the toggle.
+// ------------------------------------------------------------------
+document.addEventListener(
+  "keyup",
+  (e) => {
+    if (e.key === "CapsLock") {
+      document.body.classList.toggle(
+        "hover-popup-disabled",
+        e.getModifierState("CapsLock"),
+      );
+    }
+  },
+  { passive: true },
+);

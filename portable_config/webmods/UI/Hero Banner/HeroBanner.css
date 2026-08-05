@@ -612,35 +612,6 @@ span.play-icon {
    HERO CATALOG TOGGLE — CONTAINER PROXIMITY FADE
    ========================================================================= */
 
-/* Only hide the buttons container on the board page (where the hero is active) */
-body.hero-active .buttons-container-Oc5z1 {
-  position: relative; /* Required for ::before extended hit area */
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  /* No backdrop-filter here — container-level backdrop creates a stacking context
-     that breaks descendant elements' (e.g. menu popup) own backdrop-filter */
-}
-
-/* Always-on backdrop on individual non-popup buttons (fullscreen + catalog toggle).
-   Avoids the "pop" when hover first triggers backdrop. Menu button is intentionally
-   excluded so Stremio's native popup backdrop logic remains intact. */
-body.hero-active .buttons-container-Oc5z1 .button-container-xT9_L:not(.menu-button-container-DtW4v) {
-  backdrop-filter: var(--backdrop-filter);
-}
-
-/* Extended invisible hit area — expands the hover zone beyond the container */
-body.hero-active .buttons-container-Oc5z1::before {
-  content: '';
-  position: absolute;
-  inset: -50px -50px; /* 50px top/bottom, 50px left/right clearance */
-  pointer-events: auto;
-}
-
-/* Reveal the whole container on proximity */
-body.hero-active .buttons-container-Oc5z1:hover {
-  opacity: 1;
-}
-
 /* Catalog toggle: cursor override only — native button-container classes handle the rest */
 .hero-catalog-btn {
   cursor: pointer;

@@ -48,6 +48,7 @@
     VULKAN_API: "kai-vulkan-api",
     ULTRAWIDE_ZOOM: "kai-ultrawide-zoom",
     AUDIO_PRESET: "kai-audio-preset",
+    SVP_GLOBAL: "kai-svp-global",
   };
 
   // ... (existing helper functions) ...
@@ -94,7 +95,6 @@
     { value: "sign", label: "Signs" },
     { value: "song", label: "Songs" },
     { value: "karaoke", label: "Karaoke" },
-    { value: "forced", label: "Forced" },
     { value: "sdh", label: "SDH (Hearing Impaired)" },
     { value: "commentary", label: "Commentary" },
     { value: "op", label: "Opening (OP)" },
@@ -104,6 +104,11 @@
     { value: "graphic", label: "Graphics" },
     { value: "translation", label: "Translation" },
   ];
+
+  const removeManagedSubtitleKeywords = (values) =>
+    (Array.isArray(values) ? values : []).filter(
+      (value) => String(value).trim().toLowerCase() !== "forced",
+    );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // HELPERS (STORAGE & STATE)
@@ -435,6 +440,15 @@
   function setSvpEnabled(value) {
     localStorage.setItem(STORAGE_KEYS.svpEnabled, value.toString());
     console.log(`[MPV Settings] SVP Enabled set to: ${value}`);
+  }
+
+  function getSvpGlobal() {
+    return localStorage.getItem(STORAGE_KEYS.SVP_GLOBAL) === "true"; // Default false
+  }
+
+  function setSvpGlobal(value) {
+    localStorage.setItem(STORAGE_KEYS.SVP_GLOBAL, value.toString());
+    console.log(`[MPV Settings] SVP Global set to: ${value}`);
   }
 
   function getColorProfile() {
@@ -1020,8 +1034,8 @@
 
     audioFrag.appendChild(
       createToggleOption(
-        "Match Audio to Video Language",
-        "Prioritize audio tracks that match the video's original language.",
+        "Match Audio to Original Language",
+        "Prioritize audio tracks that match the title's metadata language.",
         safeGet(STORAGE_KEYS.MATCH_AUDIO, false),
         (val) => {
           safeSet(STORAGE_KEYS.MATCH_AUDIO, val);
@@ -1067,7 +1081,7 @@
     subFrag.appendChild(
       createToggleOption(
         "Use Forced Subs for Native Audio",
-        "Enable forced subs when audio matches video.",
+        "Enable forced subtitles matching the selected audio language.",
         safeGet(STORAGE_KEYS.USE_FORCED_SUBS, false),
         (val) => {
           safeSet(STORAGE_KEYS.USE_FORCED_SUBS, val);
@@ -1076,11 +1090,10 @@
       ),
     );
 
-    const currentRejectSubKw = safeGet(STORAGE_KEYS.REJECT_SUB_KEYWORDS, [
+    const storedRejectSubKw = safeGet(STORAGE_KEYS.REJECT_SUB_KEYWORDS, [
       "sign",
       "song",
       "karaoke",
-      "forced",
       "commentary",
       "op",
       "ed",
@@ -1089,10 +1102,17 @@
       "graphic",
       "translation",
     ]);
+    const currentRejectSubKw = removeManagedSubtitleKeywords(storedRejectSubKw);
+    if (
+      !Array.isArray(storedRejectSubKw) ||
+      currentRejectSubKw.length !== storedRejectSubKw.length
+    ) {
+      safeSet(STORAGE_KEYS.REJECT_SUB_KEYWORDS, currentRejectSubKw);
+    }
     subFrag.appendChild(
       createMultiSelect(
         "Subtitle Reject Keywords",
-        "Ignore subtitle tracks containing these keywords (e.g. 'Signs').",
+        "Ignore matching labels during automatic selection; saved choices override this list.",
         SUB_REJECT_PRESETS,
         currentRejectSubKw,
         (val) => {
@@ -1152,6 +1172,21 @@
         },
       ),
     );
+    const svpGlobalToggle = createToggleOption(
+      "Use SVP for all content",
+      "Applies motion interpolation to movies and TV series, not just anime.",
+      getSvpGlobal(),
+      (val) => {
+        setSvpGlobal(val);
+        sendConfigUpdate();
+      },
+    );
+    const svpGlobalNote = createNote(
+      "warning",
+      "<strong>Warning:</strong> High CPU/GPU load on high bitrate and 4K live-action content. Requires high-end hardware.",
+    );
+    svpGlobalToggle.appendChild(svpGlobalNote);
+    skipFrag.appendChild(svpGlobalToggle);
     skipFrag.appendChild(
       createToggleOption(
         "Use Vulkan Rendering",
@@ -1347,6 +1382,17 @@
       }
     };
 
+    const storedSubRejectKeywords = getList(STORAGE_KEYS.REJECT_SUB_KEYWORDS);
+    const subRejectKeywords = removeManagedSubtitleKeywords(
+      storedSubRejectKeywords,
+    );
+    if (subRejectKeywords.length !== storedSubRejectKeywords.length) {
+      localStorage.setItem(
+        STORAGE_KEYS.REJECT_SUB_KEYWORDS,
+        JSON.stringify(subRejectKeywords),
+      );
+    }
+
     return {
       match_audio_to_video: getBool(STORAGE_KEYS.MATCH_AUDIO),
       use_forced_for_native: getBool(STORAGE_KEYS.USE_FORCED_SUBS),
@@ -1356,7 +1402,7 @@
       // Keyword Lists
 
       audio_reject_keywords: getList(STORAGE_KEYS.REJECT_AUDIO_KEYWORDS),
-      sub_reject_keywords: getList(STORAGE_KEYS.REJECT_SUB_KEYWORDS),
+      sub_reject_keywords: subRejectKeywords,
     };
   }
 
@@ -1376,13 +1422,21 @@
     return entry ? entry.value : cleanCode;
   }
 
+  // The selector receives these groups through mpv-bridge.js so it can expand
+  // the raw language tag reported by mpv when persisting a track preference.
+  function getLanguageAliasGroups() {
+    return ISO_LANGUAGES.map((lang) => lang.value);
+  }
+
   // Also expose to window for bridge usage (Critical for mpv-bridge.js)
   window.MpvSettings.getSmartTrackConfig = getSmartTrackConfig;
   window.MpvSettings.expandLanguage = expandLanguage;
+  window.MpvSettings.getLanguageAliasGroups = getLanguageAliasGroups;
 
   window.MpvSettings.getHdrPassthrough = getHdrPassthrough;
   window.MpvSettings.getAnime4kPreset = getAnime4kPreset;
   window.MpvSettings.getSvpEnabled = getSvpEnabled;
+  window.MpvSettings.getSvpGlobal = getSvpGlobal;
   window.MpvSettings.getColorProfile = getColorProfile;
   window.MpvSettings.getIccProfile = getIccProfile;
 
@@ -1395,7 +1449,6 @@
 
   // Storage listener for live reactivity (Wizard Support)
   window.addEventListener("storage", (e) => {
-    // Only care about our keys
     if (Object.values(STORAGE_KEYS).includes(e.key)) {
       // If settings page is open, the toggles might need visual update
       // For simplicity, we just trigger the observer logic again or wait for next render

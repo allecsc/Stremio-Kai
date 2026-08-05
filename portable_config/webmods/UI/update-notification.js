@@ -11,7 +11,7 @@
 
   // Configuration
   window.KaiUpdatePlugin.config = {
-    CURRENT_VERSION: "4.5.0",
+    CURRENT_VERSION: "4.8.0",
     REPO_URL:
       "https://api.github.com/repos/allecsc/Stremio-Kai/releases/latest",
     RELEASES_URL: "https://allecsc.github.io/Stremio-Kai/changelog.html",

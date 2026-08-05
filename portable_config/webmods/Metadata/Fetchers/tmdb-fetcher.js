@@ -78,6 +78,23 @@
     return `${IMAGE_BASE}${size}${path}`;
   }
 
+  /**
+   * Escapes HTML special characters in a string to prevent XSS.
+   * Applied at the ingestion boundary so all downstream consumers receive safe text.
+   *
+   * @param {string|null} str - Raw string from TMDB API
+   * @returns {string|null} HTML-escaped string, or the original value if not a string
+   */
+  function escapeHTML(str) {
+    if (typeof str !== "string") return str;
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#x27;");
+  }
+
   // ─────────────────────────────────────────────────────────────────────────────
   // TMDB FETCHER CLASS
   // ─────────────────────────────────────────────────────────────────────────────
@@ -309,7 +326,7 @@
       const company = withLogo || companies[0];
 
       return {
-        name: company.name,
+        name: escapeHTML(company.name),
         logo: company.logo_path ? `${IMAGE_BASE}w92${company.logo_path}` : null,
       };
     }
@@ -399,12 +416,12 @@
 
       return {
         // Content
-        title,
-        originalTitle,
-        englishTitle, // Always stored for tooltip use
-        plot: data.overview || null,
-        tagline: data.tagline || null,
-        contentRating: this.extractMovieRating(data.release_dates),
+        title: escapeHTML(title),
+        originalTitle: escapeHTML(originalTitle),
+        englishTitle: escapeHTML(englishTitle), // Always stored for tooltip use
+        plot: escapeHTML(data.overview || null),
+        tagline: escapeHTML(data.tagline || null),
+        contentRating: escapeHTML(this.extractMovieRating(data.release_dates)),
 
         // Cast & Crew (per plan: cast→stars)
         stars: this.extractCast(credits.cast || [], 8),
@@ -443,7 +460,7 @@
         const primaryNetwork = data.networks[0];
         if (primaryNetwork) {
           network = {
-            name: primaryNetwork.name,
+            name: escapeHTML(primaryNetwork.name),
             logo: buildImageUrl(primaryNetwork.logo_path, "profile"),
           };
         }
@@ -462,12 +479,12 @@
 
       return {
         // Content
-        title,
-        originalTitle,
-        englishTitle, // Always stored for tooltip use
-        plot: data.overview || null,
-        tagline: data.tagline || null,
-        contentRating: this.extractTVRating(data.content_ratings),
+        title: escapeHTML(title),
+        originalTitle: escapeHTML(originalTitle),
+        englishTitle: escapeHTML(englishTitle), // Always stored for tooltip use
+        plot: escapeHTML(data.overview || null),
+        tagline: escapeHTML(data.tagline || null),
+        contentRating: escapeHTML(this.extractTVRating(data.content_ratings)),
 
         // Cast & Crew (per plan: cast→stars)
         stars: this.extractCast(credits.cast || [], 8),
@@ -492,8 +509,8 @@
      */
     extractCast(castArray, limit = 20) {
       return castArray.slice(0, limit).map((person) => ({
-        name: person.name,
-        character: person.character,
+        name: escapeHTML(person.name),
+        character: escapeHTML(person.character),
         photo: buildImageUrl(person.profile_path, "profile"),
         tmdbId: person.id,
         order: person.order,
@@ -508,7 +525,7 @@
         .filter((person) => person.job === job)
         .slice(0, limit)
         .map((person) => ({
-          name: person.name,
+          name: escapeHTML(person.name),
           photo: buildImageUrl(person.profile_path, "profile"),
           tmdbId: person.id,
         }));

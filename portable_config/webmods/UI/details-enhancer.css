@@ -425,15 +425,16 @@
 .video-container-ezBpK .info-container-xyynk {
     display: grid !important;
     gap: 0px !important;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto !important;
     grid-template-rows: min-content 1fr;
     align-content: stretch !important;
     justify-content: start !important;
     
-    /* STABILITY FIX: Force container to fill card height regardless of title lines */
+    /* Flex child stability fix: Occupy remaining space without overflowing or collapsing */
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
     height: 100% !important;
     align-self: stretch !important; 
-    min-height: 8.5vw !important; /* Matches 16:9 thumbnail ratio (15vw * 9/16) */
     
     padding-bottom: 2px !important;
     

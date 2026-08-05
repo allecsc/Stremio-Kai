@@ -1,0 +1,35 @@
+/*
+*   PLAYBACK CLOCK & ESTIMATED FINISH TIME STYLES
+*/
+
+.player-clock-eta,
+.player-clock-eta span {
+    font-size: 1.8rem !important;
+}
+
+.player-clock-eta {
+    flex-shrink: 0; /* Ensures the clock never warps/compresses on narrow screens */
+
+    padding: 0px 24px;
+    font-family: 'Nata Sans', sans-serif;
+    font-weight: 700;
+    pointer-events: none;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    white-space: nowrap;
+
+    color: var(--primary-foreground-color);
+
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.2s ease-in-out;
+}
+
+.player-clock-separator {
+    color: var(--tertiary-accent-color);
+}
+
+.player-clock-ends {
+    opacity: 0.85;
+}

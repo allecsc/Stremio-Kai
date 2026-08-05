@@ -89,7 +89,21 @@ function M.get_skip_target()
     -- Check if current chapter is skippable (pattern-matched or heuristic-matched)
     local is_skippable = chapters.is_current_chapter_skippable()
     
-    -- Check for nearby chapter end within valid distance
+    -- Check for active virtual chapter (IntroDB segments)
+    local skip_chapters = state.chapter_cache.skippable_chapters or {}
+    for _, ch in ipairs(skip_chapters) do
+        if ch.is_virtual and current_time >= ch.time and current_time < ch.chapter_end then
+            return {
+                type = "chapter_end",
+                target_time = ch.chapter_end,
+                chapter_index = nil,
+                remaining = ch.chapter_end - current_time,
+                is_skippable_chapter = true,
+            }
+        end
+    end
+
+    -- Check for nearby physical chapter end within valid distance
     local nearby = chapters.get_nearby_chapter_end(current_time, max_length)
     if nearby then
         return {

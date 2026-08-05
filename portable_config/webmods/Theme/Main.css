@@ -55,13 +55,12 @@ html {
     border: 1px solid transparent;
     box-shadow: var(--box-shadow);
 
-    backdrop-filter: var(--backdrop-filter);
-    
     transition: all 0.2s ease-in-out;
 }
 
 /* cancel buttons blur on hover */
-.horizontal-nav-bar-container-Y_zvK .button-container-xT9_L:hover {
+.horizontal-nav-bar-container-Y_zvK .button-container-xT9_L:hover,
+.horizontal-nav-bar-container-Y_zvK .button-container-xT9_L:focus-visible {
     background: var(--background) !important;
 
     border-color: var(--primary-accent-color) !important;
@@ -70,8 +69,6 @@ html {
 
 /* :active -> On mouse press */
 .horizontal-nav-bar-container-Y_zvK .button-container-xT9_L:active {
-    backdrop-filter: none !important;
-
     border-color: var(--accent) !important;
     box-shadow: var(--box-shadow) !important;
 }
@@ -79,7 +76,6 @@ html {
 /* .active -> persistent while active */
 .horizontal-nav-bar-container-Y_zvK .button-container-xT9_L.active {
     background-color: var(--background) !important;
-    backdrop-filter: none !important;
 
     border-color: var(--accent) !important;
     box-shadow: var(--box-shadow), var(--outer-glow) !important;
@@ -173,11 +169,13 @@ html {
     transition: all 0.2s ease;
 }
 
-.nav-tab-button-container-dYhs0:hover{
+.nav-tab-button-container-dYhs0:hover,
+.nav-tab-button-container-dYhs0:focus-visible {
     transform: translateY(-3px);
 }
 
 .nav-tab-button-container-dYhs0:hover,
+.nav-tab-button-container-dYhs0:focus-visible,
 .nav-tab-button-container-dYhs0.selected {
     box-shadow: var(--box-shadow), var(--outer-glow);
     background: var(--background);
@@ -218,8 +216,46 @@ html {
 .vertical-nav-bar-container-UPAkA:hover,
 .vertical-nav-bar-container-UPAkA:focus,
 .vertical-nav-bar-container-UPAkA:focus-within,
-.vertical-nav-bar-container-UPAkA:focus-visible {
-    transform: translate3d(0, 0, 0);
+.vertical-nav-bar-container-UPAkA:focus-visible,
+body.nav-layer-active .vertical-nav-bar-container-UPAkA {
+    transform: translate3d(0, 0, 0) !important;
+}
+
+/* When sidebar is keyboard/gamepad-focused, also reveal the top nav and hero action buttons */
+body.nav-layer-active .horizontal-nav-bar-container-Y_zvK {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* --- Native UI Navigation Buttons (.buttons-container-Oc5z1) ---
+   Contains Switch Catalog, Fullscreen, and User Menu buttons. 
+   These are native Stremio elements, logic lives here in the core theme. */
+
+/* Default state on Dashboard (Hero Active) - Hidden until interaction */
+body.hero-active .buttons-container-Oc5z1 {
+    position: relative;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Extended invisible hit area — expands the hover zone beyond the container */
+body.hero-active .buttons-container-Oc5z1::before {
+    content: '';
+    position: absolute;
+    inset: -50px -50px;
+    pointer-events: auto;
+}
+
+/* Reveal on proximity / mouse hover */
+body.hero-active .buttons-container-Oc5z1:hover,
+body.hero-active .buttons-container-Oc5z1:focus-within,
+body.hero-active .buttons-container-Oc5z1:focus-visible {
+    opacity: 1 !important;
+}
+
+/* Force reveal when sidebar is keyboard/gamepad-focused (Nav Layer) */
+body.nav-layer-active .buttons-container-Oc5z1 {
+    opacity: 1 !important;
 }
 
 @media (max-width: 640px) {
@@ -348,7 +384,15 @@ to {
   
   
 
-
-
-
-
+/* Focus Styles for Dropdown Menus (Avatar Menu, Settings) */
+.menu-container-B6cqK .nav-menu-option-container-Qj9Xh:focus,
+.menu-container-B6cqK .nav-menu-option-container-Qj9Xh:focus-visible,
+.menu-container-B6cqK .logout-button-container-prHdW:focus,
+.menu-container-B6cqK .logout-button-container-prHdW:focus-visible,
+.dropdown-container-T9bZ2 .nav-menu-option-container-Qj9Xh:focus,
+.dropdown-container-T9bZ2 .nav-menu-option-container-Qj9Xh:focus-visible,
+.dropdown-container-T9bZ2 .logout-button-container-prHdW:focus,
+.dropdown-container-T9bZ2 .logout-button-container-prHdW:focus-visible {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    outline: none !important;
+}

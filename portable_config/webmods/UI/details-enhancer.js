@@ -33,6 +33,24 @@
     "color: #7b5bf5; font-weight: bold",
   );
 
+  /**
+   * Decodes HTML entities in a string back to their literal characters.
+   * Required because metadata is HTML-encoded at ingestion (for innerHTML safety),
+   * but textContent assignments render entities literally, not as HTML.
+   *
+   * Uses a throwaway <textarea> — the standard safe browser approach.
+   * A <textarea> never executes scripts, so this is not an XSS risk.
+   *
+   * @param {string|null} str - Potentially HTML-encoded string
+   * @returns {string|null} Decoded string, or the original value if not a string
+   */
+  function decodeHTML(str) {
+    if (!str || typeof str !== "string") return str;
+    const ta = document.createElement("textarea");
+    ta.innerHTML = str;
+    return ta.value;
+  }
+
   // Configuration
   const CONFIG = {
     // Route detection
@@ -69,12 +87,23 @@
     DESC_CLASS: "episode-description-spe",
   };
 
+  function getMetaContainer() {
+    const containers = document.querySelectorAll(CONFIG.META_CONTAINER);
+    for (const container of containers) {
+      const rect = container.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        return container;
+      }
+    }
+    return containers[0] || null;
+  }
+
   /**
    * Route detector and ID extractor with caching
    */
   class RouteDetector {
-    // Route state cache (invalidated on hash change)
-    static _cache = { hash: "", state: null };
+    // Route state cache (invalidated on hash change or DOM ID change)
+    static _cache = { key: "", state: null };
 
     // Known Route Regular Expressions
     static ROUTES = {
@@ -86,8 +115,18 @@
     static getRouteState() {
       const hash = window.location.hash;
 
-      // Return cached state if hash hasn't changed
-      if (RouteDetector._cache.hash === hash && RouteDetector._cache.state) {
+      // Check if this is a discover/library route where detail DOM might exist
+      const isDiscoverRoute = /^#\/(discover|library)\//.test(hash);
+      let domDetail = null;
+      if (isDiscoverRoute) {
+        domDetail = RouteDetector.extractDetailFromDOM();
+      }
+
+      // Generate cache key
+      const cacheKey = domDetail ? `${hash}::${domDetail.id}` : hash;
+
+      // Return cached state if key hasn't changed
+      if (RouteDetector._cache.key === cacheKey && RouteDetector._cache.state) {
         return RouteDetector._cache.state;
       }
 
@@ -96,7 +135,7 @@
       // 1. Player (Nuclear Cleanup Phase)
       if (RouteDetector.ROUTES.PLAYER.test(hash)) {
         state = { view: "PLAYER", id: null };
-        RouteDetector._cache = { hash, state };
+        RouteDetector._cache = { key: cacheKey, state };
         return state;
       }
 
@@ -114,7 +153,7 @@
           source: idInfo.source,
           episodeId: decodeURIComponent(streamsMatch[3]),
         };
-        RouteDetector._cache = { hash, state };
+        RouteDetector._cache = { key: cacheKey, state };
         return state;
       }
 
@@ -134,17 +173,30 @@
           source: idInfo.source,
           season: season,
         };
-        RouteDetector._cache = { hash, state };
+        RouteDetector._cache = { key: cacheKey, state };
+        return state;
+      }
+
+      // 4. Discover/Library Detail Page
+      if (isDiscoverRoute && domDetail) {
+        state = {
+          view: "DETAIL",
+          type: domDetail.type,
+          id: domDetail.id,
+          source: domDetail.source,
+          season: new URLSearchParams(hash.split("?")[1] || "").get("season"),
+        };
+        RouteDetector._cache = { key: cacheKey, state };
         return state;
       }
 
       state = { view: "UNKNOWN", id: null };
-      RouteDetector._cache = { hash, state };
+      RouteDetector._cache = { key: cacheKey, state };
       return state;
     }
 
     static invalidateCache() {
-      RouteDetector._cache = { hash: "", state: null };
+      RouteDetector._cache = { key: "", state: null };
     }
 
     static parseId(idString) {
@@ -189,8 +241,10 @@
     }
 
     static extractFromDOM() {
-      const logoImg = document.querySelector(CONFIG.LOGO_IMAGE);
-      const releaseInfo = document.querySelector(CONFIG.RELEASE_INFO);
+      const container = getMetaContainer();
+      if (!container) return null;
+      const logoImg = container.querySelector(CONFIG.LOGO_IMAGE);
+      const releaseInfo = container.querySelector(CONFIG.RELEASE_INFO);
 
       if (!logoImg) return null;
 
@@ -199,6 +253,75 @@
       const year = yearText.match(/\d{4}/)?.[0] || "";
 
       return title ? { title, year } : null;
+    }
+
+    static extractDetailFromDOM() {
+      const container = getMetaContainer();
+      if (!container) return null;
+
+      // 1. Try IMDb button
+      const imdbBtn = container.querySelector(
+        '.imdb-button-container-gGjxp a[href*="tt"]',
+      );
+      if (imdbBtn) {
+        const href = imdbBtn.getAttribute("href") || "";
+        const match = href.match(/tt\d+/);
+        if (match) {
+          return {
+            id: match[0],
+            source: "imdb",
+            type: container.querySelector(CONFIG.EPISODES_CONTAINER)
+              ? "series"
+              : "movie",
+          };
+        }
+      }
+
+      // 2. Try any detail link
+      const detailLink = container.querySelector('a[href*="/detail/"]');
+      if (detailLink) {
+        const href = decodeURIComponent(detailLink.getAttribute("href") || "");
+        const match = href.match(/\/(movie|series)\/([^/?#]+)/);
+        if (match) {
+          const idInfo = RouteDetector.parseId(match[2]);
+          if (idInfo.id) {
+            return { id: idInfo.id, source: idInfo.source, type: match[1] };
+          }
+        }
+      }
+
+      // 3. Try any link with tt ID
+      const imdbLink = container.querySelector('a[href*="tt"]');
+      if (imdbLink) {
+        const href = imdbLink.getAttribute("href") || "";
+        const match = href.match(/tt\d+/);
+        if (match) {
+          return {
+            id: match[0],
+            source: "imdb",
+            type: container.querySelector(CONFIG.EPISODES_CONTAINER)
+              ? "series"
+              : "movie",
+          };
+        }
+      }
+
+      // 4. Try logo image source
+      const logoImg = container.querySelector(CONFIG.LOGO_IMAGE);
+      if (logoImg?.src) {
+        const match = logoImg.src.match(/tt\d{7,}/);
+        if (match) {
+          return {
+            id: match[0],
+            source: "imdb",
+            type: container.querySelector(CONFIG.EPISODES_CONTAINER)
+              ? "series"
+              : "movie",
+          };
+        }
+      }
+
+      return null;
     }
   }
 
@@ -225,7 +348,7 @@
       });
 
       // 1c. Restore stashed text node content
-      const metaContainer = document.querySelector(CONFIG.META_CONTAINER);
+      const metaContainer = getMetaContainer();
       if (metaContainer) {
         const desc = metaContainer.querySelector(
           ".description-container-yi8iU",
@@ -254,7 +377,7 @@
     static injectMetadata(metadata, intersectionObserver) {
       if (!metadata) return;
 
-      const metaContainer = document.querySelector(CONFIG.META_CONTAINER);
+      const metaContainer = getMetaContainer();
       if (!metaContainer) {
         console.error(
           "[Show Page Enhancer] Meta container not found during injection!",
@@ -351,7 +474,7 @@
       if (metadata.tagline) {
         taglineEl = document.createElement("div");
         taglineEl.className = "show-page-tagline";
-        taglineEl.textContent = metadata.tagline;
+        taglineEl.textContent = decodeHTML(metadata.tagline);
         replaced++;
       }
 
@@ -365,7 +488,7 @@
       if (metadata.certification || metadata.rated) {
         const cert = document.createElement("span");
         cert.className = "show-page-certification";
-        cert.textContent = metadata.certification || metadata.rated;
+        cert.textContent = decodeHTML(metadata.certification || metadata.rated);
         metaItems.push(cert);
       }
 
@@ -407,7 +530,7 @@
         const networkBadge = document.createElement("span");
         networkBadge.className = "show-page-network show-page-meta-text";
         const networkName = badgeEntity.name || badgeEntity;
-        networkBadge.textContent = networkName;
+        networkBadge.textContent = decodeHTML(networkName);
         metaItems.push(networkBadge);
       }
 
@@ -518,7 +641,7 @@
         // Add our plot text as a new element
         const plotSpan = document.createElement("span");
         plotSpan.className = "show-page-injected-plot";
-        plotSpan.textContent = plotText;
+        plotSpan.textContent = decodeHTML(plotText);
         if (existingLabel) {
           existingLabel.after(plotSpan);
         } else {
@@ -691,6 +814,11 @@
     reset() {
       this.cleanupInjectedContent();
       this.processedEpisodes.clear();
+      const container = document.querySelector(CONFIG.EPISODES_CONTAINER);
+      if (container) {
+        delete container.dataset.kaiScrolled;
+        delete container.dataset.kaiScrolledSeason;
+      }
     }
 
     handleEpisodesMutation(container) {
@@ -702,11 +830,23 @@
       const episodes = container.querySelectorAll(CONFIG.EPISODE_ITEM);
 
       for (const episodeEl of episodes) {
+        const thumbnailEl = episodeEl.querySelector(
+          ".thumbnail-container-Zm8Cl",
+        );
+        const watchedEl = episodeEl.querySelector(
+          ".upcoming-watched-container-msCaq",
+        );
+        if (thumbnailEl && watchedEl && watchedEl.parentNode !== thumbnailEl) {
+          thumbnailEl.appendChild(watchedEl);
+        }
+
         if (episodeEl.classList.contains("spe-processed")) continue;
 
         episodeEl.classList.add("spe-processed");
         this.injectDescription(season, episodeEl);
       }
+
+      scrollToNextEpisode(container, season);
     }
 
     // Correctly locate the ACTIVE season
@@ -941,7 +1081,16 @@
       const routeInfo = RouteDetector.extractFromHash();
       if (!routeInfo || !routeInfo.id) return;
 
-      if (routeInfo.id === id || routeInfo.id === imdb) {
+      let isMatch = routeInfo.id === id || routeInfo.id === imdb;
+      if (!isMatch && this.currentMetadata) {
+        const metadataImdb = this.currentMetadata.imdb;
+        const metadataId = this.currentMetadata.id;
+        isMatch =
+          (metadataImdb && (metadataImdb === id || metadataImdb === imdb)) ||
+          (metadataId && (metadataId === id || metadataId === imdb));
+      }
+
+      if (isMatch) {
         // FIX: Defer DOM mutations to next frame to avoid colliding with React's
         // reconciler during navigation transitions. Without this, clearInjectedContent()
         // can .remove() nodes that React is mid-unmount on, causing an uncaught
@@ -962,7 +1111,7 @@
           // Force re-process — clear current metadata to force a fresh lookup
           this.currentMetadata = null;
 
-          const container = document.querySelector(CONFIG.META_CONTAINER);
+          const container = getMetaContainer();
           if (container) {
             // Remove marker to allow re-injection
             container.classList.remove(CONFIG.MARKER_CLASS);
@@ -1000,6 +1149,9 @@
       // Debounced handler to prevent CPU spikes from React's frequent DOM updates
       const debouncedHandler = debounce(() => {
         try {
+          // Invalidate route cache before any route-state check to ensure new DOM is detected
+          RouteDetector.invalidateCache();
+
           // 1. Guard against non-detail pages OR active player
           const isPlayer = !!(
             document.querySelector("video") ||
@@ -1010,11 +1162,10 @@
           if (!RouteDetector.isDetailPage() || isPlayer) {
             if (isPlayer) {
               // Release focus from injected buttons to prevent spacebar hijacking
+              const activeMetaContainer = getMetaContainer();
               if (
                 document.activeElement &&
-                document
-                  .querySelector(CONFIG.META_CONTAINER)
-                  ?.contains(document.activeElement)
+                activeMetaContainer?.contains(document.activeElement)
               ) {
                 document.activeElement.blur();
               }
@@ -1027,7 +1178,7 @@
           }
 
           // 2. Refresh injection if container is missing markers
-          const container = document.querySelector(CONFIG.META_CONTAINER);
+          const container = getMetaContainer();
           if (container && !container.classList.contains(CONFIG.MARKER_CLASS)) {
             if (this.currentMetadata) {
               this.injectIfReady(container);
@@ -1144,7 +1295,7 @@
      */
     setContainerState(isActive) {
       const targets = [
-        document.querySelector(CONFIG.META_CONTAINER),
+        getMetaContainer(),
         document.querySelector(CONFIG.EPISODES_CONTAINER),
         document.querySelector(".hero-container"),
         document.querySelector(".metadata-hover-popup"),
@@ -1270,7 +1421,7 @@
 
       if (metadata) {
         this.currentMetadata = metadata;
-        const container = document.querySelector(CONFIG.META_CONTAINER);
+        const container = getMetaContainer();
         if (container) {
           this.injectIfReady(container);
         }
@@ -1368,11 +1519,128 @@
     }
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () =>
-      new ShowPageEnhancer().init(),
+  // Container-bound auto-scroll targeting the next episode after the last watched episode
+  function scrollToNextEpisode(container, seasonKey = "") {
+    if (!container) return;
+    const currentKey = String(seasonKey);
+    if (
+      container.dataset.kaiScrolled === "true" &&
+      container.dataset.kaiScrolledSeason === currentKey
+    ) {
+      return;
+    }
+
+    const episodes = Array.from(
+      container.querySelectorAll(".video-container-ezBpK"),
     );
+    if (episodes.length === 0) return;
+
+    // Find all watched episodes in the current list
+    const watchedEpisodes = episodes.filter((ep) =>
+      ep.querySelector(".watched-container-gvzs3"),
+    );
+
+    let targetEpisode = null;
+    if (watchedEpisodes.length > 0) {
+      const lastWatched = watchedEpisodes[watchedEpisodes.length - 1];
+      const lastWatchedIndex = episodes.indexOf(lastWatched);
+      // Target last watched episode to anchor user progress at the top of the list
+      targetEpisode = lastWatched;
+    }
+
+    container.dataset.kaiScrolled = "true";
+    container.dataset.kaiScrolledSeason = currentKey;
+
+    if (!targetEpisode) return;
+
+    // Locate the scrollable parent container to avoid window-level scrollIntoView layout shifts
+    let scrollParent = container;
+    while (
+      scrollParent &&
+      scrollParent !== document.body &&
+      scrollParent !== document.documentElement
+    ) {
+      const style = window.getComputedStyle(scrollParent);
+      if (
+        style.overflowY === "auto" ||
+        style.overflowY === "scroll" ||
+        style.overflow === "auto" ||
+        style.overflow === "scroll"
+      ) {
+        break;
+      }
+      scrollParent = scrollParent.parentElement;
+    }
+
+    if (!scrollParent || scrollParent === document.body) {
+      scrollParent = container;
+    }
+
+    const parentRect = scrollParent.getBoundingClientRect();
+    const targetRect = targetEpisode.getBoundingClientRect();
+    const targetTop = targetRect.top - parentRect.top + scrollParent.scrollTop;
+
+    scrollParent.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: "smooth",
+    });
+  }
+
+  // Optimized side-drawer overlay relocation (Ensures 1:1 visual parity with detail page)
+  let isDrawerRelocatePending = false;
+
+  function relocateSideDrawerBadges() {
+    isDrawerRelocatePending = false;
+    const sideDrawer = document.querySelector(".side-drawer-r9EuA");
+    if (!sideDrawer) return;
+
+    const unprocessed = sideDrawer.querySelectorAll(
+      ".video-container-ezBpK:not(.spe-drawer-processed)",
+    );
+    for (const episodeEl of unprocessed) {
+      const thumbnailEl = episodeEl.querySelector(".thumbnail-container-Zm8Cl");
+      const watchedEl = episodeEl.querySelector(
+        ".upcoming-watched-container-msCaq",
+      );
+      if (thumbnailEl && watchedEl) {
+        if (watchedEl.parentNode !== thumbnailEl) {
+          thumbnailEl.appendChild(watchedEl);
+        }
+        episodeEl.classList.add("spe-drawer-processed");
+      }
+    }
+
+    const drawerSeason =
+      sideDrawer.querySelector(".seasons-popup-label-container-fZcu4")
+        ?.textContent || "";
+    const drawerContainer =
+      sideDrawer.querySelector(".videos-nRM2D") || sideDrawer;
+    scrollToNextEpisode(drawerContainer, drawerSeason);
+  }
+
+  function scheduleSideDrawerRelocate() {
+    if (isDrawerRelocatePending) return;
+    isDrawerRelocatePending = true;
+    requestAnimationFrame(relocateSideDrawerBadges);
+  }
+
+  const sideDrawerObserver = new MutationObserver(scheduleSideDrawerRelocate);
+
+  function initSideDrawerObserver() {
+    sideDrawerObserver.disconnect();
+    const target =
+      document.querySelector(".application-S5_Fh") || document.body;
+    sideDrawerObserver.observe(target, { childList: true, subtree: true });
+    scheduleSideDrawerRelocate();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      new ShowPageEnhancer().init();
+      initSideDrawerObserver();
+    });
   } else {
     new ShowPageEnhancer().init();
+    initSideDrawerObserver();
   }
 })();

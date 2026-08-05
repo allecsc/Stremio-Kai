@@ -145,8 +145,9 @@ local VF_FILTERS = {
     -- Base filters (always applied for anime)
     hqdn3d = '@HQDN3D_HIGH:lavfi=[hqdn3d=luma_spatial=5:chroma_spatial=5:luma_tmp=6:chroma_tmp=6]',
     bwdif = '@BWDIF:lavfi=[bwdif=mode=1:parity=auto:deint=all]',
-    -- SVP interpolation (optional, appended if enabled)
-    svp = '@SVP:vapoursynth="~~/svp_main.vpy":buffered-frames=8:concurrent-frames=16'
+    -- SVP interpolation (anime vs cinema)
+    svp_anime = '@SVP:vapoursynth="~~/svp_anime.vpy":buffered-frames=8:concurrent-frames=16',
+    svp_cinema = '@SVP:vapoursynth="~~/svp_cinema.vpy":buffered-frames=8:concurrent-frames=16'
 }
 
 -- Audio Presets (Audiophile / Non-Destructive)
@@ -283,6 +284,30 @@ local function apply_sdr_baseline()
     mp.set_property("tone-mapping", "auto")           -- Reset tone mapping
 end
 
+-- Apply SVP sync engine policies (forces hwdec=auto-copy and real-time frame sync settings when active)
+local function apply_svp_sync_policy(active)
+    if active then
+        mp.set_property("hwdec", "auto-copy")
+        mp.set_property("hr-seek-framedrop", "no")
+        mp.set_property("video-latency-hacks", "yes")
+        mp.set_property("mc", "0")
+        mp.set_property("autosync", "30")
+        mp.set_property("vd-queue-enable", "yes")
+        mp.set_property("vd-queue-max-bytes", "1024MiB")
+        mp.set_property("vd-queue-max-samples", "120")
+        mp.set_property("vd-queue-max-secs", "60")
+        log("SVP Engine Active: applied real-time sync & enlarged queue buffer (1024MiB / 120 samples)")
+    else
+        mp.set_property("hwdec", "auto")
+        mp.set_property("hr-seek-framedrop", "yes")
+        mp.set_property("video-latency-hacks", "no")
+        mp.set_property("mc", "-1")
+        mp.set_property("autosync", "0")
+        mp.set_property("vd-queue-enable", "no")
+        log("SVP Engine Inactive: restored default mpv playback baseline")
+    end
+end
+
 -- Apply HDR passthrough settings (for HDR displays)
 local function apply_hdr_passthrough(target_peak)
     log("Applying HDR passthrough layer")
@@ -351,8 +376,8 @@ local function apply_anime_vf(is_legacy, svp_enabled)
     mp.commandv("vf", "append", base_filter)
     
     if svp_enabled then
-        log("Appending VF: SVP")
-        mp.commandv("vf", "append", VF_FILTERS.svp)
+        log("Appending VF: SVP (Anime)")
+        mp.commandv("vf", "append", VF_FILTERS.svp_anime)
     end
 end
 
@@ -593,10 +618,12 @@ function try_execute_profile()
     local icc_profile_enabled = meta.icc_profile
     local svp_enabled = meta.svp_enabled
     if svp_enabled == nil then svp_enabled = true end
+    local svp_global = meta.svp_global or false
     local target_peak = meta.target_peak or "auto"
     local vulkan_mode = meta.vulkan_mode or false
 
     local is_legacy_anime = is_anime and is_interlaced and height <= 576
+    local should_run_global_svp = not is_anime and svp_enabled and svp_global
 
     if vulkan_mode then
         log("Vulkan mode enabled")
@@ -619,6 +646,9 @@ function try_execute_profile()
     if is_hdr then
         table.insert(osd_parts, hdr_passthrough and "HDR" or "HDR→SDR")
     end
+    if should_run_global_svp then
+        table.insert(osd_parts, "SVP")
+    end
     
     -- APPLY
     log("--- FINAL DECISION ---")
@@ -626,6 +656,7 @@ function try_execute_profile()
     log("HDR Status: " .. tostring(is_hdr) .. ", Passthrough: " .. tostring(hdr_passthrough))
     log("Resolution: " .. tostring(height) .. "p")
     log("Legacy Anime: " .. tostring(is_legacy_anime))
+    log("Global SVP Active: " .. tostring(should_run_global_svp))
 
     apply_sdr_baseline()
     
@@ -654,17 +685,16 @@ function try_execute_profile()
             apply_anime_shaders(shader_preset, is_legacy_anime, is_hdr and hdr_passthrough)
         end
         apply_anime_vf(is_legacy_anime, svp_enabled)
+    elseif should_run_global_svp then
+        log("Appending VF: Global SVP (Cinema)")
+        mp.commandv("vf", "append", VF_FILTERS.svp_cinema)
     end
 
     audio_state.mode = meta.audio_preset or "off"
     apply_audio_current()
     
-    -- Series hwdec check
-    local content_type = meta.content_type or "unknown"
-    if content_type == "series" then
-        mp.set_property("hwdec", "auto-copy")
-        log("Series detected: enabled hwdec=auto-copy")
-    end
+    -- HWDEC & SVP Sync Engine Policy Application
+    apply_svp_sync_policy(is_anime or should_run_global_svp)
     
     -- OSD
     local show_osd = meta.osd_profile_messages

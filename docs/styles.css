@@ -78,10 +78,6 @@ body {
   color: var(--purple-light);
 }
 
-.nav-discord {
-  display: flex;
-  align-items: center;
-}
 
 .nav-github {
   display: flex;

@@ -39,6 +39,23 @@
     return window.MetadataModules?.fetchUtils;
   }
 
+  /**
+   * Escapes HTML special characters in a string to prevent XSS.
+   * Applied at the ingestion boundary so all downstream consumers receive safe text.
+   *
+   * @param {string|null} str - Raw string from MDBList API
+   * @returns {string|null} HTML-escaped string, or the original value if not a string
+   */
+  function escapeHTML(str) {
+    if (typeof str !== "string") return str;
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#x27;");
+  }
+
   // ─────────────────────────────────────────────────────────────────────────────
   // MDBLIST FETCHER CLASS
   // ─────────────────────────────────────────────────────────────────────────────
@@ -154,7 +171,7 @@
 
       return {
         // Content
-        plot: data.description || null,
+        plot: escapeHTML(data.description || null),
 
         // Images
         poster: data.poster || null,
@@ -162,7 +179,7 @@
         trailer: data.trailer || null,
 
         // Metadata
-        contentRating: data.certification || null,
+        contentRating: escapeHTML(data.certification || null),
 
         // Ratings (multi-source)
         ratings,

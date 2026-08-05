@@ -162,7 +162,15 @@ class IdLookupService {
                     .first();
 
                 if (titleMatch) {
-                    return titleMatch;
+                    // Guard against matching a different show with the same name:
+                    // If both entries have an ID for the same provider and they differ, do not treat as match.
+                    const isSameImdb = !extractedIds.imdb || !titleMatch.imdb || titleMatch.imdb === extractedIds.imdb;
+                    const isSameTmdb = !extractedIds.tmdb || !titleMatch.tmdb || String(titleMatch.tmdb) === String(extractedIds.tmdb);
+                    const isSameTvdb = !extractedIds.tvdb || !titleMatch.tvdb || String(titleMatch.tvdb) === String(extractedIds.tvdb);
+
+                    if (isSameImdb && isSameTmdb && isSameTvdb) {
+                        return titleMatch;
+                    }
                 }
             }
 

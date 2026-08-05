@@ -16,6 +16,7 @@ M.opts = {
     blackdetect_args = "d=0.5:pic_th=0.98:pix_th=0.05",
     silencedetect_args = "n=-45dB:d=0.5",
     show_notification = true,
+    enable_filter_notifications = false,
     notification_duration = 30,
     filters_notification_duration = 5,
     min_skip_duration = 10,

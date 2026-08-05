@@ -66,7 +66,13 @@
      */
     static isJapanAnimation(entry) {
       const origin = entry?.originCountry?.toLowerCase();
-      if (origin !== "japan") return false;
+      const language = entry?.language?.toLowerCase();
+
+      // Accept either origin country OR language as the "Japanese" signal.
+      // Handles co-productions where a non-Japanese country may be listed first
+      // but the content is clearly Japanese-language animation.
+      const isJapanese = origin === "japan" || language === "japanese";
+      if (!isJapanese) return false;
 
       // Check BOTH genres AND interests (may differ)
       const allTerms = [

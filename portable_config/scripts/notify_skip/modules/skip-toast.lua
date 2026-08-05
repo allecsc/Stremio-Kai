@@ -219,21 +219,6 @@ function SkipToast:render()
         shadow_color = shadow_color,
     })
 
-    -- "(Press Tab)" hint
-    if self.is_prompt then
-        local tab_font_size = font_size * 0.5
-        local tab_y = y + (font_size * 0.55)
-
-        ass:txt(x, tab_y, 5, self.hint_text, {
-            size = tab_font_size,
-            color = text_color,
-            opacity = 0.5,
-            bold = false,
-            shadow_y = 1.5 * self.scale,
-            shadow_color = shadow_color,
-        })
-    end
-
     self.osd.res_x = self.display.width
     self.osd.res_y = self.display.height
     self.osd.data = ass.text

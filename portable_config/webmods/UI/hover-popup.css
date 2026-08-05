@@ -927,6 +927,20 @@
 
 /*=====  End of PEOPLE  ======*/
 
+/*=============================================
+=         CAPS LOCK TOGGLE (disabled state)   =
+=============================================*/
+
+/* When Caps Lock is ON, the hover panel is fully suppressed.
+   `display: none` is used instead of opacity so the show/hide
+   timers in the JS never make it visible accidentally.           */
+body.hover-popup-disabled .metadata-hover-popup {
+    display: none !important;
+}
+
+/*=====  End of CAPS LOCK TOGGLE  ======*/
+
+
 
 
 

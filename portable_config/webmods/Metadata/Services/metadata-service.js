@@ -497,6 +497,15 @@
             id: entry.id,
             imdb: entry.imdb,
             type: entry.type,
+            // Promote to "complete" when an entry already has public data (cinemeta/imdbapi)
+            // and private APIs have now also succeeded. IMDbAPI is offline so this is the
+            // new gate for reaching "complete" status.
+            metaSource:
+              entry.metaSource === "cinemeta" ||
+              entry.metaSource === "imdbapi" ||
+              entry.metaSource === "complete"
+                ? "complete"
+                : entry.metaSource,
           };
 
           const updated = await storage.saveTitle(updatePayload);

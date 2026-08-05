@@ -353,10 +353,18 @@ class MetadataStorage {
 
       // Fallback to type+title if no ID match found
       if (!existing && richData.type && richData.title) {
-        existing = await this.db.titles
+        const titleMatch = await this.db.titles
           .where("[type+title]")
           .equals([richData.type, richData.title])
           .first();
+        if (titleMatch) {
+          const isSameImdb = !richData.imdb || !titleMatch.imdb || titleMatch.imdb === richData.imdb;
+          const isSameTmdb = !richData.tmdb || !titleMatch.tmdb || String(titleMatch.tmdb) === String(richData.tmdb);
+          const isSameTvdb = !richData.tvdb || !titleMatch.tvdb || String(titleMatch.tvdb) === String(richData.tvdb);
+          if (isSameImdb && isSameTmdb && isSameTvdb) {
+            existing = titleMatch;
+          }
+        }
       }
 
       if (existing) {
@@ -407,6 +415,7 @@ class MetadataStorage {
           directors: richData.directors,
           stars: richData.stars,
           originCountry: richData.originCountry,
+          language: richData.language,
           seasons: richData.seasons,
           episodes: richData.episodes,
           tmdb: richData.tmdb,
@@ -498,12 +507,18 @@ class MetadataStorage {
 
     // If still not found, try type+title compound index
     if (!conflictingEntry && richData.type && richData.title) {
-      conflictingEntry = await this.db.titles
+      const titleMatch = await this.db.titles
         .where("[type+title]")
         .equals([richData.type, richData.title])
         .first();
-      if (conflictingEntry) {
-        conflictField = "type+title";
+      if (titleMatch) {
+        const isSameImdb = !richData.imdb || !titleMatch.imdb || titleMatch.imdb === richData.imdb;
+        const isSameTmdb = !richData.tmdb || !titleMatch.tmdb || String(titleMatch.tmdb) === String(richData.tmdb);
+        const isSameTvdb = !richData.tvdb || !titleMatch.tvdb || String(titleMatch.tvdb) === String(richData.tvdb);
+        if (isSameImdb && isSameTmdb && isSameTvdb) {
+          conflictingEntry = titleMatch;
+          conflictField = "type+title";
+        }
       }
     }
 

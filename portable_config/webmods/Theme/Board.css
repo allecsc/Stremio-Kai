@@ -120,7 +120,11 @@ body.hero-active .board-container-DTN_b .board-content-container-ToQTz .board-co
 	transition: all 0.3s ease-out;
 }
 
-.meta-item-container-Tj0Ib:hover .poster-container-qkw48, .meta-item-container-Tj0Ib:focus .poster-container-qkw48, .meta-item-container-Tj0Ib.active .poster-container-qkw48, .meta-item-container-Tj0Ib.selected .poster-container-qkw48 {
+.meta-item-container-Tj0Ib:hover .poster-container-qkw48, 
+.meta-item-container-Tj0Ib:focus .poster-container-qkw48, 
+.meta-item-container-Tj0Ib:focus-visible .poster-container-qkw48,
+.meta-item-container-Tj0Ib.active .poster-container-qkw48, 
+.meta-item-container-Tj0Ib.selected .poster-container-qkw48 {
 	z-index: 10;
 
 	box-shadow: 0 8px 20px rgb(0, 0, 0, 1);
@@ -130,7 +134,8 @@ body.hero-active .board-container-DTN_b .board-content-container-ToQTz .board-co
 }
 
 
-.meta-item-container-Tj0Ib .poster-container-qkw48 .poster-image-layer-KimPZ .poster-image-NiV7O:hover {
+.meta-item-container-Tj0Ib .poster-container-qkw48 .poster-image-layer-KimPZ .poster-image-NiV7O:hover,
+.meta-item-container-Tj0Ib:focus-visible .poster-container-qkw48 .poster-image-layer-KimPZ .poster-image-NiV7O {
 	filter: brightness(100%) saturate(105%);
 }
 
@@ -144,6 +149,7 @@ body.hero-active .board-container-DTN_b .board-content-container-ToQTz .board-co
 /* Disable poster zoom-in animation on hover */
 .meta-item-container-Tj0Ib:hover .poster-container-qkw48 .poster-image-layer-KimPZ, 
 .meta-item-container-Tj0Ib:focus .poster-container-qkw48 .poster-image-layer-KimPZ,
+.meta-item-container-Tj0Ib:focus-visible .poster-container-qkw48 .poster-image-layer-KimPZ,
 .meta-item-container-Tj0Ib.active .poster-container-qkw48 .poster-image-layer-KimPZ,
 .meta-item-container-Tj0Ib.selected .poster-container-qkw48 .poster-image-layer-KimPZ {
     transform: unset; 
@@ -194,7 +200,8 @@ body.hero-active .board-container-DTN_b .board-content-container-ToQTz .board-co
     transform: scale(1.2);
 }
 
-.meta-item-container-Tj0Ib .poster-container-qkw48 .play-icon-layer-vpQIo:hover {
+.meta-item-container-Tj0Ib .poster-container-qkw48 .play-icon-layer-vpQIo:hover,
+.meta-item-container-Tj0Ib:focus-visible .poster-container-qkw48 .play-icon-layer-vpQIo {
     backdrop-filter: var(--backdrop-filter) !important;
     box-shadow: var(--box-shadow), var(--outer-glow);
 

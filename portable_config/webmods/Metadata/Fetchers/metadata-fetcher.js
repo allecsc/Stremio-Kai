@@ -50,6 +50,23 @@ class SimpleLRUCache {
 }
 
 class MetadataFetcher {
+  /**
+   * Escapes HTML special characters in a string to prevent XSS.
+   * Applied at the ingestion boundary so all downstream consumers receive safe text.
+   *
+   * @param {string} str - Raw string from external API
+   * @returns {string} HTML-escaped string, or the original value if not a string
+   */
+  static escapeHTML(str) {
+    if (typeof str !== "string") return str;
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#x27;");
+  }
+
   /** @type {number} Maximum number of stars to include in metadata */
   static MAX_STARS = 50;
 
@@ -117,25 +134,9 @@ class MetadataFetcher {
       const needsCinemeta = !hasCinemetaData;
       const needsImdb = !hasImdbData;
 
-      // Edge case: Missing type - need IMDbAPI first to get type
-      if (!type && imdbId && needsCinemeta) {
-        // Determine episode count if we have partial data (unlikely here but for completeness)
-        const episodeCount = enrichedData.episodes || 1;
-        const imdbData = await this.fetchImdbData(
-          imdbId,
-          priority,
-          episodeCount,
-        );
-        if (imdbData) {
-          type = imdbData.type;
-          // Save intermediate result with IMDb data
-          Object.assign(enrichedData, imdbData, {
-            metaSource: "imdbapi",
-            lastUpdated: Date.now(),
-          });
-          hasImdbData = true;
-        }
-      }
+      // NOTE: IMDb API (api.imdbapi.dev) is disabled — permanently offline as of July 2026.
+      // The type-resolution fallback that used it is also disabled; Cinemeta provides type reliably.
+      // if (!type && imdbId && needsCinemeta) { ... fetchImdbData ... }
 
       // Fetch Cinemeta data if needed
       if (needsCinemeta && type) {
@@ -183,42 +184,9 @@ class MetadataFetcher {
         }
       }
 
-      // Fetch IMDb data if needed (and we have type or already have Cinemeta)
-      if (needsImdb && (type || hasCinemetaData)) {
-        // Pass episode count from existing data (e.g. from Cinemeta) to help normalizer fix runtime
-        const episodeCount = enrichedData.episodes || 1;
-        const imdbData = await this.fetchImdbData(
-          imdbId,
-          priority,
-          episodeCount,
-        );
-        if (imdbData) {
-          // Merge credits: prioritize Cinemeta, fallback to IMDbAPI
-          const mergedCredits = this.mergeCreditsWithFallback(
-            enrichedData.stars || [],
-            imdbData.stars || [],
-            MetadataFetcher.MAX_STARS,
-          );
-          const mergedDirectors = this.mergeCreditsWithFallback(
-            enrichedData.directors || [],
-            imdbData.directors || [],
-            MetadataFetcher.MAX_DIRECTORS,
-          );
-
-          // SMART MERGE: IMDb data over existing
-          const smartMerged = this.smartMerge(enrichedData, imdbData);
-
-          // Merge IMDb data, preserve Cinemeta plot if it exists
-          Object.assign(enrichedData, smartMerged, {
-            plot: enrichedData.plot || imdbData.plot,
-            stars: mergedCredits,
-            directors: mergedDirectors,
-            metaSource: hasCinemetaData ? "complete" : "imdbapi",
-            lastUpdated: Date.now(),
-          });
-          hasImdbData = true;
-        }
-      }
+      // NOTE: IMDb API (api.imdbapi.dev) is disabled — permanently offline as of July 2026.
+      // metaSource promotion to "complete" now happens below when private APIs succeed.
+      // if (needsImdb && (type || hasCinemetaData)) { ... fetchImdbData ... }
 
       // -----------------------------------------------------------------------
       // SEQUENTIAL PRIVATE ENRICHMENT
@@ -242,9 +210,15 @@ class MetadataFetcher {
             // (e.g. Logos, Ratings, Content Ratings)
             const smartMerged = this.smartMerge(enrichedData, privateData);
 
+            // Promote to "complete" when Cinemeta (or IMDbAPI) + private APIs have both succeeded.
+            // This replaces the old Cinemeta+IMDbAPI gate since IMDbAPI is permanently offline.
+            const promotedSource =
+              hasCinemetaData || hasImdbData ? "complete" : enrichedData.metaSource;
+
             Object.assign(enrichedData, smartMerged, {
               metaSourcePrivate: privateData.metaSourcePrivate,
               lastEnrichedPrivate: Date.now(),
+              metaSource: promotedSource,
             });
           }
         } catch (e) {
@@ -403,6 +377,8 @@ class MetadataFetcher {
       );
     }
 
+    const esc = MetadataFetcher.escapeHTML;
+
     const normalized = {
       id: String(data.mal_id), // Use MAL ID as temporary ID needed for structure, but caller will merge
       // Unified ratings object format
@@ -417,14 +393,14 @@ class MetadataFetcher {
       rankMal: data.rank,
       malUrl: data.url,
       // Jikan-specific enriched fields
-      genres: data.genres ? data.genres.map((g) => g.name) : [],
-      interests: data.themes ? data.themes.map((t) => t.name) : [],
+      genres: data.genres ? data.genres.map((g) => esc(g.name)) : [],
+      interests: data.themes ? data.themes.map((t) => esc(t.name)) : [],
       demographics:
         data.demographics && data.demographics.length > 0
-          ? data.demographics[0].name
+          ? esc(data.demographics[0].name)
           : null,
       runtime: runtime,
-      status: data.status,
+      status: esc(data.status),
       metaSource: "jikan", // Marker source
     };
 
@@ -459,7 +435,9 @@ class MetadataFetcher {
    * @returns {Object} Normalized metadata object
    */
   normalizeIMDbData(data, episodeCount = 1) {
-    const allInterests = data.interests?.map((interest) => interest.name) || [];
+    const esc = MetadataFetcher.escapeHTML;
+
+    const allInterests = data.interests?.map((interest) => esc(interest.name)) || [];
     const demographics = allInterests.filter((interest) =>
       ["Josei", "Seinen", "Shōnen", "Shōjo"].includes(interest),
     );
@@ -473,8 +451,8 @@ class MetadataFetcher {
 
     const normalized = {
       id: data.id,
-      title: data.primaryTitle,
-      originalTitle: data.originalTitle,
+      title: esc(data.primaryTitle),
+      originalTitle: esc(data.originalTitle),
       type: computedType,
       runtime: data.runtimeSeconds
         ? this.formatRuntime(
@@ -483,9 +461,9 @@ class MetadataFetcher {
             episodeCount,
           )
         : null,
-      genres: data.genres || [],
-      interests, // Now excludes demographics
-      demographics: demographics.length > 0 ? demographics[0] : null, // Flatten to single string
+      genres: (data.genres || []).map(esc),
+      interests, // Now excludes demographics (already escaped above)
+      demographics: demographics.length > 0 ? demographics[0] : null, // Flatten to single string (already escaped)
       // Unified ratings object format
       ratings: {
         ...(data.rating?.aggregateRating && {
@@ -501,22 +479,22 @@ class MetadataFetcher {
           },
         }),
       },
-      plot: data.plot,
+      plot: esc(data.plot),
       directors:
         data.directors?.map((d) => ({
-          name: d.displayName,
+          name: esc(d.displayName),
           image: d.primaryImage?.url
             ? d.primaryImage.url.replace("._V1_.", "._V1_UX150_.")
             : null,
         })) || [],
       stars:
         data.stars?.map((s) => ({
-          name: s.displayName,
+          name: esc(s.displayName),
           image: s.primaryImage?.url
             ? s.primaryImage.url.replace("._V1_.", "._V1_UX150_.")
             : null,
         })) || [],
-      originCountry: data.originCountries?.[0]?.name || null,
+      originCountry: esc(data.originCountries?.[0]?.name || null),
       metaSource: "imdbapi",
     };
 
@@ -550,14 +528,27 @@ class MetadataFetcher {
     );
     const computedType = this.normalizeType(data.type);
 
+    const esc = MetadataFetcher.escapeHTML;
+
+    // Escape person names and characters in credits (image URLs are not escaped)
+    const escapedStars = (credits.stars || []).map((p) => ({
+      ...p,
+      name: esc(p.name),
+      character: esc(p.character),
+    }));
+    const escapedDirectors = (credits.directors || []).map((p) => ({
+      ...p,
+      name: esc(p.name),
+    }));
+
     const normalized = {
       id: data.imdb_id || data.id,
-      title: data.name,
+      title: esc(data.name),
       type: computedType,
       year: cleanedYear,
-      status: data.status === "Continuing" ? "Ongoing" : data.status,
+      status: esc(data.status === "Continuing" ? "Ongoing" : data.status),
       runtime: formattedRuntime,
-      genres: data.genres || data.genre || [],
+      genres: (data.genres || data.genre || []).map(esc),
       // Unified ratings object format
       ratings: {
         ...(data.imdbRating && {
@@ -567,17 +558,19 @@ class MetadataFetcher {
           },
         }),
       },
-      plot: data.description,
+      plot: esc(data.description),
       awards: this.checkForOscar(data.awards),
       ...(seriesMetadata.seasons > 0 && { seasons: seriesMetadata.seasons }),
       ...(seriesMetadata.episodes > 0 && { episodes: seriesMetadata.episodes }),
-      ...(credits.stars &&
-        credits.stars.length > 0 && { stars: credits.stars }),
-      ...(credits.directors &&
-        credits.directors.length > 0 && { directors: credits.directors }),
+      ...(escapedStars.length > 0 && { stars: escapedStars }),
+      ...(escapedDirectors.length > 0 && { directors: escapedDirectors }),
       imdb: data.imdb_id || data.id,
       tmdb: data.moviedb_id ? String(data.moviedb_id) : null,
       tvdb: data.tvdb_id ? String(data.tvdb_id) : null,
+      // Origin country & language — used by AnimeDetection T2 (Japan + Animation)
+      // Cinemeta provides these reliably; previously only IMDbAPI populated originCountry.
+      originCountry: esc(data.country || null),
+      language: esc(data.language || null),
       metaSource: "cinemeta",
       // Add MetaHub images
       poster: `https://images.metahub.space/poster/small/${
