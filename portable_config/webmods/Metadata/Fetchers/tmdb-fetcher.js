@@ -78,6 +78,10 @@
     return `${IMAGE_BASE}${size}${path}`;
   }
 
+  function getImageLanguage(locale) {
+    return (locale || "en").split("-")[0].toLowerCase();
+  }
+
   /**
    * Escapes HTML special characters in a string to prevent XSS.
    * Applied at the ingestion boundary so all downstream consumers receive safe text.
@@ -607,6 +611,7 @@
       // Get user language
       const userLang =
         window.MetadataModules?.preferences?.get("language") || "en";
+      const imageLang = getImageLanguage(userLang);
 
       const mediaType = type === "series" ? "tv" : "movie";
 
@@ -614,7 +619,7 @@
       // 1. User Language (for Logos/Posters)
       // 2. English (Fallback)
       // 3. Null (Textless - Critical for Backdrops)
-      const langs = [userLang, "en", "null"];
+      const langs = [imageLang, "en", "null"];
       const uniqueLangs = [...new Set(langs)].join(","); // Dedupe if userLang is 'en'
 
       const url = `${this.apiBase}/${mediaType}/${tmdbId}/images?api_key=${apiKey}&include_image_language=${uniqueLangs}`;
@@ -673,7 +678,7 @@
           if (isSvg) score += 100;
 
           // 2. Language Matching
-          if (img.iso_639_1 === userLang)
+          if (img.iso_639_1 === imageLang)
             score += 50; // Perfect Match
           else if (img.iso_639_1 === "en")
             score += 20; // English Fallback
@@ -718,7 +723,7 @@
         // Posters: Prefer User Language, Fallback to English, Fallback to Most Popular
         const bestPoster =
           posters
-            .filter((p) => p.iso_639_1 === userLang)
+            .filter((p) => p.iso_639_1 === imageLang)
             .sort(
               (a, b) =>
                 b.vote_average * b.vote_count - a.vote_average * a.vote_count,
@@ -773,8 +778,14 @@
      * Helper to process images and extract best logo
      * Reuses scoring logic from getImages concept but for embedded data
      */
-    processImages(data, userLang = "en") {
+    processImages(data, userLang = null) {
       if (!data?.images) return { logo: null };
+
+      userLang =
+        userLang ||
+        window.MetadataModules?.preferences?.get("language") ||
+        "en";
+      const imageLang = getImageLanguage(userLang);
 
       const IMAGE_BASE = "https://image.tmdb.org/t/p/";
       const logos = data.images?.logos || [];
@@ -789,7 +800,7 @@
         if (isSvg) score += 100;
 
         // 2. Language Matching
-        if (img.iso_639_1 === userLang)
+        if (img.iso_639_1 === imageLang)
           score += 50; // Perfect Match
         else if (img.iso_639_1 === "en")
           score += 20; // English Fallback
