@@ -307,6 +307,64 @@
     text-transform: none !important;
 }
 
+/* Episodes without a thumbnail have no image to cover, so the thumbnail-sized
+   panel above would spill over neighbouring rows and the episode title. Show a
+   compact badge at the far right of the episode pill instead. */
+.video-container-ezBpK:not(:has(.thumbnail-container-Zm8Cl)) .upcoming-watched-container-msCaq {
+    top: 50% !important;
+    right: 12px !important;
+    left: auto !important;
+    width: auto !important;
+    height: auto !important;
+    aspect-ratio: auto !important;
+    transform: translateY(-50%) !important;
+}
+
+.video-container-ezBpK:not(:has(.thumbnail-container-Zm8Cl)) .upcoming-watched-container-msCaq .watched-container-gvzs3,
+.video-container-ezBpK:not(:has(.thumbnail-container-Zm8Cl)) .upcoming-watched-container-msCaq .upcoming-container-LXfQ7 {
+    position: static !important;
+    width: 32px !important;
+    height: 32px !important;
+    flex-direction: row !important;
+    gap: 0 !important;
+    border-radius: 50% !important;
+}
+
+/* The badge doesn't cover anything, so it stays visible on hover */
+.video-container-ezBpK:not(:has(.thumbnail-container-Zm8Cl)):hover .upcoming-watched-container-msCaq .watched-container-gvzs3,
+.video-container-ezBpK:not(:has(.thumbnail-container-Zm8Cl)):hover .upcoming-watched-container-msCaq .upcoming-container-LXfQ7 {
+    opacity: 1 !important;
+}
+
+.video-container-ezBpK:not(:has(.thumbnail-container-Zm8Cl)) .upcoming-watched-container-msCaq .flag-label-zJloD {
+    display: none !important;
+}
+
+/* Eye instead of the checkmark for Watched */
+.video-container-ezBpK:not(:has(.thumbnail-container-Zm8Cl)) .upcoming-watched-container-msCaq .watched-container-gvzs3::before {
+    content: '\1F441\FE0F';
+    width: auto;
+    height: auto;
+    border: none;
+    transform: none;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.video-container-ezBpK:not(:has(.thumbnail-container-Zm8Cl)) .upcoming-watched-container-msCaq .upcoming-container-LXfQ7::before {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+}
+
+/* Reserve room for the badge (32px width + 12px inset + 8px gap) so titles and
+   dates never run under it */
+.video-container-ezBpK:not(:has(.thumbnail-container-Zm8Cl)):has(.upcoming-watched-container-msCaq) .info-container-xyynk {
+    padding-right: 52px !important;
+    box-sizing: border-box !important;
+}
+
 /*=====  End of UPCOMING/WATCHED  ======*/
 
 
