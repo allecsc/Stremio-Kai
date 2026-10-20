@@ -42,6 +42,7 @@
     // Notify Skip Logic
     AUTO_SKIP: "kai-notify-auto-skip",
     SHOW_NOTIFICATIONS: "kai-notify-show-notifications",
+    INTRODB_SUBMIT: "kai-introdb-submit-enabled",
     // New Features
     HDR_TARGET_PEAK: "kai-hdr-target-peak",
     OSD_PROFILE_MESSAGES: "kai-osd-profile-messages",
@@ -141,6 +142,102 @@
     } catch (e) {
       console.error(`[MPV] Failed to save ${key}`, e);
     }
+  }
+
+  // IntroDB key is stored by api-keys.js, obfuscated like the TMDB/MDBList keys
+  function getIntrodbKey() {
+    return window.MetadataModules?.apiKeys?.getKey("INTRODB") || "";
+  }
+
+  function setIntrodbKey(key) {
+    window.MetadataModules?.apiKeys?.setKey("INTRODB", key);
+  }
+
+  const INTRODB_KEY_FORMAT = /^idb_[A-Za-z0-9_-]+$/;
+  const INTRODB_CHECK_DELAY_MS = 800;
+
+  // Same badge markup as the TMDB/MDBList key rows (enhanced-metadata.js),
+  // plus "unverified" for a key saved while IntroDB could not be reached
+  function setKeyBadge(badge, status, msg = "") {
+    badge.dataset.status = status;
+    const icons = {
+      valid: '<span class="status-valid">✓</span>',
+      invalid: '<span class="status-invalid">✗</span>',
+      validating: '<span class="status-loading">⏳</span>',
+      unverified: '<span class="status-unverified">⚠</span>',
+    };
+    badge.innerHTML = icons[status] || "";
+    badge.title = msg;
+  }
+
+  /**
+   * IntroDB key row: checks the key with IntroDB as you type, like the
+   * TMDB/MDBList rows. The page can't call IntroDB (CORS), so the check runs
+   * through MpvBridge.validateIntrodbKey (sealed key, never logged in clear).
+   */
+  function createIntrodbKeyInput(disabled) {
+    const container = createTextInput(
+      "IntroDB API Key",
+      "Create one at introdb.app/account. Checked with IntroDB as you type, kept obfuscated like the TMDB/MDBList keys, and never written to the mpv log.",
+      getIntrodbKey(),
+      () => {},
+      "idb_...",
+      disabled,
+    );
+    const input = container.querySelector("input");
+    input.type = "password";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "kai-settings-input-wrapper";
+    const badge = document.createElement("div");
+    badge.className = "kai-settings-status";
+    input.parentNode.replaceChild(wrapper, input);
+    wrapper.appendChild(input);
+    wrapper.appendChild(badge);
+    setKeyBadge(badge, getIntrodbKey() ? "valid" : "empty");
+
+    let timer = null;
+    let checkSeq = 0;
+    input.addEventListener("input", () => {
+      clearTimeout(timer);
+      const seq = ++checkSeq;
+      const key = input.value.trim();
+
+      if (!key) {
+        setKeyBadge(badge, "empty");
+        setIntrodbKey("");
+        sendConfigUpdate();
+        return;
+      }
+      if (!INTRODB_KEY_FORMAT.test(key)) {
+        setKeyBadge(badge, "invalid", "IntroDB keys start with idb_ (copy it from introdb.app/account)");
+        return;
+      }
+
+      setKeyBadge(badge, "validating", "Checking with IntroDB…");
+      timer = setTimeout(async () => {
+        const check = window.MpvBridge?.validateIntrodbKey;
+        const res = check
+          ? await check(key)
+          : { result: "unknown", error: "Player bridge not loaded yet" };
+        if (seq !== checkSeq) return; // a newer edit replaced this check
+
+        if (res.result === "invalid") {
+          setKeyBadge(badge, "invalid", res.error || "Invalid API key");
+          return;
+        }
+        // Valid, or IntroDB unreachable: keep the key rather than lose it
+        setIntrodbKey(key);
+        sendConfigUpdate();
+        if (res.result === "valid") {
+          setKeyBadge(badge, "valid", "Key works");
+        } else {
+          setKeyBadge(badge, "unverified", `Saved, but could not check it: ${res.error || "unknown error"}`);
+        }
+      }, INTRODB_CHECK_DELAY_MS);
+    });
+
+    return container;
   }
 
   function sendConfigUpdate() {
@@ -1161,6 +1258,22 @@
         },
       ),
     );
+    const introdbKeyInput = createIntrodbKeyInput(
+      !safeGet(STORAGE_KEYS.INTRODB_SUBMIT, false),
+    );
+    skipFrag.appendChild(
+      createToggleOption(
+        "Enable IntroDB Submissions",
+        "Mark and submit intro/recap/outro timestamps while watching, from the flag button in the player bar or with Alt+[ start, Alt+] end, Alt+Enter confirm, Alt+i change type. Only submit accurate times; IntroDB is a shared public database.",
+        safeGet(STORAGE_KEYS.INTRODB_SUBMIT, false),
+        (val) => {
+          safeSet(STORAGE_KEYS.INTRODB_SUBMIT, val);
+          introdbKeyInput.setDisabled(!val);
+          sendConfigUpdate();
+        },
+      ),
+    );
+    skipFrag.appendChild(introdbKeyInput);
     skipFrag.appendChild(
       createToggleOption(
         "Show Profile OSD Messages",

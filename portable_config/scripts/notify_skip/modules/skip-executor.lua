@@ -17,6 +17,7 @@ local M = {}
 -- Forward declarations (will be set by main.lua)
 M.filter_engine = nil
 M.notification = nil
+M.introdb_submit = nil
 
 --============================================================================--
 --                          HELPER FUNCTIONS                                   --
@@ -215,12 +216,28 @@ end
 -- Check for auto-skip on chapter entry (only for high confidence chapters)
 function M.check_auto_skip()
     if not config.opts.auto_skip then return end
-    
+    -- Marking IntroDB times means sitting inside the segment on purpose
+    if M.introdb_submit and M.introdb_submit.is_marking() then return end
+
     local current_chapter_idx = mp.get_property_native("chapter")
+    local current_time = mp.get_property_native("time-pos")
     local skip_chapters = state.chapter_cache.skippable_chapters or {}
-    
+
     for _, chapter in ipairs(skip_chapters) do
-        if current_chapter_idx ~= nil and chapter.index == current_chapter_idx + 1 then
+        -- Virtual (IntroDB) chapters have string indexes like "introdb_opening",
+        -- so match them by playback position instead of chapter number.
+        -- Stop short of the end: paused on a segment's last frame, time-pos can
+        -- read a hair below chapter_end, and seeking there lands on the same
+        -- frame, which would re-trigger the skip in a loop.
+        local in_chapter
+        if chapter.is_virtual then
+            in_chapter = current_time ~= nil and chapter.chapter_end ~= nil
+                and current_time >= chapter.time - 0.5
+                and current_time < chapter.chapter_end - config.CONSTANTS.VIRTUAL_SKIP_END_MARGIN
+        else
+            in_chapter = current_chapter_idx ~= nil and chapter.index == current_chapter_idx + 1
+        end
+        if in_chapter then
             -- Only auto-skip high confidence (pattern matched) chapters
             if chapter.confidence == "high" then
                 mp.msg.info("Auto-skipping high-confidence chapter: " .. (chapter.title or "untitled"))

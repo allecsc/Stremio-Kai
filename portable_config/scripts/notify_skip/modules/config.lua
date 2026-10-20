@@ -21,6 +21,7 @@ M.opts = {
     filters_notification_duration = 5,
     min_skip_duration = 10,
     intro_length_check = 200,
+    introdb_api_url = "https://api.introdb.app",
 
     logo_patterns = "Logo|Studio|Production",
     opening_patterns = "^OP$|^OP%d+$|Opening|Intro|Introduction|Theme Song|Main Theme|Title Sequence|Cold Open|Teaser",
@@ -49,6 +50,7 @@ M.CONSTANTS = {
     MIN_INTRO_LENGTH = 30,        -- Chapters must be ≥30s to avoid title cards
     PREVIEW_MAX_LENGTH = 30,      -- Preview chapters typically 25-30s
     CONFIRMATION_TIMEOUT = 5,     -- Seconds to wait for second Tab to confirm skip
+    VIRTUAL_SKIP_END_MARGIN = 0.5, -- Don't auto-skip IntroDB segments this close to their end
     
     -- Dynamic window percentages (series only)
     INTRO_WINDOW_PERCENT = 0.20,  -- 20% of duration for intro window

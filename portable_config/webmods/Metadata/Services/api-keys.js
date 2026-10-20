@@ -1,7 +1,7 @@
 /**
  * API Keys Management Module
  *
- * Centralized management for user-provided private API keys (TMDB, MDBList).
+ * Centralized management for user-provided private API keys (TMDB, MDBList, IntroDB).
  * Handles storage (obfuscated), validation, and rate limit tracking.
  *
  * @module api-keys
@@ -26,11 +26,13 @@
   const PROVIDERS = Object.freeze({
     TMDB: "tmdb",
     MDBLIST: "mdblist",
+    INTRODB: "introdb",
   });
 
   const STORAGE_KEYS = Object.freeze({
     TMDB: "kai-api-key-tmdb",
     MDBLIST: "kai-api-key-mdblist",
+    INTRODB: "kai-api-key-introdb",
     RATE_LIMIT_PREFIX: "kai-api-ratelimit-",
   });
 

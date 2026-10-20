@@ -365,6 +365,231 @@
     console.log("[MPV Bridge] Sent notify skip config", config);
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // IntroDB submissions
+  //
+  // mpv writes every command it receives to LOG.txt, so the API key is never
+  // sent in the clear. introdb_helper.py publishes a Diffie-Hellman public
+  // value in INTRODB_PUBKEY_PROP; we seal the key against it and send only
+  // our public value plus the sealed bytes. See introdb_helper.py.
+  // ─────────────────────────────────────────────────────────────────────────
+  const INTRODB_PUBKEY_PROP = "user-data/kai/introdb-pubkey";
+  const INTRODB_ENABLED_KEY = "kai-introdb-submit-enabled";
+  const INTRODB_KDF_LABEL = new TextEncoder().encode("kai-introdb-key-v1");
+  // RFC 7919 ffdhe2048 group (safe prime, generator 2)
+  const INTRODB_P = BigInt(
+    "0xFFFFFFFFFFFFFFFFADF85458A2BB4A9AAFDC5620273D3CF1D8B9C583CE2D3695" +
+      "A9E13641146433FBCC939DCE249B3EF97D2FE363630C75D8F681B202AEC4617A" +
+      "D3DF1ED5D5FD65612433F51F5F066ED0856365553DED1AF3B557135E7F57C935" +
+      "984F0C70E0E68B77E2A689DAF3EFE8721DF158A136ADE73530ACCA4F483A797A" +
+      "BC0AB182B324FB61D108A94BB2C8E3FBB96ADAB760D7F4681D4F42A3DE394DF4" +
+      "AE56EDE76372BB190B07A7C8EE0A6D709E02FCE1CDF7E2ECC03404CD28342F61" +
+      "9172FE9CE98583FF8E4F1232EEF28183C3FE3B1B4C6FAD733BB5FCBC2EC22005" +
+      "C58EF1837D1683B2C6F34A26C1B2EFFA886B423861285C97FFFFFFFFFFFFFFFF",
+  );
+  // Keys forwarded to mpv while the WebView has focus (mirror input.conf)
+  const INTRODB_KEYS = {
+    i: "cycle-type",
+    "[": "mark-start",
+    "]": "mark-end",
+    Enter: "submit",
+  };
+
+  let introdbServerPub = null;
+  let introdbSealCache = null;
+
+  function getIntrodbApiKey() {
+    return window.MetadataModules?.apiKeys?.getKey("INTRODB") || null;
+  }
+
+  function modPow(base, exp, mod) {
+    let result = 1n;
+    base %= mod;
+    while (exp > 0n) {
+      if (exp & 1n) result = (result * base) % mod;
+      base = (base * base) % mod;
+      exp >>= 1n;
+    }
+    return result;
+  }
+
+  function bytesToHex(bytes) {
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  function hexToBytes(hex) {
+    const out = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < out.length; i++) {
+      out[i] = parseInt(hex.substr(i * 2, 2), 16);
+    }
+    return out;
+  }
+
+  async function sealIntrodbKey(serverPubHex, apiKey) {
+    const serverPub = BigInt("0x" + serverPubHex);
+    if (serverPub <= 1n || serverPub >= INTRODB_P - 1n) {
+      throw new Error("invalid key-exchange value");
+    }
+    const rand = crypto.getRandomValues(new Uint8Array(32));
+    rand[0] |= 0x80;
+    const exponent = BigInt("0x" + bytesToHex(rand));
+    const pagePub = modPow(2n, exponent, INTRODB_P);
+    const shared = modPow(serverPub, exponent, INTRODB_P);
+    const sharedBytes = hexToBytes(shared.toString(16).padStart(512, "0"));
+
+    const keyBytes = new TextEncoder().encode(apiKey);
+    const stream = [];
+    for (let counter = 0; stream.length < keyBytes.length; counter++) {
+      const input = new Uint8Array(sharedBytes.length + INTRODB_KDF_LABEL.length + 4);
+      input.set(sharedBytes, 0);
+      input.set(INTRODB_KDF_LABEL, sharedBytes.length);
+      new DataView(input.buffer).setUint32(input.length - 4, counter);
+      stream.push(...new Uint8Array(await crypto.subtle.digest("SHA-256", input)));
+    }
+    const sealed = keyBytes.map((b, i) => b ^ stream[i]);
+    return { page_pub: pagePub.toString(16), sealed: bytesToHex(sealed) };
+  }
+
+  async function sendIntrodbSubmitConfig() {
+    const enabled = localStorage.getItem(INTRODB_ENABLED_KEY) === "true";
+    const apiKey = enabled ? getIntrodbApiKey() : null;
+    const config = { enabled };
+
+    if (apiKey && introdbServerPub) {
+      try {
+        const cache = introdbSealCache;
+        if (!cache || cache.serverPub !== introdbServerPub || cache.apiKey !== apiKey) {
+          introdbSealCache = {
+            serverPub: introdbServerPub,
+            apiKey,
+            ...(await sealIntrodbKey(introdbServerPub, apiKey)),
+          };
+        }
+        config.page_pub = introdbSealCache.page_pub;
+        config.sealed = introdbSealCache.sealed;
+      } catch (error) {
+        console.warn("[MPV Bridge] IntroDB key sealing failed:", error);
+      }
+    }
+
+    sendToMpv("script-message-to", [
+      "notify_skip",
+      "introdb-submit-config",
+      JSON.stringify(config),
+    ]);
+    // Never log the key, sealed or not
+    console.log("[MPV Bridge] Sent IntroDB submit config", {
+      enabled,
+      has_key: !!apiKey,
+      key_exchange_ready: !!introdbServerPub,
+    });
+  }
+
+  // mpv -> page channel: the shell forwards changes of any property the page
+  // asks it to observe as "mpv-prop-change" transport messages
+  const propObservers = new Map();
+  let propListenerInstalled = false;
+
+  function observeMpvProp(name, callback) {
+    if (!propListenerInstalled) {
+      propListenerInstalled = true;
+      window.chrome?.webview?.addEventListener("message", (event) => {
+        let msg;
+        try {
+          msg = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        } catch {
+          return;
+        }
+        const [eventName, data] = msg?.args || [];
+        if (eventName !== "mpv-prop-change") return;
+        (propObservers.get(data?.name) || []).forEach((cb) => cb(data.data));
+      });
+    }
+    if (!propObservers.has(name)) {
+      propObservers.set(name, []);
+      window.chrome?.webview?.postMessage(
+        JSON.stringify({
+          type: 6,
+          object: "transport",
+          method: "handleInboundJSON",
+          args: ["mpv-observe-prop", name],
+        }),
+      );
+    }
+    propObservers.get(name).push(callback);
+  }
+
+  // Settings key check. CORS blocks the page from calling IntroDB, so the
+  // typed key is sealed like the saved one and checked by introdb_helper.py.
+  const INTRODB_VALIDATE_PROP = "user-data/kai/introdb-validate";
+  const INTRODB_VALIDATE_TIMEOUT_MS = 20000;
+  const pendingKeyChecks = new Map();
+  let keyCheckSeq = 0;
+
+  /**
+   * @param {string} key - key typed in Settings (not yet saved)
+   * @returns {Promise<{result: "valid"|"invalid"|"unknown", error?: string}>}
+   */
+  async function validateIntrodbKey(key) {
+    if (!introdbServerPub) {
+      return { result: "unknown", error: "Player is still starting, try again in a moment" };
+    }
+    let sealed;
+    try {
+      sealed = await sealIntrodbKey(introdbServerPub, key);
+    } catch (error) {
+      return { result: "unknown", error: error.message };
+    }
+    const id = `k${Date.now()}_${++keyCheckSeq}`;
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        pendingKeyChecks.delete(id);
+        resolve({ result: "unknown", error: "Key check timed out" });
+      }, INTRODB_VALIDATE_TIMEOUT_MS);
+      pendingKeyChecks.set(id, { resolve, timer });
+      sendToMpv("script-message-to", [
+        "notify_skip",
+        "introdb-validate",
+        JSON.stringify({ id, ...sealed }),
+      ]);
+    });
+  }
+
+  window.MpvBridge.sendToMpv = sendToMpv;
+  window.MpvBridge.observeMpvProp = observeMpvProp;
+  window.MpvBridge.validateIntrodbKey = validateIntrodbKey;
+
+  function initIntrodbSubmit() {
+    observeMpvProp(INTRODB_VALIDATE_PROP, (value) => {
+      const pending = value && pendingKeyChecks.get(value.id);
+      if (!pending) return;
+      pendingKeyChecks.delete(value.id);
+      clearTimeout(pending.timer);
+      pending.resolve({ result: value.result, error: value.error || "" });
+    });
+
+    observeMpvProp(INTRODB_PUBKEY_PROP, (value) => {
+      if (typeof value !== "string" || !/^[0-9a-f]+$/i.test(value)) return;
+      if (value === introdbServerPub) return;
+      introdbServerPub = value;
+      sendIntrodbSubmitConfig();
+    });
+
+    document.addEventListener(
+      "keydown",
+      (e) => {
+        if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        const action = INTRODB_KEYS[e.key];
+        if (!action || window.RouteDetector?.getRouteState?.().view !== "PLAYER") return;
+        if (localStorage.getItem(INTRODB_ENABLED_KEY) !== "true") return;
+        e.preventDefault();
+        e.stopPropagation();
+        sendToMpv("script-message-to", ["notify_skip", "introdb-key", action]);
+      },
+      { capture: true },
+    );
+  }
+
   /**
    * Handle route change - check if entering player
    */
@@ -388,6 +613,7 @@
       startedAtMs: Date.now(),
     });
     sendNotifySkipConfig();
+    sendIntrodbSubmitConfig();
 
     // Wait for metadataHelper for anime detection
     waitForMetadata(state.id, state.type, 0, {
@@ -494,6 +720,7 @@
     }
 
     window.addEventListener("hashchange", onRouteChange);
+    initIntrodbSubmit();
 
     const handleSettingsChange = (reason) => {
       const state = window.RouteDetector.getRouteState();
@@ -506,6 +733,7 @@
           startedAtMs: Date.now(),
         });
         sendNotifySkipConfig();
+        sendIntrodbSubmitConfig();
         // Re-send anime/profile metadata (HDR, Ultrawide, etc.)
         waitForMetadata(state.id, state.type, 0, {
           reason,

@@ -929,7 +929,7 @@
           // The skip button is rendered by mpv as an ASS overlay beneath the web UI.
           if (
             e.target.closest(
-              ".menu-layer-HZFG9, .dropdown-container-T9bZ2, .menu-container-B6cqK, .dialog-container-S5c_E, .modal-backdrop, .control-bar-container-xsWA7, .search-input-IQ0ZW, .search-bar-container-asfq1, .button-container-zVLH6, .language-option-O1Yr9, .variant-option-t7_LA, .option-COcvW, .option-GcPlB",
+              ".menu-layer-HZFG9, .dropdown-container-T9bZ2, .menu-container-B6cqK, .dialog-container-S5c_E, .modal-backdrop, .control-bar-container-xsWA7, .search-input-IQ0ZW, .search-bar-container-asfq1, .button-container-zVLH6, .language-option-O1Yr9, .variant-option-t7_LA, .option-COcvW, .option-GcPlB, .kai-introdb-panel, .kai-introdb-button",
             )
           ) {
             return;

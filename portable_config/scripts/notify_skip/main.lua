@@ -22,6 +22,7 @@
   
   @requires
     - modules/skip-toast.lua (OSD toast overlay)
+    - introdb_helper.py (IntroDB submissions, run with the bundled python.exe)
     - script-opts/notify_skip.conf (optional)
   
   Architecture:
@@ -49,6 +50,7 @@ local chapters = require('modules/chapter-detection')
 local filter_engine = require('modules/filter-engine')
 local notification = require('modules/notification')
 local skip_executor = require('modules/skip-executor')
+local introdb_submit = require('modules/introdb-submit')
 
 -- Load skip toast overlay
 local skip_toast = require('modules/skip-toast')
@@ -62,6 +64,7 @@ notification.skip_button = skip_toast
 filter_engine.notification = notification
 skip_executor.filter_engine = filter_engine
 skip_executor.notification = notification
+skip_executor.introdb_submit = introdb_submit
 
 -- Track active skippable chapter key to debounce and control notifications
 local active_skippable_chapter_key = nil
@@ -78,6 +81,7 @@ local virtual_category_names = {
 local normalized_script_dir = script_dir:gsub("\\", "/")
 local stremio_root = normalized_script_dir:match("(.+/)[^/]+/[^/]+/[^/]+/$") or normalized_script_dir
 local python_exe   = stremio_root .. "python.exe"
+local config_root  = normalized_script_dir:match("(.+/)[^/]+/[^/]+/$") or normalized_script_dir
 
 --============================================================================--
 --                     INTRODB VIRTUAL CHAPTER LOGIC                          --
@@ -255,20 +259,21 @@ end
 local function fetch_introdb_segments(imdb_id, season, episode)
     if not imdb_id or not season or not episode then return end
 
-    local python_code = string.format(
+    -- URL goes in as an argument rather than being formatted into the code
+    local url = string.format("%s/segments?imdb_id=%s&season=%d&episode=%d",
+        config.opts.introdb_api_url, imdb_id, season, episode)
+    local python_code =
         "import urllib.request,sys\n" ..
         "try:\n" ..
-        " r=urllib.request.urlopen('https://api.introdb.app/segments?imdb_id=%s&season=%d&episode=%d',timeout=8)\n" ..
+        " r=urllib.request.urlopen(sys.argv[1],timeout=8)\n" ..
         " sys.stdout.write(r.read().decode('utf-8'))\n" ..
-        "except: sys.stdout.write('{}')",
-        imdb_id, season, episode
-    )
+        "except: sys.stdout.write('{}')"
 
     mp.msg.info(string.format("IntroDB: fetching segments for %s S%dE%d", imdb_id, season, episode))
 
     mp.command_native_async({
         name = "subprocess",
-        args = { python_exe, "-c", python_code },
+        args = { python_exe, "-c", python_code, url },
         capture_stdout = true,
         capture_stderr = false,
         playback_only  = false,
@@ -295,6 +300,7 @@ local function fetch_introdb_segments(imdb_id, season, episode)
         state.chapter_cache.introdb_segments = data
         mp.msg.info(string.format("IntroDB: segments stored (intro=%s, recap=%s, outro=%s)",
             tostring(data.intro ~= nil), tostring(data.recap ~= nil), tostring(data.outro ~= nil)))
+        introdb_submit.refresh()
 
         -- Late-arrival injection: if finalize_setup already ran, inject now
         if state.skip_state.mode == "hybrid" then
@@ -441,7 +447,8 @@ local function on_file_loaded()
     end
     active_skippable_chapter_key = nil
     state.reset_all()
-    
+    introdb_submit.reset()
+
     -- Wait a short time for content-metadata to arrive, then run setup
     mp.add_timeout(1.0, function()
         if content.is_movie() then
@@ -555,6 +562,19 @@ mp.add_key_binding('Tab', 'perform_skip', skip_executor.perform_skip)
 -- Allow the web overlay to trigger skip (mouse clicks can't reach mpv directly)
 mp.register_script_message("perform-skip", skip_executor.perform_skip)
 
+-- IntroDB submissions: key bindings, config message, and refetch after success
+introdb_submit.init({
+    python_exe  = python_exe,
+    helper_path = normalized_script_dir .. "introdb_helper.py",
+    state_path  = config_root .. "cache/introdb-keyx.json",
+    history_path = config_root .. "cache/introdb-submissions.json",
+    on_submitted = function()
+        local imdb_id, season, episode = content.get_imdb_id(), content.get_season(), content.get_episode()
+        state.chapter_cache.introdb_segments = nil
+        fetch_introdb_segments(imdb_id, season, episode)
+    end,
+})
+
 -- Handler for content metadata from mpv-bridge.js
 mp.register_script_message("content-metadata", function(json)
     local data = utils.parse_json(json)
@@ -575,6 +595,7 @@ mp.register_script_message("content-metadata", function(json)
     if episode_changed then
         state.chapter_cache.introdb_segments = nil
         active_skippable_chapter_key = nil
+        introdb_submit.reset()
     end
 
     -- Store content metadata

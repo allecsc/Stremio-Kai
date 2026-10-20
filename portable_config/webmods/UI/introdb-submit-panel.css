@@ -1,0 +1,263 @@
+/*
+*   INTRODB SUBMIT PANEL (player control bar button + floating panel)
+*/
+
+.kai-introdb-button svg {
+    fill: none !important;
+}
+
+.kai-introdb-button-active svg {
+    color: var(--primary-accent-color);
+}
+
+/* Same spot and look as Stremio's player menus (speed, subtitles, ...):
+   Stremio places .menu-layer at right 4rem / bottom 8rem, above the seek bar,
+   and Kai's Theme/Episodes.css restyles it with these variables. */
+.kai-introdb-panel {
+    position: absolute;
+    right: 4rem;
+    bottom: 8rem;
+    z-index: 10000;
+    width: 25rem;
+    max-width: calc(100% - 4rem);
+    max-height: calc(100% - 13.5rem);
+    overflow: auto;
+    padding: 1rem 1.1rem 0.9rem;
+    border-radius: var(--border-radius);
+    background: var(--background);
+    border: 1px solid var(--accent);
+    backdrop-filter: blur(15px);
+    box-shadow: var(--box-shadow), var(--outer-glow);
+    filter: var(--shadow);
+    color: var(--primary-foreground-color);
+    font-family: 'Nata Sans', sans-serif;
+    font-size: 1rem;
+    display: none;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.kai-introdb-panel.open {
+    display: flex;
+}
+
+@media (orientation: portrait) and (max-width: 640px) {
+    .kai-introdb-panel {
+        right: 2.5rem;
+        bottom: 11rem;
+    }
+}
+
+.kai-introdb-panel button {
+    font: inherit;
+    color: inherit;
+    border: none;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.35rem 0.6rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.kai-introdb-panel button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.kai-introdb-panel button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.kai-introdb-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.kai-introdb-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.kai-introdb-panel .kai-introdb-close {
+    background: transparent;
+    padding: 0.2rem 0.45rem;
+    opacity: 0.7;
+}
+
+.kai-introdb-types {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+}
+
+.kai-introdb-panel .kai-introdb-type.selected {
+    background: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--primary-accent-color);
+    font-weight: 700;
+}
+
+.kai-introdb-row {
+    display: grid;
+    grid-template-columns: 3rem 1fr auto auto auto auto;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.kai-introdb-row-label {
+    opacity: 0.7;
+}
+
+.kai-introdb-time {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0.25rem 0.45rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.06);
+    color: inherit;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: 1.15rem;
+    outline: none;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.kai-introdb-time:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.kai-introdb-time:focus {
+    border-color: var(--primary-accent-color);
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.kai-introdb-time.invalid {
+    border-color: #f87171;
+}
+
+.kai-introdb-time::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-weight: 400;
+}
+
+.kai-introdb-time:disabled {
+    opacity: 0.35;
+}
+
+.kai-introdb-end-extra {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -0.3rem;
+}
+
+.kai-introdb-end-extra[hidden] {
+    display: none;
+}
+
+.kai-introdb-panel .kai-introdb-nudge,
+.kai-introdb-panel .kai-introdb-preview {
+    min-width: 2rem;
+    padding: 0.35rem 0;
+}
+
+.kai-introdb-length {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    min-height: 1.2em;
+}
+
+.kai-introdb-length.error,
+.kai-introdb-message[data-kind="error"] {
+    color: #ff8a8a;
+    opacity: 1;
+}
+
+.kai-introdb-message {
+    font-size: 0.9rem;
+    min-height: 1.2em;
+    overflow-wrap: anywhere;
+}
+
+.kai-introdb-message:empty {
+    display: none;
+}
+
+.kai-introdb-message[data-kind="success"] {
+    color: #8fe3a2;
+}
+
+.kai-introdb-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.kai-introdb-panel .kai-introdb-submit {
+    flex: 1;
+    background: var(--accent);
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kai-introdb-panel .kai-introdb-submit:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--primary-accent-color), transparent 35%);
+}
+
+.kai-introdb-mine {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.kai-introdb-mine[hidden] {
+    display: none;
+}
+
+.kai-introdb-mine-title {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.kai-introdb-panel .kai-introdb-mine-row {
+    display: grid;
+    /* type | times (never squeezed) | label (takes the rest, may wrap) */
+    grid-template-columns: 3.5rem max-content minmax(0, 1fr);
+    width: 100%;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.kai-introdb-mine-type {
+    font-weight: 700;
+}
+
+.kai-introdb-mine-times {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.kai-introdb-mine-meta {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    text-align: right;
+}
+
+.kai-introdb-note {
+    font-size: 0.8rem;
+    opacity: 0.55;
+}
+
+.kai-introdb-unavailable .kai-introdb-types,
+.kai-introdb-unavailable .kai-introdb-row,
+.kai-introdb-unavailable .kai-introdb-length {
+    opacity: 0.4;
+    pointer-events: none;
+}
