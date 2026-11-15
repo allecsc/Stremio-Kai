@@ -7,6 +7,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: windows-2022
@@ -24,6 +27,7 @@ jobs:
         run: |
           pnpm install --frozen-lockfile --ignore-scripts
           node --test tests/simkl-media.test.cjs
+          node tests/core-compatibility.cjs
           pnpm run build
       - name: Prepare pinned Kai runtime and MPV SDK
         shell: pwsh
@@ -38,6 +42,12 @@ jobs:
       - name: Build native app and tests
         shell: pwsh
         run: |
+          git -C "$env:VCPKG_INSTALLATION_ROOT" fetch origin 8f363bdc11359ede4bc51e5eb32a2617538049c8 --depth=1
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          git -C "$env:VCPKG_INSTALLATION_ROOT" checkout 8f363bdc11359ede4bc51e5eb32a2617538049c8
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          & "$env:VCPKG_INSTALLATION_ROOT/bootstrap-vcpkg.bat" -disableMetrics
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
           cmake -S native -B build -A x64 -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DDEBUG_LOG=OFF
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           cmake --build build --config Release --parallel 4

@@ -15,6 +15,12 @@ Copy-Item web-ui/LICENSE.md -Destination (Join-Path $appPath 'LICENSE-web-ui.md'
 Copy-Item THIRD-PARTY.md -Destination $appPath
 Copy-Item native/deps/discord-rpc-source/LICENSE -Destination (Join-Path $appPath 'LICENSE-discord-rpc.txt')
 Copy-Item native/deps/rapidjson/license.txt -Destination (Join-Path $appPath 'LICENSE-rapidjson.txt')
+$licensePath = Join-Path $appPath 'licenses/native'
+New-Item -ItemType Directory -Path $licensePath -Force | Out-Null
+Get-ChildItem build/vcpkg_installed/x64-windows-static/share -Directory | ForEach-Object {
+    $copyrightPath = Join-Path $_.FullName 'copyright'
+    if (Test-Path -LiteralPath $copyrightPath) { Copy-Item -LiteralPath $copyrightPath -Destination (Join-Path $licensePath ($_.Name + '.txt')) }
+}
 Copy-Item build-scripts/Start-Kai.cmd -Destination $appPath
 # No build-machine browser profile, credentials, tests or logs enter the release.
 Get-ChildItem -LiteralPath $appPath -Recurse -File -Include *.log,*.dmp | Remove-Item -Force
