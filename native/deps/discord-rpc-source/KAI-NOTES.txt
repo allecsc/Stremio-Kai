@@ -1,0 +1,9 @@
+Source: https://github.com/discord/discord-rpc/tree/v3.4.0 (MIT; LICENSE included).
+RapidJSON: https://github.com/Tencent/rapidjson/tree/v1.1.0 (license included alongside headers).
+
+The parent native source requires DiscordRichPresence.type, button1Label,
+button1Url, button2Label, button2Url and DISCORD_ACTIVITY_TYPE_WATCHING, but
+does not ship its modified Discord SDK. This vendored build adds those fields
+and their JSON serialization to the official SDK to retain the existing
+Watching activity and both presence buttons. No downloaded precompiled RPC
+library is linked. Live Discord behavior still requires separate verification.

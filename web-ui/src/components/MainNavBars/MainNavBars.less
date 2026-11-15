@@ -1,0 +1,52 @@
+// Copyright (C) 2017-2024 Smart code 203358507
+
+@import (reference) '~stremio/common/screen-sizes.less';
+
+.main-nav-bars-container {
+    position: relative;
+    z-index: 0;
+    overflow: clip;
+    margin-left: var(--safe-area-inset-left);
+    margin-right: var(--safe-area-inset-right);
+    width: calc(100% - var(--safe-area-inset-left) - var(--safe-area-inset-right));
+    height: 100%;
+
+    .horizontal-nav-bar {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    .vertical-nav-bar {
+        position: absolute;
+        top: var(--horizontal-nav-bar-size);
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    .nav-content-container {
+        position: absolute;
+        top: calc(var(--horizontal-nav-bar-size) + var(--safe-area-inset-top));
+        right: 0;
+        bottom: 0;
+        left: var(--vertical-nav-bar-size);
+        z-index: 0;
+        overflow: hidden;
+    }
+}
+
+@media only screen and (max-width: @minimum) {
+    .main-nav-bars-container {
+        .nav-content-container {
+            left: 0;
+            bottom: var(--vertical-nav-bar-size);
+        }
+
+        .vertical-nav-bar {
+            top: initial;
+        }
+    }
+}

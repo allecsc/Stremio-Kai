@@ -1,0 +1,31 @@
+{
+    "name": "@stremio/stremio-video",
+    "version": "0.0.68",
+    "description": "Abstraction layer on top of different media players",
+    "author": "Smart Code OOD",
+    "main": "src/index.js",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/stremio/stremio-video.git"
+    },
+    "scripts": {
+        "lint": "eslint src"
+    },
+    "dependencies": {
+        "buffer": "6.0.3",
+        "color": "4.2.3",
+        "deep-freeze": "0.0.1",
+        "eventemitter3": "4.0.7",
+        "hat": "0.0.3",
+        "hls.js": "https://github.com/Stremio/hls.js/releases/download/v1.5.4-patch2/hls.js-1.5.4-patch2.tgz",
+        "lodash.clonedeep": "4.5.0",
+        "magnet-uri": "6.2.0",
+        "url": "0.11.0",
+        "video-name-parser": "1.4.6",
+        "vtt.js": "https://codeload.github.com/jaruba/vtt.js/tar.gz/84d33d157848407d790d78423dacc41a096294f0"
+    },
+    "devDependencies": {
+        "eslint": "7.32.0"
+    }
+}

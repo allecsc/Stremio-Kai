@@ -1,0 +1,121 @@
+// Copyright (C) 2017-2024 Smart code 203358507
+
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+@import (reference) '~stremio/common/screen-sizes.less';
+
+.horizontal-nav-bar-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--horizontal-nav-bar-size);
+    padding-right: 1rem;
+    background-color: transparent;
+    overflow: visible;
+    padding-top: var(--safe-area-inset-top);
+    box-sizing: content-box;
+
+    .logo-container {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--vertical-nav-bar-size);
+        height: var(--horizontal-nav-bar-size);
+
+        .logo {
+            flex: none;
+            width: 2.5rem;
+            height: 2.5rem;
+            object-position: center;
+            object-fit: contain;
+            opacity: 0.9;
+        }
+    }
+
+    .back-button-container {
+        margin-left: max(0rem, calc(1rem - var(--safe-area-inset-left)));
+    }
+
+    .title {
+        flex: 4 0 0;
+        padding: 0 1rem;
+        font-size: 1.2rem;
+        font-style: normal;
+        font-weight: 500;
+        letter-spacing: 0.01rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: @color-secondaryvariant2-light1-90;
+    }
+
+    .search-bar {
+        height: 3.25rem;
+        width: 30rem;
+    }
+
+    .buttons-container {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+        overflow: visible;
+    }
+
+    .button-container {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 0.75rem;
+        opacity: 0.6;
+
+        .icon {
+            flex: none;
+            width: 2rem;
+            height: 2rem;
+            color: var(--primary-foreground-color);
+            opacity: 0.6;
+        }
+
+        .active() {
+            background-color: var(--overlay-color);
+            opacity: 1;
+
+            .icon {
+                color: var(--primary-foreground-color);
+                opacity: 0.8;
+            }
+        }
+
+        &:global(.active) {
+            .active();
+        }
+
+        @media (pointer: fine) {
+            &:hover {
+                .active();
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: @minimum) {
+    .horizontal-nav-bar-container {
+        justify-content: space-between;
+        padding-right: 0;
+
+        .logo-container {
+            width: var(--horizontal-nav-bar-size);
+        }
+
+        .button-container {
+            margin: 0 1rem;
+
+            &:not(.back-button-container):not(.menu-button-container) {
+                display: none;
+            }
+        }
+    }
+}

@@ -1,0 +1,121 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+
+.subtitles-menu-container {
+    height: 25rem;
+    display: flex;
+    flex-direction: row;
+
+    .languages-container, .variants-container, .subtitles-settings-container {
+        flex: none;
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
+
+        .languages-header, .variants-header, .settings-header {
+            flex: none;
+            align-self: stretch;
+            padding: 1.5rem 2rem;
+            font-weight: 700;
+            color: var(--primary-foreground-color);
+        }
+
+        .languages-list, .variants-list {
+            flex: 1;
+            align-self: stretch;
+            overflow-y: auto;
+            padding: 0 1rem;
+
+            .language-option, .variant-option {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                height: 3.5rem;
+                padding: 0 1.5rem;
+                margin-bottom: 0.5rem;
+                border-radius: var(--border-radius);
+
+                &:global(.selected), &:hover {
+                    background-color: var(--overlay-color);
+                }
+
+                .language-label, .variant-label {
+                    flex: 1;
+                    font-size: 1.1rem;
+                    color: var(--primary-foreground-color);
+                }
+
+                .language-label, .variant-label, .variant-origin {
+                    text-wrap: nowrap;
+                    text-overflow: ellipsis;
+                }
+
+                .icon {
+                    flex: none;
+                    width: 0.5rem;
+                    height: 0.5rem;
+                    border-radius: 100%;
+                    margin-left: 1rem;
+                    background-color: var(--secondary-accent-color);
+                }
+            }
+
+            .variant-option {
+                height: 4rem;
+
+                .info {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.25rem;
+
+                    .variant-label {
+                        line-height: 1.5rem;
+                    }
+
+                    .variant-origin {
+                        font-size: 0.9rem;
+                        color: var(--color-placeholder-text);
+                    }
+                }
+            }
+        }
+    }
+
+    .languages-container {
+        width: 16rem;
+    }
+
+    .variants-container {
+        width: 16rem;
+
+        .no-variants-container {
+            flex: 1;
+            align-self: stretch;
+            padding: 1rem;
+
+            .no-variants-label {
+                max-height: 4.8em;
+                font-weight: 500;
+                color: var(--primary-foreground-color);
+            }
+        }
+    }
+
+    .subtitles-settings-container {
+        width: 17rem;
+
+        .settings-list {
+            overflow-y: scroll;
+        }
+
+        .spacing {
+            flex: 1;
+        }
+
+        .discrete-input {
+            padding: 0 1.5rem 1rem;
+        }
+    }
+}

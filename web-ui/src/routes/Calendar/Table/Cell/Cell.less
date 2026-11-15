@@ -1,0 +1,210 @@
+// Copyright (C) 2017-2024 Smart code 203358507
+
+@import (reference) '~stremio/common/screen-sizes.less';
+
+.disable-cell-items() {
+    .cell {
+        .items {
+            .item {
+                pointer-events: none;
+            }
+        }
+    }
+}
+
+.compact-items() {
+    .cell {
+        .items {
+            padding: 1px;
+            gap: 0.15rem;
+        }
+    }
+}
+
+.cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background-color: var(--overlay-color);
+    border: 0.15rem solid transparent;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.1s ease-out;
+
+    &:first-child {
+        border-radius: var(--border-radius) 0 0 0;
+    }
+
+    &:nth-child(7) {
+        border-radius: 0 var(--border-radius) 0 0;
+    }
+
+    &:last-child {
+        border-radius: 0 0 var(--border-radius) 0;
+    }
+
+    .heading {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+
+        .day {
+            flex: none;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 2rem;
+            width: 2rem;
+            border-radius: 100%;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--primary-foreground-color);
+        }
+    }
+
+    .items {
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        gap: 0.2rem;
+        padding: 0.1rem;
+        flex: 1 1 60%;
+        overflow-x: auto;
+        overflow-y: hidden; 
+        min-width: 0;
+
+        .item {
+            flex: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            aspect-ratio: 2 / 3;
+            border-radius: calc(var(--border-radius) / 2);
+            max-height: 100%;
+            max-width: 100%;
+
+            .icon {
+                flex: none;
+                z-index: 1;
+                position: absolute;
+                width: 2rem;
+                height: 2rem;
+                padding: 0.5rem;
+                border-radius: 50%;
+                color: var(--primary-foreground-color);
+                background-color: var(--secondary-accent-color);
+                opacity: 0;
+            }
+
+            .poster {
+                height: auto;
+                max-height: 100%;
+                aspect-ratio: 2 / 3;
+                object-fit: cover;
+                border-radius: inherit
+            }
+
+            .icon, .poster {
+                transition: opacity 0.1s ease-out;
+            }
+
+            &:hover {
+                .icon {
+                    opacity: 1;
+                }
+
+                .poster {
+                    opacity: 0.5;
+                }
+            }
+        }
+    }
+
+    .more {
+        display: none;
+        flex: none;
+        width: 2rem;
+        height: 2rem;
+        padding: 0.5rem;
+        align-self: center;
+        color: var(--primary-foreground-color);
+    }
+
+    &.today {
+        .heading {
+            padding: 0.3rem;
+            .day {
+                background-color: var(--primary-accent-color);
+                height: 1.5rem;
+                width: 1.5rem;
+            }
+        }
+    }
+
+    &.active {
+        border-color: var(--primary-foreground-color);
+    }
+
+    @media (pointer: fine) {
+        &:not(.active):hover {
+            border-color: var(--overlay-color);
+        }
+    }
+}
+
+@media only screen and (max-width: @minimum) {
+    .disable-cell-items();
+}
+
+@media @phone-portrait {
+    .cell {
+        flex-direction: column;
+        display: grid;
+    }
+    .compact-items();
+    .disable-cell-items();
+}
+
+@media @phone-landscape {
+    .cell {
+        flex-direction: row;
+    }
+    .compact-items();
+    .disable-cell-items();
+}
+
+@media only screen and (max-height: @medium) and (max-width: @medium) and (orientation: landscape) {
+    .cell {
+        gap: 0;
+
+        .heading {
+            .day {
+                padding: 0;
+                font-size: 0.875rem;
+            }
+        }
+
+        .items {
+            width: 100%;
+            padding-left: 0.5rem;
+        }
+    }
+}
+
+@media only screen and (max-width: @minimum) and (orientation: portrait) and (pointer: fine) {
+    .cell {
+        display: flex;
+
+        .heading {
+            flex: 1 1 33%;
+        }
+    }
+}
+
+@media screen and (max-width: @small) and (orientation: portrait) {
+    .disable-cell-items();
+}

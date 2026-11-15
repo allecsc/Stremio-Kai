@@ -1,0 +1,109 @@
+// Copyright (C) 2017-2024 Smart code 203358507
+
+@import (reference) '~stremio/common/screen-sizes.less';
+
+:import('~stremio/components/MetaPreview/styles.less') {
+    action-buttons-container: action-buttons-container;
+}
+
+@padding: 1rem;
+
+.side-drawer {
+    display: flex;
+    flex-direction: column;
+    padding: @padding;
+    height: 100dvh;
+    max-width: 35rem;
+    overflow-y: auto;
+    position: relative;
+    border-top-left-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+    background-color: var(--modal-background-color);
+    box-shadow: 0 1.35rem 2.7rem var(--color-background-dark5-40), 0 1.1rem 0.85rem var(--color-background-dark5-20);
+    backdrop-filter: blur(15px);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1;
+
+    .close-button {
+        display: none;
+        position: absolute;
+        top: 1.3rem;
+        right: 1.3rem;
+        padding: 0.5rem;
+        background-color: transparent;
+        cursor: pointer;
+        z-index: 2;
+        border-radius: var(--border-radius);
+        transition: 0.3s all ease-in-out;
+        -webkit-tap-highlight-color: transparent;
+
+        .icon {
+            color: var(--primary-foreground-color);
+            width: 2rem;
+            height: 2rem;
+            opacity: 0.6;
+            transition: 0.3s opacity ease-in-out;
+        }
+
+        &:hover {
+            background-color: var(--overlay-color);
+
+            .icon {
+                opacity: 1;
+            }
+        }
+    }
+
+    .info {
+        padding: @padding;
+        overflow-y: auto;
+        flex: 1;
+
+        .side-drawer-meta-preview {
+            .action-buttons-container {
+                padding-top: 0;
+                margin-top: 0;
+            }
+        }
+    }
+
+    .series-content {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+
+        .videos {
+            overflow-y: auto;
+        }
+    }
+}
+
+@media @phone-portrait {
+    .side-drawer {
+        max-width: 100dvw;
+
+        .close-button {
+            display: block;
+        }
+    }
+}
+
+@media @phone-landscape {
+    .side-drawer {
+        max-width: 50dvw;
+
+        .info {
+            flex: 1;
+        }
+    }
+}
+
+@media screen and (max-width: @xxsmall) {
+    .side-drawer {
+        padding: calc(@padding / 2);
+
+        .info {
+            padding: calc(@padding / 2);
+        }
+    }
+}

@@ -1,0 +1,93 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+
+@audio-boost-background: linear-gradient(to right,
+    var(--primary-foreground-color) 0%,
+    var(--primary-foreground-color) 50%,
+    var(--warning-accent-color) 75%,
+    var(--danger-accent-color) 100%) !important;
+
+html.active-slider-within {
+    cursor: grabbing;
+
+    body {
+        pointer-events: none;
+    }
+}
+
+.slider-container {
+    position: relative;
+    z-index: 0;
+    overflow: visible;
+    cursor: pointer;
+
+    &:global(.disabled) {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
+    .layer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        overflow: visible;
+    }
+
+    .track {
+        z-index: 0;
+        flex: 1;
+        width: 100%;
+        height: var(--track-size);
+        border-radius: var(--track-size);
+        background-color: var(--primary-accent-color);
+        opacity: 0.2;
+
+        &.audio-boost {
+            opacity: 0.3;
+            background: @audio-boost-background;
+        }
+    }
+
+    .track-before {
+        z-index: 1;
+        flex: none;
+        height: var(--track-size);
+        border-radius: var(--track-size);
+        background-color: var(--overlay-color);
+    }
+
+    .track-after {
+        z-index: 2;
+        flex: none;
+        width: 100%;
+        height: var(--track-size);
+        border-radius: var(--track-size);
+        background-color: var(--primary-foreground-color);
+        mask-image: linear-gradient(to right,
+            black 0%,
+            black var(--mask-width),
+            transparent var(--mask-width)
+        );
+
+        &.audio-boost {
+            background: @audio-boost-background;
+        }
+    }
+
+    .thumb {
+        z-index: 3;
+        flex: none;
+        width: var(--thumb-size);
+        height: var(--thumb-size);
+        transform: translateX(-50%);
+        background-color: var(--primary-foreground-color);
+        border-radius: 100%;
+    }
+}

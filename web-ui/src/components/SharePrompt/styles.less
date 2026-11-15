@@ -1,0 +1,105 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+
+.share-prompt-container {
+    .buttons-container {
+        display: flex;
+        flex-direction: row;
+
+        .button-container {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+
+            &:not(:last-child) {
+                margin-right: 1rem;
+            }
+
+            .icon {
+                flex: none;
+                height: 1.5rem;
+                color: var(--primary-foreground-color);
+            }
+        }
+
+        .facebook-button, .x-button, .reddit-button {
+            border-radius: var(--border-radius);
+
+            &:focus {
+                outline-color: var(--primary-foreground-color);
+            }
+        }
+
+        .facebook-button {
+            background-color: var(--color-facebook);
+        }
+
+        .x-button {
+            background-color: var(--color-x);
+        }
+
+        .reddit-button {
+            background-color: var(--color-reddit);
+        }
+    }
+
+    .url-container {
+        display: flex;
+        flex-direction: row;
+        margin-top: 1rem;
+        border-radius: var(--border-radius);
+        background-color: var(--overlay-color);
+
+        .url-text-input {
+            flex: 1;
+            align-self: stretch;
+            padding: 1rem;
+            font-size: 1.1rem;
+            text-align: center;
+            color: var(--primary-foreground-color);
+        }
+
+        .copy-button {
+            flex: none;
+            align-self: stretch;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            width: 8rem;
+            padding: 1rem;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            background-color: var(--secondary-accent-color);
+
+            &:hover {
+                outline: var(--focus-outline-size) solid var(--secondary-accent-color);
+                background-color: transparent;
+            }
+
+            &:focus {
+                outline-color: var(--primary-foreground-color);
+            }
+
+            .icon {
+                flex: none;
+                width: 1.2rem;
+                height: 1.2rem;
+                margin-right: 0.5rem;
+                color: var(--primary-foreground-color);
+            }
+
+            .label {
+                flex-grow: 0;
+                flex-shrink: 1;
+                flex-basis: auto;
+                max-height: 2.4em;
+                font-size: 1.1rem;
+                color: var(--primary-foreground-color);
+            }
+        }
+    }
+}

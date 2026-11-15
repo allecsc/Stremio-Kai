@@ -1,0 +1,73 @@
+name: Windows build
+on:
+  push:
+    branches: [main, 'feat/**']
+    tags: ['v*-simkl*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+      - name: Install and test web UI
+        working-directory: web-ui
+        run: |
+          pnpm install --frozen-lockfile --ignore-scripts
+          node --test tests/simkl-media.test.cjs
+          pnpm run build
+      - name: Prepare pinned Kai runtime and MPV SDK
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./build-scripts/prepare.ps1
+      - name: Cache native dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/AppData/Local/vcpkg/archives
+          key: windows-static-v1-${{ hashFiles('native/vcpkg.json') }}
+      - name: Build native app and tests
+        shell: pwsh
+        run: |
+          cmake -S native -B build -A x64 -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DDEBUG_LOG=OFF
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          cmake --build build --config Release --parallel 4
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          ctest --test-dir build -C Release --output-on-failure
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Package portable and installer
+        shell: pwsh
+        run: ./build-scripts/package.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Stremio-Kai-Simkl-Windows-x64
+          path: |
+            out/*.exe
+            out/*.zip
+            out/SHA256SUMS.txt
+          retention-days: 14
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Stremio-Kai-Simkl-Windows-x64
+          path: release
+      - name: Publish prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" release/* --repo "$GITHUB_REPOSITORY" --prerelease --title "Stremio Kai Simkl $GITHUB_REF_NAME" --notes "Native Simkl preview. See SIMKL.md for setup, supported updates, validation and limitations. Windows packages are unsigned."
+

@@ -1,0 +1,120 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+@import (reference) '~stremio/common/screen-sizes.less';
+
+.control-bar-container {
+    padding: 0 1.5rem;
+
+    .seek-bar {
+        --track-size: 0.5rem;
+        --thumb-size: 1.3rem;
+
+        height: 2.5rem;
+    }
+
+    .control-bar-buttons-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .control-bar-button {
+            flex: none;
+            width: 4rem;
+            height: 5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &:global(.disabled) {
+                .icon {
+                    opacity: 0.5;
+                }
+            }
+
+            .icon {
+                flex: none;
+                width: 2.5rem;
+                height: 2.5rem;
+                color: var(--primary-foreground-color);
+            }
+        }
+
+        .volume-slider {
+            --track-size: 0.35rem;
+            --thumb-size: 1rem;
+
+            flex: 0 1 10rem;
+            height: 4rem;
+            margin: 0 1rem;
+        }
+
+        .spacing {
+            flex: 1;
+        }
+
+        .control-bar-buttons-menu-button {
+            flex: none;
+            width: 4rem;
+            height: 4rem;
+            display: none;
+            justify-content: center;
+            align-items: center;
+
+            .icon {
+                flex: none;
+                width: 2.5rem;
+                height: 2.5rem;
+                color: var(--primary-foreground-color);
+            }
+        }
+
+        .control-bar-buttons-menu-container {
+            flex: none;
+            display: flex;
+            flex-direction: row;
+        }
+    }
+}
+
+@media only screen and (max-width: @minimum) {
+    .control-bar-container {
+        padding: 0;
+
+        .seek-bar {
+            margin: 0 1.5rem;
+        }
+
+        .control-bar-buttons-container {
+            position: relative;
+            padding: 0 0.5rem;
+            overflow: visible;
+
+            .volume-slider {
+                display: none;
+            }
+
+            .control-bar-buttons-menu-button {
+                display: flex;
+            }
+
+            .control-bar-buttons-menu-container {
+                position: absolute;
+                right: 0rem;
+                bottom: 4.5rem;
+                padding: 0.5rem;
+                margin: 0.5rem;
+                max-width: calc(100dvw - 1rem);
+                border-radius: var(--border-radius);
+                background-color: var(--modal-background-color);
+                box-shadow: 0 1.35rem 2.7rem @color-background-dark5-40,
+                    0 1.1rem 0.85rem @color-background-dark5-20;
+                overflow-x: auto;
+
+                &:not(:global(.open)) {
+                    display: none;
+                }
+            }
+        }
+    }
+}
