@@ -36,6 +36,7 @@ mpv_handle* mpv = nullptr;
 HWND window = nullptr;
 std::thread worker, authListener;
 std::atomic<bool> stopping{false};
+std::atomic<int64_t> shutdownDeadline{0};
 std::atomic<uint64_t> authGeneration{0};
 std::atomic<HINTERNET> activeRequest{nullptr};
 bool workerDone = false, initialized = false, enabled = false, connected = false, connecting = false;
@@ -51,6 +52,8 @@ bool diagnosticOffline=false, diagnosticRefresh=false;
 #endif
 
 int64_t Now() { return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count(); }
+int64_t MonotonicMilliseconds() { return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count(); }
+bool MaySend() { return !stopping || MonotonicMilliseconds() < shutdownDeadline.load(); }
 std::wstring Wide(const std::string& text) {
     const int size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), static_cast<int>(text.size()), nullptr, 0);
     std::wstring result(size, 0);
@@ -211,6 +214,7 @@ void LoadTokens() {
 struct Response { DWORD status = 0; Json body; unsigned retryAfter = 0; };
 Response Request(const wchar_t* method, const std::string& endpoint, const std::string& body = "", const std::string& bearer = "", bool form = false) {
     Response result;
+    if (!MaySend()) return result;
     DWORD proxyMode=WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY;
     const wchar_t* proxyName=WINHTTP_NO_PROXY_NAME;
 #ifdef DEBUG_LOG
@@ -301,7 +305,7 @@ Response Api(const std::string& endpoint, const Json& body) {
 bool FlushPending() {
     for (;;) {
         Json event;
-        { std::lock_guard lock(workMutex); if (pending.empty() || stopping) return pending.empty();
+        { std::lock_guard lock(workMutex); if (pending.empty() || !MaySend()) return pending.empty();
           const auto oldest=std::min_element(pending.begin(),pending.end(),[](const auto& a,const auto& b){return a.second.value("created",int64_t(0)) < b.second.value("created",int64_t(0));});
           event = oldest->second; }
         if (event.value("connection",std::string()) != tokens.value("connection",std::string())) {
@@ -517,6 +521,7 @@ void MpvEvent(mpv_handle* player,mpv_event* event) {
 }
 void Shutdown() {
     if(!initialized || stopping) return;
+    shutdownDeadline=MonotonicMilliseconds()+3000;
     BeforeLoad(); ++authGeneration;
     {std::lock_guard lock(workMutex);stopping=true;} workChanged.notify_all();
     if(authListener.joinable())authListener.join();

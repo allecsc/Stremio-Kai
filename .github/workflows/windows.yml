@@ -64,7 +64,8 @@ jobs:
             out/*.exe
             out/*.zip
             out/SHA256SUMS.txt
-          retention-days: 14
+          compression-level: 0
+          retention-days: 1
   release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build

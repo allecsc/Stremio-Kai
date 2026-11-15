@@ -22,11 +22,24 @@ const core = require('@stremio/stremio-core-web');
     const ctx = core.get_state('ctx');
     assert.ok(ctx.profile.settings, 'retained Settings expects ctx.profile.settings');
     assert.ok(Array.isArray(ctx.profile.addons), 'retained Addons expects profile.addons');
+    core.dispatch({ action: 'Ctx', args: { action: 'UpdateSettings', args: {
+        ...ctx.profile.settings, pauseOnMinimize: !ctx.profile.settings.pauseOnMinimize,
+    } } }, undefined, '#/settings');
+    assert.equal(core.get_state('ctx').profile.settings.pauseOnMinimize, !ctx.profile.settings.pauseOnMinimize);
+    core.dispatch({ action: 'Load', args: { model: 'LibraryWithFilters', args: {
+        request: { type: null },
+    } } }, 'library', '#/library');
+    assert.ok(core.get_state('library'), 'retained library load schema is accepted');
     const player = core.get_state('player');
     assert.equal(player.selected, null);
     const stream = { url: 'https://example.com/fixture.mp4' };
     const encoded = core.encode_stream(stream);
     assert.equal(core.decode_stream(encoded).url, stream.url);
+    core.dispatch({ action: 'Load', args: { model: 'Player', args: {
+        stream, streamRequest: null, metaRequest: null, subtitlesPath: null,
+    } } }, 'player', '#/player');
+    assert.equal(core.get_state('player').selected.stream.url, stream.url,
+        'retained Player load schema must be accepted by the upgraded core');
     for (const action of [
         { action: 'PausedChanged', args: { paused: true } },
         { action: 'TimeChanged', args: { time: 30000, duration: 60000, device: 'ShellVideo' } },
