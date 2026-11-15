@@ -1,0 +1,6 @@
+{
+  "name": "stremio-kai-simkl",
+  "version-string": "4.8.1-simkl.1",
+  "builtin-baseline": "8f363bdc11359ede4bc51e5eb32a2617538049c8",
+  "dependencies": ["openssl", "curl", "nlohmann-json", "webview2"]
+}

@@ -1,0 +1,58 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+@import (reference) '~stremio/common/screen-sizes.less';
+
+.vertical-nav-bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: var(--vertical-nav-bar-size);
+    padding: 1rem 0;
+    background-color: transparent;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-tab-button {
+        width: calc(var(--vertical-nav-bar-size) - 1.2rem);
+        height: calc(var(--vertical-nav-bar-size) - 1.2rem);
+        min-height: 3.5rem;
+    }
+}
+
+@media only screen and (max-width: @minimum) {
+    .vertical-nav-bar-container {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 0;
+        height: var(--vertical-nav-bar-size);
+        width: 100%;
+        padding: 0 1rem;
+        overflow-y: hidden;
+        overflow-x: auto;
+
+        .nav-tab-button {
+            flex: none;
+
+            &:last-child {
+                display: none;
+            }
+        }
+    }
+}
+
+@media only screen and (max-height: @minimum) {
+    .vertical-nav-bar-container {
+        .nav-tab-button {
+            &:last-child {
+                display: none;
+            }
+        }
+    }
+}

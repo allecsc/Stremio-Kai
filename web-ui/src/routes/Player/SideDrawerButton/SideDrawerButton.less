@@ -1,0 +1,47 @@
+// Copyright (C) 2017-2024 Smart code 203358507
+
+@import (reference) '~stremio/common/screen-sizes.less';
+
+.side-drawer-button {
+    height: 12.5rem;
+    width: 7.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding-left: 0.5rem;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--modal-background-color);
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+    opacity: 1;
+    will-change: opacity;
+    transition: opacity 0.3s ease-in-out, border-radius 0.3s ease-in-out;
+
+    .icon {
+        position: relative;
+        width: 2.5rem;
+        height: 2.5rem;
+        color: var(--primary-foreground-color);
+        opacity: 0.6;
+        transition: 0.3s opacity ease-in-out;
+    }
+
+    &:hover {
+        .icon {
+            opacity: 1;
+        }
+    }
+}
+
+@media screen and (max-width: @xsmall) {
+    .side-drawer-button {
+        height: 8rem;
+        width: 4.5rem;
+
+        .icon {
+            width: 2rem;
+            height: 2rem;
+        }
+    }
+}

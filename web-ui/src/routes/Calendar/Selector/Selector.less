@@ -1,0 +1,91 @@
+// Copyright (C) 2017-2024 Smart code 203358507
+
+@import (reference) '~stremio/common/screen-sizes.less';
+
+.selector {
+    flex: none;
+    position: relative;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem;
+
+    .prev, .next {
+        position: relative;
+        height: 3rem;
+        width: 6rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        border-radius: 0.5rem;
+        transition: background-color 0.1s ease-out;
+
+        .label, .icon {
+            color: var(--primary-foreground-color);
+            opacity: 0.5;
+            transition: opacity 0.1s ease-out;
+        }
+
+        .label {
+            font-size: 1rem;
+            font-weight: 500;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .icon {
+            height: 1.5rem;
+        }
+
+        &:hover {
+            .label, .icon {
+                opacity: 1;
+            }
+
+            background-color: var(--overlay-color);
+        }
+    }
+
+    .prev {
+        padding-left: 0.5rem;
+        padding-right: 1.25rem;
+    }
+
+    .next {
+        padding-left: 1.25rem;
+        padding-right: 0.5rem;
+    }
+
+    .selected {
+        position: relative;
+        width: 8.5rem;
+        text-align: center;
+
+        .year {
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 100%;
+            color: var(--primary-foreground-color);
+            opacity: 0.5;
+        }
+
+        .month {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--primary-foreground-color);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    }
+}
+
+@media only screen and (max-width: @small) {
+    .selector {
+        justify-content: space-between;
+    }
+}

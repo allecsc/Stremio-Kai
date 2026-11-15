@@ -1,0 +1,114 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+:global(.animation-fade-in) {
+    :local {
+        animation-name: fade-in;
+    }
+
+    animation-timing-function: ease-in-out;
+    animation-duration: 350ms;
+
+    @media (prefers-reduced-motion) {
+        :local {
+            animation-name: fade-in-no-motion;
+        }
+    }
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    40% {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    70% {
+        opacity: 0.6;
+        transform: translateY(2px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+:global(.animation-slide-up) {
+    :local {
+        animation-name: slide-up;
+    }
+
+    animation-timing-function: ease-out;
+    animation-duration: 0.1s;
+}
+
+@keyframes slide-up {
+    0% {
+        transform: translateY(100%);
+    }
+
+    100% {
+        transform: translateY(0%);
+    }
+}
+
+.slide-left-enter {
+    transform: translateX(100%);
+}
+
+.slide-left-active {
+    transform: translateX(0%);
+    transition: transform 0.3s cubic-bezier(0.32, 0, 0.67, 0);
+}
+
+.slide-left-exit {
+    transform: translateX(100%);
+}
+
+.slide-up-enter {
+    transform: translateY(100%);
+}
+
+.slide-up-active {
+    transform: translateY(0%);
+    transition: transform 0.3s cubic-bezier(0.32, 0, 0.67, 0);
+}
+
+.slide-up-exit {
+    transform: translateY(100%);
+}
+
+.fade-enter {
+    opacity: 0;
+}
+
+.fade-active {
+    opacity: 1;
+    transition: opacity 0.3s cubic-bezier(0.32, 0, 0.67, 0);
+}
+
+.fade-exit {
+    opacity: 0;
+}
+
+@keyframes fade-in-no-motion {
+    0% {
+        opacity: 0;
+    }
+
+    40% {
+        opacity: 0;
+    }
+
+    70% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

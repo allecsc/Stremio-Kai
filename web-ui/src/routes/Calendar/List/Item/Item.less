@@ -1,0 +1,138 @@
+// Copyright (C) 2017-2024 Smart code 203358507
+
+.item {
+    flex: none;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--overlay-color);
+    border-radius: var(--border-radius);
+    border: 0.15rem solid transparent;
+    transition: border-color 0.1s ease-out;
+
+    .heading {
+        flex: none;
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 3.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--primary-foreground-color);
+        padding: 0 1rem;
+    }
+
+    .body {
+        flex: auto;
+        display: flex;
+        flex-direction: column;
+
+        .video {
+            flex: none;
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            height: 3rem;
+            padding: 0 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--primary-foreground-color);
+
+            &:last-child {
+                border-radius: 0 0 var(--border-radius) var(--border-radius);
+            }
+
+            .name {
+                flex: auto;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+
+            .info {
+                flex: none;
+                display: block;
+            }
+
+            .icon {
+                flex: none;
+                display: none;
+                width: 2rem;
+                height: 2rem;
+                padding: 0.5rem;
+                border-radius: 50%;
+                color: var(--primary-foreground-color);
+                background-color: var(--secondary-accent-color);
+            }
+
+            &:hover {
+                background-color: var(--overlay-color);
+
+                .info {
+                    display: none;
+                }
+
+                .icon {
+                    display: block;
+                }
+            }
+        }
+    }
+
+    &.placeholder {
+        opacity: 0.7;
+        pointer-events: none;
+
+        .text {
+            width: 8rem;
+            height: 1.2rem;
+            background-color: var(--overlay-color);
+            border-radius: 0.2rem;
+        }
+
+        .video {
+            flex: none;
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            height: 3rem;
+            padding: 0 1rem;
+
+            .name {
+                flex: auto;
+                width: 12rem;
+                height: 1.2rem;
+                background-color: var(--overlay-color);
+                border-radius: 0.2rem;
+            }
+
+            .info {
+                flex: none;
+                width: 4rem;
+                height: 1.2rem;
+                background-color: var(--overlay-color);
+                border-radius: 0.2rem;
+            }
+        }
+    }
+
+    &.today {
+        .heading {
+            background-color: var(--primary-accent-color);
+        }
+    }
+
+    &.active {
+        border-color: var(--primary-foreground-color);
+    }
+
+    &:not(.active):hover {
+        border-color: var(--overlay-color);
+    }
+}

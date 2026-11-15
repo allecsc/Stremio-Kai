@@ -1,0 +1,7 @@
+#include <windows.h>
+#include "src/resource.h"
+
+#define IDR_MAINFRAME 101
+
+IDR_MAINFRAME ICON "images/stremio2.ico"
+IDR_SPLASH_PNG RCDATA "images/stremio.png"

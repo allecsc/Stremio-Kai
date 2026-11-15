@@ -1,0 +1,10 @@
+/out/
+/build/
+/downloads/
+/vcpkg/
+**/node_modules/
+**/user-data/
+/native/deps/libmpv/
+/web-ui/build/
+*.log
+

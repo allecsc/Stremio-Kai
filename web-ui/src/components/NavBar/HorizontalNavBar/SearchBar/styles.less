@@ -1,0 +1,117 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+
+.search-bar-container {
+    --search-bar-size: 3.25rem;
+    display: flex;
+    flex-direction: row;
+    height: var(--search-bar-size);
+    border-radius: var(--search-bar-size);
+    background-color: var(--overlay-color);
+    position: relative;
+    overflow: visible;
+
+    .search-input {
+        flex: 1;
+        align-self: stretch;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 0.5rem 0 2rem;
+        font-weight: 500;
+        color: var(--primary-foreground-color);
+        cursor: text;
+
+        &::placeholder, .placeholder-label {
+            max-height: 1.2em;
+            opacity: 1;
+            color: var(--primary-foreground-color);
+            opacity: 0.6;
+        }
+    }
+
+    .submit-button-container {
+        flex: none;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        height: var(--search-bar-size);
+        padding: 0 1.5rem;
+
+        .icon {
+            flex: none;
+            width: 1.7rem;
+            height: 1.7rem;
+            color: var(--primary-foreground-color);
+            opacity: 0.6;
+        }
+    }
+
+    .menu-container {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: auto;
+        z-index: 10;
+        padding: 1rem;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 1.5rem;
+        background-color: var(--modal-background-color);
+        border-radius: var(--border-radius);
+        
+        .label {
+            font-size: 0.9rem;
+            color: var(--primary-foreground-color);
+        }
+
+        .title {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            opacity: 0.8;
+            padding-bottom: 1rem;
+
+            .search-history-clear {
+                cursor: pointer;
+                color: var(--primary-foreground-color);
+                font-size: 0.9rem;
+
+                &:hover {
+                    opacity: 0.6;
+                }
+            }
+        }
+
+        .items {
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+
+            .item {
+                width: 90%;
+                color: var(--primary-foreground-color);
+                text-align: left;
+                text-decoration: none;
+                padding: 0.5rem 1rem;
+                border-radius: var(--border-radius);
+                width: 100%;
+                cursor: pointer;
+                z-index: 10;
+
+                &:hover {
+                    background-color: var(--secondary-background-color);
+                }
+            }
+        }
+    }
+}

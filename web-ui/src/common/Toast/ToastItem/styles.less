@@ -1,0 +1,97 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+
+.toast-item-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 25rem;
+    margin-bottom: 1rem;
+    overflow: visible;
+    box-shadow: var(--outer-glow);
+    background-color: var(--modal-background-color);
+    pointer-events: auto;
+    border-radius: var(--border-radius);
+    border: 0.4px solid var(--primary-accent-color);
+    backdrop-filter: blur(10px);
+    padding: 1rem;
+    &.success {
+        .icon-container {
+            .icon {
+                color: @color-accent3;
+            }
+        }
+    }
+
+    &.error {
+        .icon-container {
+            .icon {
+                color: var(--color-trakt);
+            }
+        }
+    }
+
+    &.info {
+        .icon-container {
+            background-color: @color-primary-light2;
+
+            .icon {
+                color: @color-surface-light5-90;
+            }
+        }
+    }
+
+    .icon-container {
+        border-radius: 3px;
+        background-color: var(--overlay-color);
+
+        .icon {
+            display: block;
+            width: 100%;
+            height: 100%;
+            max-width: 2rem;
+        }
+    }
+
+    .info-container {
+        flex: 1;
+        align-self: stretch;
+        padding: 0.2rem 1rem;
+
+        .title-container {
+            font-size: 1.2rem;
+            color: var(--primary-foreground-color);
+
+            &:not(:last-child) {
+                margin-bottom: 0.2rem;
+            }
+        }
+
+        .message-container {
+            font-size: 1.1rem;
+            color: var(--primary-foreground-color);
+            opacity: 0.8;
+        }
+    }
+
+    .close-button-container {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 3px;
+        
+        .icon {
+            display: block;
+            width: 100%;
+            height: 100%;
+            color: var(--primary-foreground-color);
+            opacity: 0.4;
+        }
+
+        &:hover {
+            .icon {
+                opacity: 1;
+            }
+        }
+    }
+}

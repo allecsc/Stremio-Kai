@@ -1,0 +1,160 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+@import (reference) '~stremio/common/screen-sizes.less';
+
+:import('~stremio/components/Slider/styles.less') {
+    active-slider-within: active-slider-within;
+}
+
+:import('~stremio/components/NavBar/HorizontalNavBar/styles.less') {
+    nav-bar-button-container: button-container;
+    nav-bar-title: title;
+    nav-bar-icon: icon;
+}
+
+@background-color: rgba(0, 0, 0, 1);
+
+html:not(.active-slider-within) {
+    .player-container.overlayHidden {
+        cursor: none;
+
+        .nav-bar-layer, .control-bar-layer, .menu-layer, .side-drawer-button-layer {
+            opacity: 0;
+            transition: opacity 200ms;
+        }
+    }
+}
+
+.player-container {
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    background-color: @background-color;
+
+    .layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+
+        &.buffering-layer, &.error-layer {
+            background: transparent;
+        }
+
+        &.background-layer {
+            .image {
+                width: 100vw;
+                height: 100vh;
+                object-fit: cover;
+                opacity: 0.6;
+            }
+        }
+
+        &.nav-bar-layer {
+            bottom: initial;
+            background: transparent;
+            overflow: visible;
+
+            &::before {
+                position: absolute;
+                right: 0;
+                top: 0;
+                left: 0;
+                z-index: -1;
+                box-shadow: 0 0 8rem 6rem @color-background-dark5;
+                content: "";
+            }
+
+            .nav-bar-button-container {
+                &:hover {
+                    background: transparent;
+                }
+
+                .nav-bar-icon {
+                    color: var(--primary-foreground-color);
+                }
+            }
+
+            .nav-bar-title {
+                color: var(--primary-foreground-color);
+            }
+        }
+
+        &.side-drawer-button-layer {
+            position: fixed;
+            top: 50%;
+            right: -4rem;
+            left: initial;
+            transform: translateY(-50%);
+        }
+
+        &.control-bar-layer {
+            top: initial;
+            overflow: visible;
+
+            &::before {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                z-index: -1;
+                box-shadow: 0 0 8rem 8rem @color-background-dark5;
+                content: "";
+            }
+        }
+
+        &.indicator-layer {
+            top: initial;
+            left: 0;
+            right: 0;
+            bottom: 10rem;
+        }
+
+        &.menu-layer {
+            top: initial;
+            left: initial;
+            right: 4rem;
+            bottom: 8rem;
+            max-height: calc(100% - 13.5rem);
+            max-width: calc(100% - 4rem);
+            border-radius: var(--border-radius);
+            background-color: var(--modal-background-color);
+            box-shadow: 0 1.35rem 2.7rem @color-background-dark5-40,
+                0 1.1rem 0.85rem @color-background-dark5-20;
+            backdrop-filter: blur(15px);
+            overflow: auto;
+        }
+
+        &.side-drawer-layer {
+            bottom: 0;
+            right: 0;
+            left: initial;
+            bottom: initial;
+        }
+    }
+}
+
+@media screen and (max-width: @xsmall) {
+    .player-container {
+        .layer {
+            &.side-drawer-button-layer {
+                right: -2rem;
+            }
+        }
+    }
+}
+
+@media (orientation: portrait) and (max-width: @minimum) {
+    .player-container {
+        .layer {
+            &.menu-layer {
+                right: 2.5rem;
+                bottom: 11rem;
+            }
+        }
+    }
+}

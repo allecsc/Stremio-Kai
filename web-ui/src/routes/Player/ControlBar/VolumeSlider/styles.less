@@ -1,0 +1,24 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+
+:import('~stremio/components/Slider/styles.less') {
+    slider-track: track;
+    slider-track-after: track-after;
+}
+
+.volume-slider:not(:global(.disabled)) {
+    .slider-track {
+        background-color: var(--overlay-color);
+    }
+
+    .slider-track-after {
+        background-color: var(--primary-foreground-color);
+    }
+
+    &:hover, &:global(.active) {
+        .slider-track-after {
+            background-color: var(--primary-foreground-color);
+        }
+    }
+}

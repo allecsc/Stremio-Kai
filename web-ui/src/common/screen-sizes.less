@@ -1,0 +1,25 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+@minimum: 640px;
+@xxsmall: 800px;
+@xsmall: 1000px;
+@small: 1300px;
+@medium: 1600px;
+@normal: 1900px;
+@large: 2200px;
+@xlarge: 2500px;
+@xxlarge: 2800px;
+@xxxlarge: 3800px;
+
+@small-phone-landscape-size: 400px;
+@small-phone-portrait-size: 700px;
+
+@phone-landscape-size: 500px;
+@phone-portrait-size: 1000px;
+
+@small-phone-landscape: ~"screen and (max-width: @{small-phone-portrait-size}) and (max-height: @{small-phone-landscape-size}) and (orientation: landscape)";
+@small-phone-portrait: ~"screen and (max-width: @{small-phone-landscape-size}) and (max-height: @{small-phone-portrait-size}) and (orientation: portrait)";
+
+@phone-landscape: ~"screen and (max-width: @{phone-portrait-size}) and (max-height: @{phone-landscape-size}) and (orientation: landscape)";
+@phone-portrait: ~"screen and (max-width: @{phone-landscape-size}) and (max-height: @{phone-portrait-size}) and (orientation: portrait)";
+

@@ -1,0 +1,109 @@
+// Copyright (C) 2017-2023 Smart code 203358507
+
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+@import (reference) '~stremio/common/screen-sizes.less';
+
+.meta-row-container {
+    overflow: visible;
+
+    .header-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 1rem;
+        margin-bottom: 0.25rem;
+
+        .title-container {
+            flex: 1;
+            max-height: 2.4em;
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: var(--primary-foreground-color);
+        }
+
+        .see-all-container {
+            flex: none;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            max-width: 12rem;
+            height: 2.5rem;
+            padding: 0 0.5rem 0 1rem;
+            border-radius: 2.5rem;
+            opacity: 0.6;
+
+            &:hover, &:focus {
+                outline: none;
+                background-color: var(--overlay-color);
+                opacity: 1;
+            }
+
+            .label {
+                flex: 0 1 auto;
+                max-height: 1.2em;
+                font-size: 1rem;
+                font-weight: 500;
+                color: var(--primary-foreground-color);
+            }
+
+            .icon {
+                flex: none;
+                height: 1.5rem;
+                margin-left: 0.5rem;
+                color: var(--primary-foreground-color);
+            }
+        }
+    }
+
+    .message-container {
+        max-height: 3.6em;
+        padding: 0 0.5rem;
+        font-size: 1.3rem;
+        color: var(--primary-foreground-color);
+        opacity: 0.6;
+    }
+
+    .meta-items-container {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        overflow: visible;
+
+        .meta-item {
+            &.poster-shape-poster {
+                flex: calc(1 / var(--poster-shape-ratio));
+            }
+
+            &.poster-shape-square {
+                flex: 1;
+            }
+
+            &.poster-shape-landscape {
+                flex: calc(1 / var(--landscape-shape-ratio));
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: @minimum) {
+    .meta-row-container {
+        .header-container {
+            padding: 0 0.5rem;
+
+            .title-container {
+                margin-right: 0.5rem;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+        }
+
+        .meta-items-container {
+            .meta-item {
+                &:not(:first-child) {
+                    margin-left: 0;
+                }
+            }
+        }
+    }
+}
