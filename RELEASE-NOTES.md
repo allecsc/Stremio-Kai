@@ -9,7 +9,7 @@ Downloads:
 
 - **Existing installations:** close Kai, extract `Stremio-Kai-Simkl-App-Update.zip` over the application folder, then open `stremio.exe`. It preserves `user-data`, MPV and configuration.
 - **Full Windows installation:** use `Stremio-Kai-Simkl-Setup-x64.exe`, or extract the complete `Stremio-Kai-Simkl-Windows-x64.zip`.
-- **Already on simkl.3:** the smaller `Stremio-Kai-Simkl-WebUI-Update.zip` is sufficient for this warning fix.
+- Use the **App-Update ZIP** for normal EXE startup: it also updates the build-specific UI URL to avoid a stale cached page. The UI-only ZIP requires a launcher that supplies the matching build URL.
 - `SHA256SUMS.txt` contains download checksums.
 
 The regression check uses the actual released WASM core's initial discovery state. Separate checks cover loading/reload, ready, genuine failure, recovery and active/expired dismissals. Packages are unsigned. See [SIMKL.md](https://github.com/helbetmathias/Stremio-Kai/blob/main/SIMKL.md) for setup and playback-validation limits.
