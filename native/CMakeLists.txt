@@ -81,6 +81,16 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
 
+# Give each bundled UI build its own navigation URL so a previous PWA cache
+# cannot serve an older index.html after an application update.
+execute_process(COMMAND git rev-parse HEAD
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT_VARIABLE KAI_UI_BUILD_ID OUTPUT_STRIP_TRAILING_WHITESPACE)
+if(NOT KAI_UI_BUILD_ID)
+    set(KAI_UI_BUILD_ID "${PROJECT_VERSION}")
+endif()
+target_compile_definitions(${PROJECT_NAME} PRIVATE KAI_UI_BUILD_ID="${KAI_UI_BUILD_ID}")
+
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         gdiplus.lib

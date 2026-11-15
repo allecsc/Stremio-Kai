@@ -1,8 +1,10 @@
 // Copyright (C) 2017-2023 Smart code 203358507
 
 const React = require('react');
+const EMPTY_EXTENSIONS = Object.freeze([]);
 
-const useMetaExtensionTabs = (metaExtensions) => {
+// Current cores omit this legacy field. Keep old-core tabs when supplied.
+const useMetaExtensionTabs = (metaExtensions = EMPTY_EXTENSIONS) => {
     const tabs = React.useMemo(() => {
         return metaExtensions
             .map((extension) => ({

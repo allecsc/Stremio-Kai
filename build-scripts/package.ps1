@@ -21,7 +21,17 @@ Get-ChildItem build/vcpkg_installed/x64-windows-static/share -Directory | ForEac
     $copyrightPath = Join-Path $_.FullName 'copyright'
     if (Test-Path -LiteralPath $copyrightPath) { Copy-Item -LiteralPath $copyrightPath -Destination (Join-Path $licensePath ($_.Name + '.txt')) }
 }
-Copy-Item build-scripts/Start-Kai.cmd -Destination $appPath
+$buildId = (& git rev-parse HEAD).Trim()
+if ($LASTEXITCODE) { throw 'Unable to identify the bundled UI build' }
+$launcher = (Get-Content build-scripts/Start-Kai.cmd -Raw).Replace(' %*', ' "--webui-url=https://kai.local/index.html?build=' + $buildId + '" %*')
+Set-Content -LiteralPath (Join-Path $appPath 'Start-Kai.cmd') -Value $launcher -Encoding ascii
+# Small update for existing installations: preserve user-data and all runtime files.
+$updatePath = Join-Path $repoPath 'out/ui-update'
+New-Item -ItemType Directory -Path $updatePath -Force | Out-Null
+Copy-Item web-ui/build -Destination (Join-Path $updatePath 'web-ui') -Recurse
+Copy-Item -LiteralPath (Join-Path $appPath 'Start-Kai.cmd') -Destination $updatePath
+& 7z a -tzip out/Stremio-Kai-Simkl-WebUI-Update.zip "$updatePath/*" '-mx=5' | Out-Null
+if ($LASTEXITCODE) { throw 'UI update packaging failed' }
 # No build-machine browser profile, credentials, tests or logs enter the release.
 Get-ChildItem -LiteralPath $appPath -Recurse -File -Include *.log,*.dmp | Remove-Item -Force
 & 7z a -tzip out/Stremio-Kai-Simkl-Windows-x64.zip $appPath '-mx=5' | Out-Null

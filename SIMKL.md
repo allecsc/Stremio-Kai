@@ -12,6 +12,8 @@ This public desktop client's redirect registration is `http://127.0.0.1/auth/sim
 
 ## Components and updates
 
+The second Simkl release fixes a title-details crash caused by core 0.67.1 omitting the legacy `metaExtensions` field. Movie/series detail state is now checked through the actual React extension-tab hook in CI. Bundled navigation uses a build-specific URL so updates do not reopen an old cached page. Existing installations can use the small WebUI update ZIP without replacing their profile or runtime.
+
 | Component | Version / source |
 | --- | --- |
 | Kai configuration/theme/runtime | upstream Kai 4.8.0, pinned archive SHA-256 |

@@ -1,7 +1,6 @@
 name: Windows build
 on:
   push:
-    branches: [main, 'feat/**']
     tags: ['v*-simkl*']
   pull_request:
   workflow_dispatch:
@@ -73,12 +72,13 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: Stremio-Kai-Simkl-Windows-x64
           path: release
-      - name: Publish prerelease
+      - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" release/* --repo "$GITHUB_REPOSITORY" --prerelease --title "Stremio Kai Simkl $GITHUB_REF_NAME" --notes "Native Simkl preview. See SIMKL.md for setup, supported updates, validation and limitations. Windows packages are unsigned."
+        run: gh release create "$GITHUB_REF_NAME" release/* --repo "$GITHUB_REPOSITORY" --latest --title "Stremio Kai Simkl $GITHUB_REF_NAME" --notes-file RELEASE-NOTES.md
 

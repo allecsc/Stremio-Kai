@@ -303,7 +303,7 @@ void InitWebView2(HWND hWnd)
                     std::thread([bundled](){
                         std::wcout << L"[WEBVIEW]: Checking web ui endpoints..." << std::endl;
                         std::wstring foundUrl = !g_webuiOverride.empty() ? g_webuiOverride :
-                            bundled ? L"https://kai.local/index.html" : GetFirstReachableUrl();
+                            bundled ? L"https://kai.local/index.html?build=" + Utf8ToWstring(KAI_UI_BUILD_ID) : GetFirstReachableUrl();
                         std::wstring* pResult = new std::wstring(foundUrl);
                         g_webuiUrl = foundUrl;
                         PostMessage(g_hWnd, WM_REACHABILITY_DONE, (WPARAM)pResult, 0);
