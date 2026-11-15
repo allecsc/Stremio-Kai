@@ -32,6 +32,9 @@ Copy-Item web-ui/build -Destination (Join-Path $updatePath 'web-ui') -Recurse
 Copy-Item -LiteralPath (Join-Path $appPath 'Start-Kai.cmd') -Destination $updatePath
 & 7z a -tzip out/Stremio-Kai-Simkl-WebUI-Update.zip "$updatePath/*" '-mx=5' | Out-Null
 if ($LASTEXITCODE) { throw 'UI update packaging failed' }
+Copy-Item build/Release/stremio.exe -Destination $updatePath
+& 7z a -tzip out/Stremio-Kai-Simkl-App-Update.zip "$updatePath/*" '-mx=5' | Out-Null
+if ($LASTEXITCODE) { throw 'App update packaging failed' }
 # No build-machine browser profile, credentials, tests or logs enter the release.
 Get-ChildItem -LiteralPath $appPath -Recurse -File -Include *.log,*.dmp | Remove-Item -Force
 & 7z a -tzip out/Stremio-Kai-Simkl-Windows-x64.zip $appPath '-mx=5' | Out-Null

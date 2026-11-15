@@ -20,10 +20,17 @@
 #include "utils/crashlog.h"
 #include "utils/discord.h"
 #include "utils/helpers.h"
+#include "utils/profile.h"
 #include "webview/webview.h"
 #include "simkl/simkl.h"
 // This started as 1-week project so please don't take the code to seriously
 int main(int argc, char *argv[]) {
+  if (!ConfigureUserData(std::filesystem::path(GetExeDirectory()))) {
+    MessageBoxW(nullptr,
+        L"Kai could not open its user-data folder. Make sure the application folder is writable.",
+        L"Stremio Kai", MB_OK | MB_ICONERROR);
+    return 1;
+  }
   // Catch unhandled exceptions
   SetUnhandledExceptionFilter([](EXCEPTION_POINTERS *info) -> LONG {
     std::wstringstream ws;

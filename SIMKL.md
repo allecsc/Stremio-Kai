@@ -4,7 +4,9 @@ This fork adds optional native Simkl tracking beside the existing Trakt controls
 
 ## Download and use
 
-Download the Windows x64 installer or portable ZIP from [Releases](https://github.com/helbetmathias/Stremio-Kai/releases). These preview binaries are unsigned. The installer uses a separate per-user application directory and does not replace an existing Kai installation. The portable ZIP includes `stremio.exe`; use `Start-Kai.cmd` to keep the browser profile with the portable copy. Both packages include the runtime, configuration and bundled web UI; downloading only an executable is insufficient.
+Download the Windows x64 installer or portable ZIP from [Releases](https://github.com/helbetmathias/Stremio-Kai/releases). Windows binaries are unsigned. The installer uses a separate per-user application directory and does not replace an existing Kai installation. Open `stremio.exe` directly: it now configures the existing `user-data` folders itself, so a Command Prompt launcher is unnecessary. Installed shortcuts also open the EXE directly. The legacy `Start-Kai.cmd` remains available for compatibility. Both full packages include the runtime, configuration and bundled web UI; downloading only an executable is insufficient for a new installation.
+
+For an existing installation, close Kai and extract `Stremio-Kai-Simkl-App-Update.zip` into its application folder. This updates the EXE and web UI while preserving `user-data`, MPV and existing configuration. Open `stremio.exe` afterward; rerun the setup EXE if you need to refresh older installed shortcuts that still point to the batch file. The UI-only update ZIP does not include the native startup fix.
 
 In Settings, find **Simkl Scrobbling** immediately after Trakt Scrobbling. Connect through the system browser, then enable tracking. Disconnect revokes this application's refresh token and removes its Windows credential. The toggle is independent of Trakt. Disable other Simkl scrobblers (including any Trakt-to-Simkl bridge) before enabling this one to avoid account-level duplicates. There are no Simkl catalogs or metadata substitutions.
 
@@ -13,6 +15,8 @@ This public desktop client's redirect registration is `http://127.0.0.1/auth/sim
 ## Components and updates
 
 The second Simkl release fixes a title-details crash caused by core 0.67.1 omitting the legacy `metaExtensions` field. Movie/series detail state is now checked through the actual React extension-tab hook in CI. Bundled navigation uses a build-specific URL so updates do not reopen an old cached page. Existing installations can use the small WebUI update ZIP without replacing their profile or runtime.
+
+The third release makes the native EXE use those same profile folders without a batch wrapper. It also launches the streaming server using absolute executable/script paths and an explicit working directory. Windows CI checks profile preservation, paths containing spaces and Unicode, launch from a different directory, and the absence of a child console.
 
 | Component | Version / source |
 | --- | --- |
@@ -44,7 +48,7 @@ Those live results predate the core 0.67.1 upgrade. Build/test status for the up
 
 ## Build
 
-The [Windows build workflow](.github/workflows/windows.yml) uses GitHub's Windows runner; no local C++ installation is required. It builds the web UI with Node 22/pnpm 9.15.9, runs metadata tests, builds C++20 using MSVC and pinned vcpkg dependencies, runs CTest, verifies the original Kai runtime/MPV hashes, then creates an Inno Setup installer and portable ZIP with SHA-256 checksums. A `v*-simkl*` tag publishes a prerelease. Fork PRs use read-only workflow permissions and require no account credentials.
+The [Windows build workflow](.github/workflows/windows.yml) uses GitHub's Windows runner; no local C++ installation is required. It builds the web UI with Node 22/pnpm 9.15.9, runs metadata/rendering tests, builds C++20 using MSVC and pinned vcpkg dependencies, runs CTest (tracking and startup integration), verifies the original Kai runtime/MPV hashes, then creates an Inno Setup installer and portable/update ZIPs with SHA-256 checksums. A `v*-simkl*` tag publishes a normal release marked Latest. Fork PRs use read-only workflow permissions and require no account credentials.
 
 For a manual Windows build: install MSVC/Windows SDK, CMake, Git, Node 22, pnpm 9.15.9, 7-Zip, Inno Setup 6 and vcpkg. Run `pnpm --dir web-ui install --frozen-lockfile --ignore-scripts`, `pnpm --dir web-ui build`, `build-scripts/prepare.ps1`, and the CMake commands shown in the workflow. `GH_TOKEN` is only needed by the GitHub CLI to download the public upstream release. Never commit personal browser profiles or tokens.
 

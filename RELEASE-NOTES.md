@@ -1,13 +1,16 @@
-Fixes the blank screen when opening a movie or series in the first Simkl release.
+Removes the Command Prompt flash on normal startup and fixes streaming-server launch from other working directories.
 
-Core 0.67.1 removed the legacy `metaExtensions` field. The retained Kai title-details screen tried to iterate it and crashed. Missing extension tabs now render as an empty list; legacy tabs still work when provided. The core, Kai layout and MPV engine remain unchanged.
-
-The regression test exercises the real core's movie and series detail states through the actual React extension-tab hook, and also checks legacy extension rendering. Bundled UI navigation now includes its build identifier to avoid loading a stale cached page after an update.
+- Open **`stremio.exe` directly**. The native app now configures the same existing `user-data/webview`, `user-data/local` and `user-data/roaming` folders that the old batch launcher used. No profile migration or new sign-in is required.
+- New and refreshed installer shortcuts point to the EXE. The compatibility `Start-Kai.cmd` is still included, but running a batch file can show a console.
+- The streaming server now uses absolute executable/script paths and an explicit working directory. It continues to use `CREATE_NO_WINDOW`.
+- Windows startup integration tests check an existing profile marker, paths containing spaces/Unicode, launching from another directory, inherited profile folders and a real child process with no console.
+- Includes the previous movie/series blank-screen fix and build-specific UI URLs. Core 0.67.1, Kai's layout, MPV engine and native Simkl tracking remain unchanged.
 
 Downloads:
 
-- **Existing installations:** extract `Stremio-Kai-Simkl-WebUI-Update.zip` over the application folder and use `Start-Kai.cmd`. This updates the web UI and launcher; it does not contain or replace `user-data`.
+- **Existing installations:** close Kai, extract `Stremio-Kai-Simkl-App-Update.zip` over the application folder, then open `stremio.exe`. It updates the EXE and UI without replacing `user-data`, MPV or configuration. Rerun the setup EXE to refresh old installed shortcuts, or point them to `stremio.exe` yourself.
 - **Full Windows installation:** use `Stremio-Kai-Simkl-Setup-x64.exe`, or extract the complete `Stremio-Kai-Simkl-Windows-x64.zip`.
+- The smaller UI-only ZIP updates the UI, but cannot fix native startup by itself.
 - `SHA256SUMS.txt` contains download checksums.
 
 The setup EXE and portable ZIP include the native Simkl integration, original Kai runtime and configuration, updated core 0.67.1 and the retained Kai UI layout. Packages are unsigned. See [SIMKL.md](https://github.com/helbetmathias/Stremio-Kai/blob/main/SIMKL.md) for setup and validation limits.

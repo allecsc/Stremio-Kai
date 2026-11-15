@@ -17,5 +17,5 @@ UninstallDisplayIcon={app}\stremio.exe
 [Files]
 Source: "..\out\Stremio Kai Simkl\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 [Icons]
-Name: "{group}\Stremio Kai Simkl"; Filename: "{app}\Start-Kai.cmd"; IconFilename: "{app}\stremio.exe"; WorkingDir: "{app}"
-Name: "{autodesktop}\Stremio Kai Simkl"; Filename: "{app}\Start-Kai.cmd"; IconFilename: "{app}\stremio.exe"; WorkingDir: "{app}"
+Name: "{group}\Stremio Kai Simkl"; Filename: "{app}\stremio.exe"; IconFilename: "{app}\stremio.exe"; WorkingDir: "{app}"
+Name: "{autodesktop}\Stremio Kai Simkl"; Filename: "{app}\stremio.exe"; IconFilename: "{app}\stremio.exe"; WorkingDir: "{app}"

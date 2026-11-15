@@ -122,6 +122,12 @@ if(BUILD_TESTING)
     target_link_libraries(simkl_tracking_test PRIVATE nlohmann_json::nlohmann_json)
     target_compile_options(simkl_tracking_test PRIVATE /UNDEBUG)
     add_test(NAME simkl_tracking COMMAND simkl_tracking_test)
+    add_executable(kai_runtime_fixture tests/runtime_fixture.cpp)
+    add_executable(kai_startup_test tests/startup_test.cpp src/node/server.cpp)
+    target_link_libraries(kai_startup_test PRIVATE nlohmann_json::nlohmann_json
+        unofficial::webview2::webview2 shell32 user32)
+    add_test(NAME kai_startup COMMAND kai_startup_test "$<TARGET_FILE:kai_runtime_fixture>")
+    set_tests_properties(kai_startup PROPERTIES TIMEOUT 30)
 endif()
 
 # Copy MPV DLL

@@ -1,8 +1,8 @@
 {
     "name": "stremio",
     "displayName": "Stremio",
-    "version": "5.0.0-beta.29-kai.2",
-    "subVersion": "42",
+    "version": "5.0.0-beta.29-kai.3",
+    "subVersion": "43",
     "author": "Smart Code OOD",
     "private": true,
     "license": "gpl-2.0",

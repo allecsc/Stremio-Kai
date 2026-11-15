@@ -87,13 +87,13 @@ bool StartNodeServer()
     si.dwFlags=STARTF_USESTDHANDLES;
 
     PROCESS_INFORMATION pi;ZeroMemory(&pi,sizeof(pi));
-    std::wstring cmdLine = L"\"stremio-runtime.exe\" \"server.js\"";
+    std::wstring cmdLine = L"\"" + exePath + L"\" \"" + scriptPath + L"\"";
 
     SetEnvironmentVariableW(L"NO_CORS", L"1");
     BOOL success = CreateProcessW(
-        nullptr, &cmdLine[0],
+        exePath.c_str(), cmdLine.data(),
         nullptr,nullptr, TRUE,
-        CREATE_NO_WINDOW,nullptr,nullptr,
+        CREATE_NO_WINDOW,nullptr,exeDir.c_str(),
         &si, &pi
     );
     CloseHandle(inR);
