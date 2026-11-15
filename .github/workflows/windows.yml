@@ -26,6 +26,7 @@ jobs:
         run: |
           pnpm install --frozen-lockfile --ignore-scripts
           node --test tests/simkl-media.test.cjs
+          node --test tests/streaming-server-warning.test.cjs
           node tests/core-compatibility.cjs
           pnpm run build
       - name: Prepare pinned Kai runtime and MPV SDK

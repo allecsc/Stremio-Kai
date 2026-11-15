@@ -18,6 +18,7 @@ const core = require('@stremio/stremio-core-web');
 const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const useMetaExtensionTabs = require('../src/routes/MetaDetails/useMetaExtensionTabs');
+const shouldShowStreamingServerWarning = require('../src/common/shouldShowStreamingServerWarning');
 function DetailsExtensions({ extensions }) {
     const [tabs] = useMetaExtensionTabs(extensions);
     return React.createElement('nav', null, tabs.map(tab =>
@@ -27,6 +28,10 @@ function DetailsExtensions({ extensions }) {
     const binary = fs.readFileSync(path.join(path.dirname(require.resolve('@stremio/stremio-core-web')), 'stremio_core_web_bg.wasm'));
     await core.default({ module_or_path: binary });
     await core.initialize_runtime(() => {});
+    const server = core.get_state('streaming_server');
+    assert.equal(server.settings.type, 'Loading', 'server discovery starts in Loading');
+    assert.equal(shouldShowStreamingServerWarning(server.settings, new Date(NaN)), false,
+        'initial server discovery must not display an unavailable warning');
     const ctx = core.get_state('ctx');
     assert.ok(ctx.profile.settings, 'retained Settings expects ctx.profile.settings');
     assert.ok(Array.isArray(ctx.profile.addons), 'retained Addons expects profile.addons');

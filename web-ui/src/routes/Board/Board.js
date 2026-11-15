@@ -9,6 +9,7 @@ const { ContinueWatchingItem, EventModal, MainNavBars, MetaItem, MetaRow } = req
 const useBoard = require('./useBoard');
 const useContinueWatchingPreview = require('./useContinueWatchingPreview');
 const styles = require('./styles');
+const shouldShowStreamingServerWarning = require('stremio/common/shouldShowStreamingServerWarning');
 const { default: StreamingServerWarning } = require('./StreamingServerWarning');
 
 const THRESHOLD = 5;
@@ -22,11 +23,8 @@ const Board = () => {
     const profile = useProfile();
     const boardCatalogsOffset = continueWatchingPreview.items.length > 0 ? 1 : 0;
     const scrollContainerRef = React.useRef();
-    const streamingServerWarningDismissed = React.useMemo(() => {
-        return streamingServer.settings !== null && streamingServer.settings.type === 'Ready' || (
-            !isNaN(profile.settings.streamingServerWarningDismissed.getTime()) &&
-            profile.settings.streamingServerWarningDismissed.getTime() > Date.now()
-        );
+    const showStreamingServerWarning = React.useMemo(() => {
+        return shouldShowStreamingServerWarning(streamingServer.settings, profile.settings.streamingServerWarningDismissed);
     }, [profile.settings, streamingServer.settings]);
     const onVisibleRangeChange = React.useCallback(() => {
         const range = getVisibleChildrenRange(scrollContainerRef.current);
@@ -103,7 +101,7 @@ const Board = () => {
                 </div>
             </MainNavBars>
             {
-                !streamingServerWarningDismissed ?
+                showStreamingServerWarning ?
                     <StreamingServerWarning className={styles['board-warning-container']} />
                     :
                     null

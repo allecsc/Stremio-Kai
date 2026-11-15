@@ -13,6 +13,7 @@ const usePWA = require('stremio/common/usePWA');
 const useTorrent = require('stremio/common/useTorrent');
 const { withCoreSuspender } = require('stremio/common/CoreSuspender');
 const useStreamingServer = require('stremio/common/useStreamingServer');
+const shouldShowStreamingServerWarning = require('stremio/common/shouldShowStreamingServerWarning');
 const styles = require('./styles');
 
 const NavMenuContent = ({ onClick }) => {
@@ -23,11 +24,8 @@ const NavMenuContent = ({ onClick }) => {
     const { createTorrentFromMagnet } = useTorrent();
     const [fullscreen, requestFullscreen, exitFullscreen] = useFullscreen();
     const [isIOSPWA, isAndroidPWA] = usePWA();
-    const streamingServerWarningDismissed = React.useMemo(() => {
-        return streamingServer.settings !== null && streamingServer.settings.type === 'Ready' || (
-            !isNaN(profile.settings.streamingServerWarningDismissed.getTime()) &&
-            profile.settings.streamingServerWarningDismissed.getTime() > Date.now()
-        );
+    const showStreamingServerWarning = React.useMemo(() => {
+        return shouldShowStreamingServerWarning(streamingServer.settings, profile.settings.streamingServerWarningDismissed);
     }, [profile.settings, streamingServer.settings]);
     const logoutButtonOnClick = React.useCallback(() => {
         core.transport.dispatch({
@@ -50,7 +48,7 @@ const NavMenuContent = ({ onClick }) => {
         }
     }, []);
     return (
-        <div className={classnames(styles['nav-menu-container'], 'animation-fade-in', { [styles['with-warning']]: !streamingServerWarningDismissed } )} onClick={onClick}>
+        <div className={classnames(styles['nav-menu-container'], 'animation-fade-in', { [styles['with-warning']]: showStreamingServerWarning } )} onClick={onClick}>
             <div className={styles['user-info-container']}>
                 <div
                     className={styles['avatar-container']}

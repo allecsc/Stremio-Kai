@@ -18,6 +18,8 @@ The second Simkl release fixes a title-details crash caused by core 0.67.1 omitt
 
 The third release makes the native EXE use those same profile folders without a batch wrapper. It also launches the streaming server using absolute executable/script paths and an explicit working directory. Windows CI checks profile preservation, paths containing spaces and Unicode, launch from a different directory, and the absence of a child console.
 
+The fourth release fixes the brief yellow server-unavailable warning at startup: the board and account menu now distinguish discovery/reload (`Loading`) from failure (`Err`). Actual errors and existing dismissal preferences are preserved, without timers or additional requests. The real-core regression check covers the initial discovery state; separate tests cover failure, recovery and dismissals.
+
 | Component | Version / source |
 | --- | --- |
 | Kai configuration/theme/runtime | upstream Kai 4.8.0, pinned archive SHA-256 |
